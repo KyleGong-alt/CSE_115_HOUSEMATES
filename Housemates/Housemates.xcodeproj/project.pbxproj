@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C7077AF2280F3EE100B52A0C /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7077AF1280F3EE100B52A0C /* Extension.swift */; };
+		C7077AF4280F3F2E00B52A0C /* FirstLastNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7077AF3280F3F2E00B52A0C /* FirstLastNameVC.swift */; };
+		C7077AF6280F469C00B52A0C /* EmailPhoneVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7077AF5280F469C00B52A0C /* EmailPhoneVC.swift */; };
 		C73FEBDF280DE8D100C11888 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73FEBDE280DE8D100C11888 /* AppDelegate.swift */; };
 		C73FEBE1280DE8D100C11888 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73FEBE0280DE8D100C11888 /* SceneDelegate.swift */; };
-		C73FEBE3280DE8D100C11888 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73FEBE2280DE8D100C11888 /* ViewController.swift */; };
 		C73FEBE6280DE8D100C11888 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C73FEBE4280DE8D100C11888 /* Main.storyboard */; };
 		C73FEBE8280DE8D300C11888 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C73FEBE7280DE8D300C11888 /* Assets.xcassets */; };
 		C73FEBEB280DE8D300C11888 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C73FEBE9280DE8D300C11888 /* LaunchScreen.storyboard */; };
@@ -37,10 +39,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C7077AF1280F3EE100B52A0C /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		C7077AF3280F3F2E00B52A0C /* FirstLastNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstLastNameVC.swift; sourceTree = "<group>"; };
+		C7077AF5280F469C00B52A0C /* EmailPhoneVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailPhoneVC.swift; sourceTree = "<group>"; };
 		C73FEBDB280DE8D100C11888 /* Housemates.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Housemates.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C73FEBDE280DE8D100C11888 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C73FEBE0280DE8D100C11888 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C73FEBE2280DE8D100C11888 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		C73FEBE5280DE8D100C11888 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C73FEBE7280DE8D300C11888 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C73FEBEA280DE8D300C11888 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -78,6 +82,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C7077AF7280F46BF00B52A0C /* LogIn */ = {
+			isa = PBXGroup;
+			children = (
+				C73FEC12280DF40600C11888 /* LoginVC.swift */,
+				C7077AF3280F3F2E00B52A0C /* FirstLastNameVC.swift */,
+				C7077AF5280F469C00B52A0C /* EmailPhoneVC.swift */,
+			);
+			path = LogIn;
+			sourceTree = "<group>";
+		};
 		C73FEBD2280DE8D100C11888 = {
 			isa = PBXGroup;
 			children = (
@@ -101,14 +115,14 @@
 		C73FEBDD280DE8D100C11888 /* Housemates */ = {
 			isa = PBXGroup;
 			children = (
+				C7077AF7280F46BF00B52A0C /* LogIn */,
 				C73FEBDE280DE8D100C11888 /* AppDelegate.swift */,
 				C73FEBE0280DE8D100C11888 /* SceneDelegate.swift */,
-				C73FEBE2280DE8D100C11888 /* ViewController.swift */,
 				C73FEBE4280DE8D100C11888 /* Main.storyboard */,
 				C73FEBE7280DE8D300C11888 /* Assets.xcassets */,
 				C73FEBE9280DE8D300C11888 /* LaunchScreen.storyboard */,
 				C73FEBEC280DE8D300C11888 /* Info.plist */,
-				C73FEC12280DF40600C11888 /* LoginVC.swift */,
+				C7077AF1280F3EE100B52A0C /* Extension.swift */,
 			);
 			path = Housemates;
 			sourceTree = "<group>";
@@ -261,9 +275,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C73FEBE3280DE8D100C11888 /* ViewController.swift in Sources */,
+				C7077AF4280F3F2E00B52A0C /* FirstLastNameVC.swift in Sources */,
+				C7077AF2280F3EE100B52A0C /* Extension.swift in Sources */,
 				C73FEBDF280DE8D100C11888 /* AppDelegate.swift in Sources */,
 				C73FEC13280DF40600C11888 /* LoginVC.swift in Sources */,
+				C7077AF6280F469C00B52A0C /* EmailPhoneVC.swift in Sources */,
 				C73FEBE1280DE8D100C11888 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

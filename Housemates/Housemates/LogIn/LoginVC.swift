@@ -10,13 +10,12 @@ import SwiftUI
 
 class LoginVC: UIViewController, UITextFieldDelegate {
 
+    // OUTLETS
     @IBOutlet weak var logoLabel: UILabel!
-    
     @IBOutlet weak var emailTextField: UITextField!
-    
     @IBOutlet weak var passwordTextField: UITextField!
-    
     @IBOutlet weak var signInButton: UIButton!
+    @IBOutlet weak var createAccountButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,15 +37,6 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         self.view.endEditing(true)
     }
     
-    // Sets bottom border of the textfield
-    func setBottomBorder(textfield: UITextField) {
-        let bottomLine = CALayer()
-        bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 1, width: textfield.frame.width, height: 1.0)
-        bottomLine.backgroundColor = UIColor.lightGray.cgColor
-        textfield.borderStyle = UITextField.BorderStyle.none
-        textfield.layer.addSublayer(bottomLine)
-    }
-    
     // Disable signInButton if emailTextField or passwordTextField is empty
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if (!(emailTextField.text?.count == 0) && !(passwordTextField.text?.count == 0)) {
@@ -66,6 +56,15 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             //sign in
         }
         return true
+    }
+    
+    @IBAction func onSignIn(_ sender: Any) {
+        //segue to home
+        return
+    }
+    
+    @IBAction func onCreateAccount(_ sender: Any) {
+        performSegue(withIdentifier: "segueToSignUp", sender: nil)
     }
 }
 
