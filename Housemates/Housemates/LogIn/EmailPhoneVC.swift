@@ -48,7 +48,7 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
             phoneTextField.becomeFirstResponder()
         } else if textField == phoneTextField {
             textField.resignFirstResponder()
-            // next segue
+            onNext(self)
         }
         return true
     }
