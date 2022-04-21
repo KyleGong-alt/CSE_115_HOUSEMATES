@@ -55,5 +55,6 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
 
     @IBAction func onNext(_ sender: Any) {
         //segue to password
+        performSegue(withIdentifier: "segueToPassword", sender: nil)
     }
 }
