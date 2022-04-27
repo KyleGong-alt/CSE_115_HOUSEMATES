@@ -15,7 +15,7 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        doneButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 0.5)
+        doneButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         
         passwordTextField.delegate = self
         setBottomBorder(textfield: passwordTextField)
@@ -30,10 +30,10 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if (!(passwordTextField.text?.count == 0)) {
             doneButton.isUserInteractionEnabled = true
-            doneButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 1)
+            doneButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)
         } else {
             doneButton.isUserInteractionEnabled = false
-            doneButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 0.5)
+            doneButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         }
     }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

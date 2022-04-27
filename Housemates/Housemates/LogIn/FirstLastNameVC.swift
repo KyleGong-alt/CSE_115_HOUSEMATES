@@ -18,7 +18,7 @@ class FirstLastNameVC: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        nextButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 0.5)
+        nextButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         
         firstNameTextField.delegate = self
         lastNameTextField.delegate = self
@@ -36,10 +36,10 @@ class FirstLastNameVC: UIViewController, UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if (!(firstNameTextField.text?.count == 0) && !(lastNameTextField.text?.count == 0)) {
             nextButton.isUserInteractionEnabled = true
-            nextButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 1)
+            nextButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)
         } else {
             nextButton.isUserInteractionEnabled = false
-            nextButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 0.5)
+            nextButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         }
     }
     

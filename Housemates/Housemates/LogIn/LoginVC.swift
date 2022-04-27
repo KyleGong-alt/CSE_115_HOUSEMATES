@@ -20,7 +20,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        signInButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 0.5)
+        signInButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         
         emailTextField.delegate = self
         passwordTextField.delegate = self
@@ -41,10 +41,10 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if (!(emailTextField.text?.count == 0) && !(passwordTextField.text?.count == 0)) {
             signInButton.isUserInteractionEnabled = true
-            signInButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 1)
+            signInButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)
         } else {
             signInButton.isUserInteractionEnabled = false
-            signInButton.tintColor = UIColor.init(red:36/255, green: 122/255, blue: 255/255, alpha: 0.5)
+            signInButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         }
     }
     
@@ -60,6 +60,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     
     @IBAction func onSignIn(_ sender: Any) {
         //segue to home
+        performSegue(withIdentifier: "SignInSegue", sender: nil)
         return
     }
     
