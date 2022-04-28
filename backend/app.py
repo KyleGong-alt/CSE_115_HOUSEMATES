@@ -1,11 +1,35 @@
+from unicodedata import name
 from flask import Flask, request
 from werkzeug.exceptions import HTTPException
+from datetime import datetime
 import os
 
 import users
 import utils
 
 app = Flask(__name__)
+
+# -------------- Sample route template -------------------------------------------------------------------------- #
+# #
+# # description
+# #
+# @app.route('/--route--', methods=['--method--'])
+# def --function--():
+#     # get form-data fields
+#     email = request.form.get('email')
+
+#     # validate form-data for null values
+#     if '' in [email]:
+#         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty email)')
+
+#     # perform request
+#     response = users.get_user(email=email)
+
+#     # return appropriate response
+#     if not response:
+#         return utils.encode_response(status='failure', code=602, desc='cannot find user')
+#     return response
+# -------------------------------------------------------------------------------------------------------------- #
 
 #
 # default route
@@ -45,6 +69,74 @@ def signup():
                                  mobile_number=mobile_number)
     return response
 
+#
+# account login
+#
+@app.route('/login', methods=['POST'])
+def login():
+    # get form-data fields
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    # validate form-data for null values
+    if '' in [email]:
+        return utils.encode_response(status='failure', code=602, desc='invalid login form-data')
+
+    # perform login
+    response = users.get_user(email=email)
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='email or password is wrong')
+
+    # check password
+    print(response)
+    if(password != response['password']):
+        return utils.encode_response(status='failure', code=602, desc='email or password is wrong')
+    return utils.encode_response(status='success', code=200, desc='login successful')
+
+#
+# get single user info
+#
+@app.route('/get_user', methods=['GET'])
+def get_user():
+    # get form-data fields
+    email = request.form.get('email')
+    print(email)
+
+    # validate form-data for null values
+    if '' in [email]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty email)')
+
+    # perform get user info
+    response = users.get_user(email=email)
+    if not response:
+        return utils.encode_response(status='failure', code=404, desc='user not found')
+
+    # return user data
+    # print(response)
+    return response
+
+#
+# add a chore
+# due_date should be of type string -- "May 1 2022 10:00AM"
+#
+@app.route('/create_chore', methods=['POST'])
+def create_chore():
+    # get form-data fields
+    name = request.form.get('name')
+    desc = request.form.get('desc')
+    due_date = request.form.get('due_date')
+    house_code = request.form.get('house_code')
+
+    # validate form-data for null values
+    if '' in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
+
+    # perform request
+    datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
+    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
+
+    # return appropriate response
+    return response
 
 #
 # Handle HTTP and application errors
