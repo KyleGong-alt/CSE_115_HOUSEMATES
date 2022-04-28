@@ -17,9 +17,9 @@ func setBottomBorder(textfield: UITextField) {
     textfield.layer.addSublayer(bottomLine)
 }
 
-func setBottomBorder(label: UILabel) {
+func setBottomBorder(label: UILabel, height: CGFloat, color: CGColor) {
     let bottomLine = CALayer()
-    bottomLine.frame = CGRect(x: 0.0, y: label.frame.height + 8, width: label.frame.width, height: 1.0)
-    bottomLine.backgroundColor = UIColor.white.cgColor
+    bottomLine.frame = CGRect(x: 0.0, y: label.frame.height + height, width: label.frame.width, height: 1.0)
+    bottomLine.backgroundColor = color
     label.layer.addSublayer(bottomLine)
 }
