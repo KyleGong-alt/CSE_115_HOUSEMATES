@@ -165,7 +165,7 @@ def create_house_rules():
     if not response:
         return utils.encode_response(status='failure', code=404, desc='house_rules not found')
 
-    #return the form-data values
+    #return the form-data value
     return response
 
 #
