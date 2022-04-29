@@ -59,23 +59,61 @@ def get_user(email):
 #
 # add single chore
 #
-def add_chore(name, desc, due_date, house_code):
-    # email must be unique
-    dup_check = db.count_rows(table='chores', field='name', value=name)
-    if dup_check > 0:
-        return utils.encode_response(status='failure', code=600, desc='duplicate chore')
+# def add_chore(name, desc, due_date, house_code):
+#     # email must be unique
+#     dup_check = db.count_rows(table='chores', field='name', value=name)
+#     if dup_check > 0:
+#         return utils.encode_response(status='failure', code=600, desc='duplicate chore')
 
-    house_check = db.count_rows(table='house_groups', field='house_code', value=house_code)
-    if house_check == 0:
+#     house_check = db.count_rows(table='house_groups', field='house_code', value=house_code)
+#     if house_check == 0:
+#         return utils.encode_response(status='failure', code=404, desc='house not found')
+
+#     # build sql string
+#     sql_string = "INSERT INTO chores (name, due_date, house_code, description) VALUES ("\
+#         "'{}', '{}', '{}', '{}')".format(name, due_date, house_code, desc)
+
+#     result = db.db_insert(sql_string)
+
+#     # return encoded response
+#     if not result:
+#         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
+#     return utils.encode_response(status='success', code=200, desc='create chore successful')
+
+def add_house_rules(title, description, house_code, voted_num):
+    # print(title)
+    # print(description)
+    # print(house_code)
+    # print(voted_num)
+    #house_rules should be unique
+    dup_check = db.count_rows(table = 'house_rules', field='title', value=title)
+    if dup_check > 0:
+        return utils.encode_response(status='failure', code=600, desc='duplicate house rule')
+    
+    house_created = db.count_rows(table='house_groups', field='house_code', value=house_code)
+    if house_created == 0:
         return utils.encode_response(status='failure', code=404, desc='house not found')
 
-    # build sql string
-    sql_string = "INSERT INTO chores (name, due_date, house_code, description) VALUES ("\
-        "'{}', '{}', '{}', '{}')".format(name, due_date, house_code, desc)
+    # vote_counter = db.count_rows(table='house_rules', field='voted_num', value=votes)
+    # if int(vote_counter) <= 0:
+    #     # return type(vote_counter)
+    #     return utils.encode_response(status='failure', code=400, desc='no voters are found')
+
+    
+    sql_string = "INSERT INTO house_rules (title, description, house_code, voted_num) VALUES ('{}','{}','{}','{}')".format(title, description, house_code, voted_num)
+   
 
     result = db.db_insert(sql_string)
 
     # return encoded response
     if not result:
-        return utils.encode_response(status='failure', code=601, desc='unable to create chore')
-    return utils.encode_response(status='success', code=200, desc='create chore successful')
+        return utils.encode_response(status='failure', code=601, desc='unable to create the house rule')
+    return utils.encode_response(status='success', code=200, desc='house chore scucessfully created')
+
+# d:
+
+# cd housemates/CSE_115_HOUSEMATES/backend
+
+# python app.py
+   
+   
