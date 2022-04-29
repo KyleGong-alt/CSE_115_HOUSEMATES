@@ -119,36 +119,35 @@ def get_user():
 #
 # add a chore
 # due_date should be of type string -- "May 1 2022 10:00AM"
-#
-# @app.route('/create_chore', methods=['POST'])
-# def create_chore():
-#     # get form-data fields
-#     name = request.form.get('name')
-#     desc = request.form.get('desc')
-#     due_date = request.form.get('due_date')
-#     house_code = request.form.get('house_code')
 
-#     # validate form-data for null values
-#     if '' in [house_code]:
-#         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
+@app.route('/create_chore', methods=['POST'])
+def create_chore():
+    # get form-data fields
+    name = request.form.get('name')
+    desc = request.form.get('desc')
+    due_date = request.form.get('due_date')
+    house_code = request.form.get('house_code')
 
-#     # perform request
-#     datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
-#     response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
+    # validate form-data for null values
+    if '' in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
 
-#     # return appropriate response
-#     return response
+    # perform request
+    datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
+    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
 
-
-
+    # return appropriate response
+    return response
 
 @app.route('/create_house_rules', methods=['GET'])
 def create_house_rules():
-    
+
+    #get form-data files
     title = request.form.get('title')
     description = request.form.get('description')
     house_code = request.form.get('house_code')
     voted_num = request.form.get('voted_num')
+
     # validate that title-data has no null values
     if '' in [title]:
         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty house rule)')
@@ -157,17 +156,17 @@ def create_house_rules():
     if '' in [voted_num]:
         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty voters)')
 
-    # validate that form-data has no null values
+    # validate that housecode-data has no null values
     if '' in [house_code]:
         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
-
+    
+    # get all the form-data value and check if its present
     response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num)
     if not response:
         return utils.encode_response(status='failure', code=404, desc='house_rules not found')
 
+    #return the form-data value
     return response
-
-    
 
 #
 # Handle HTTP and application errors
