@@ -13,6 +13,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var choresView: UIView!
     @IBOutlet weak var currentChoreLabel: UILabel!
     
+    @IBOutlet var choreNextButton: UIButton!
     @IBOutlet weak var choreTableView: UITableView!
     
     override func viewDidLoad() {
@@ -63,4 +64,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
 
+    @IBAction func onChoreNext(_ sender: Any) {
+        performSegue(withIdentifier: "segueAllChore", sender: nil)
+    }
 }
