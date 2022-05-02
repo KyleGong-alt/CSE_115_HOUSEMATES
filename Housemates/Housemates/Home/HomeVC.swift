@@ -30,6 +30,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         choreTableView.delegate = self
         choreTableView.dataSource = self
         
+        //let leftSwipe = UISwipeGestureRecognizer(target: <#T##Any?#>, action: <#T##Selector?#>)
+        
     }
     
 
@@ -61,10 +63,16 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if segue.identifier == "seguePickChore" {
             let destinationVC = segue.destination as! ChoreHalfSheetVC
             destinationVC.sheetPresentationController?.detents = [.medium(), .large()]
+        } else {
+            //navigationController?.pushViewController(segue.destination, animated: true)
         }
     }
 
     @IBAction func onChoreNext(_ sender: Any) {
         performSegue(withIdentifier: "segueAllChore", sender: nil)
+    }
+    
+    @IBAction func onViewMembers(_ sender: Any) {
+        performSegue(withIdentifier: "segueMembers", sender: nil)
     }
 }

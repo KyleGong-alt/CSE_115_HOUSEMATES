@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import QuartzCore
 
 // Sets bottom border of the textfield
 func setBottomBorder(textfield: UITextField) {
@@ -22,4 +23,27 @@ func setBottomBorder(label: UILabel, height: CGFloat, color: CGColor) {
     bottomLine.frame = CGRect(x: 0.0, y: label.frame.height + height, width: label.frame.width, height: 1.0)
     bottomLine.backgroundColor = color
     label.layer.addSublayer(bottomLine)
+}
+
+func segue(srcVC: UIViewController, destVC: UIViewController) {
+    let transition = CATransition()
+    transition.duration = 0.25
+    transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+    transition.type = CATransitionType.push
+    transition.subtype = CATransitionSubtype.fromLeft
+    
+    //srcVC.navigationController.view.add
+}
+
+
+extension UIView {
+    func findViewController() -> UIViewController? {
+        if let nextResponder = self.next as? UIViewController {
+            return nextResponder
+        } else if let nextResponder = self.next as? UIView {
+            return nextResponder.findViewController()
+        } else {
+            return nil
+        }
+    }
 }
