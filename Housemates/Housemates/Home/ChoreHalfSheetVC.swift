@@ -48,4 +48,5 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
     @IBAction func onCheck(_ sender: Any) {
         animateCheck()
     }
+    
 }
