@@ -56,6 +56,23 @@ def get_user(email):
         return None
     return result
 
+def get_user_chores(user_id):
+    # build sql string
+    sql_string = "SELECT * FROM chores WHERE id IN \
+                (SELECT chore_id FROM chores_assignee WHERE \
+                (user_id='{}' AND house_code = \
+                (SELECT house_code FROM users WHERE id = '{}')))".format(user_id, user_id)
+
+    # sql_string = "SELECT * FROM chores"
+    data = '{}'
+
+    # query the chores that associate with user_id
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='', data=data)
+    return response
+
 #
 # add single chore
 #

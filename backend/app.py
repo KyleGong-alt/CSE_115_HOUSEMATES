@@ -104,9 +104,8 @@ def login():
 #
 @app.route('/get_user', methods=['GET'])
 def get_user():
-    # get form-data fields
-    email = request.form.get('email')
-    print(email)
+    # get params fields
+    email = request.args.get('email')
 
     # validate form-data for null values
     if '' in [email]:
@@ -142,6 +141,26 @@ def create_chore():
     response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
 
     # return appropriate response
+    return response
+
+#
+# description
+#
+@app.route('/get_chores_by_user', methods=['GET'])
+def get_chores_by_user():
+    # get params fields
+    user_id = request.args.get('user_id')
+
+    # validate form-data for null values
+    if '' in [user_id]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no id provided)')
+
+    # perform request
+    response = users.get_user_chores(user_id=user_id)
+
+    # return appropriate response
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='cannot get chores')
     return response
 
 #
