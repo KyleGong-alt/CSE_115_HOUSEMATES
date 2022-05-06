@@ -47,6 +47,12 @@ def get_users():
     response = users.list_users()
     return response
 
+#
+# list all users in db
+#
+@app.route('/profilePic', methods=['GET'])
+def get_profile_pic():
+    return send_file('./ProfilePic/img.png')
 
 #
 # account signup
