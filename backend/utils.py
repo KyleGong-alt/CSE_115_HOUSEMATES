@@ -1,3 +1,4 @@
+from flask import jsonify
 import json
 
 
@@ -9,5 +10,6 @@ def encode_response(status='success', code='', desc='', data=None):
     # build response dict
     response = {'status': status, 'code': code, 'description': desc, 'data': data}
     # convert response to JSON
-    response_json = json.dumps(response)
+    # response_json = json.dumps(response)
+    response_json = jsonify(response)
     return response_json
