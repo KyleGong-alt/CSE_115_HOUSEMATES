@@ -163,6 +163,24 @@ def get_chores_by_user():
         return utils.encode_response(status='failure', code=602, desc='cannot get chores')
     return response
 
+
+#
+# get chores by house code
+#
+@app.route('/get_chores_by_house_code', methods=['GET'])
+def get_chores_by_house_code():
+    # get params field
+    house_code = request.args.get('house_code')
+    print("DEBUG: house_code: ", house_code)
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_chores(house_code)
+    return response
+
+
 #
 # Handle HTTP and application errors
 #
