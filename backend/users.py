@@ -96,3 +96,19 @@ def add_chore(name, desc, due_date, house_code):
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
     return utils.encode_response(status='success', code=200, desc='create chore successful')
+
+
+#
+# get list of chores by house_code
+#
+def get_house_chores(house_code):
+    # build sql string
+    sql_string = "SELECT * FROM chores WHERE house_code = '{}'".format(house_code)
+
+    # fetch chores from DB
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status="success", code="200", desc='successful query', data=data)
+    # response = jsonify(data)
+    return response
