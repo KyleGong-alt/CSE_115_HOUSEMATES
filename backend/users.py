@@ -109,6 +109,21 @@ def get_house_chores(house_code):
     data = db.db_query(sql_string, many=True)
 
     # return encoded response
-    response = utils.encode_response(status="success", code="200", desc='successful query', data=data)
+    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
     # response = jsonify(data)
+    return response
+
+
+#
+# get assignees by chore_id
+#
+def get_assignees(chore_id):
+    # build sql string
+    sql_string = "SELECT * FROM users WHERE id IN (SELECT user_id FROM chores_assignee WHERE chore_id = {})".format(chore_id)
+
+    # fetch users assigned to chore
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
     return response

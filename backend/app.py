@@ -171,13 +171,33 @@ def get_chores_by_user():
 def get_chores_by_house_code():
     # get params field
     house_code = request.args.get('house_code')
-    print("DEBUG: house_code: ", house_code)
+
     # validate params for null values
     if '' in [house_code] or None in [house_code]:
         return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
 
     # response request
     response = users.get_house_chores(house_code)
+    return response
+
+
+#
+# get chore assignees
+#
+@app.route('/get_assignees', methods=['GET'])
+def get_assignees():
+    # get params field
+    chore_id = request.args.get('chore_id')
+
+    # validate params for null values
+    if '' in [chore_id] or None in [chore_id]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no chore id provided)')
+    # enforce a numeric chore_id
+    elif not chore_id.isnumeric():
+        return utils.encode_response(status='failure', code=602, desc='invalid user paramters (chore id must be numeric)')
+
+    # response request
+    response = users.get_assignees(chore_id)
     return response
 
 
