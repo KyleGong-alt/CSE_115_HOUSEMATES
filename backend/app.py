@@ -47,6 +47,12 @@ def get_users():
     response = users.list_users()
     return response
 
+#
+# list all users in db
+#
+@app.route('/profilePic', methods=['GET'])
+def get_profile_pic():
+    return send_file('./ProfilePic/img.png')
 
 #
 # account signup
@@ -98,9 +104,8 @@ def login():
 #
 @app.route('/get_user', methods=['GET'])
 def get_user():
-    # get form-data fields
-    email = request.form.get('email')
-    print(email)
+    # get params fields
+    email = request.args.get('email')
 
     # validate form-data for null values
     if '' in [email]:
@@ -137,6 +142,64 @@ def create_chore():
 
     # return appropriate response
     return response
+
+#
+# description
+#
+@app.route('/get_chores_by_user', methods=['GET'])
+def get_chores_by_user():
+    # get params fields
+    user_id = request.args.get('user_id')
+
+    # validate form-data for null values
+    if '' in [user_id]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no id provided)')
+
+    # perform request
+    response = users.get_user_chores(user_id=user_id)
+
+    # return appropriate response
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='cannot get chores')
+    return response
+
+
+#
+# get chores by house code
+#
+@app.route('/get_chores_by_house_code', methods=['GET'])
+def get_chores_by_house_code():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_chores(house_code)
+    return response
+
+
+#
+# get chore assignees
+#
+@app.route('/get_assignees', methods=['GET'])
+def get_assignees():
+    # get params field
+    chore_id = request.args.get('chore_id')
+
+    # validate params for null values
+    if '' in [chore_id] or None in [chore_id]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no chore id provided)')
+    # enforce a numeric chore_id
+    elif not chore_id.isnumeric():
+        return utils.encode_response(status='failure', code=602, desc='invalid user paramters (chore id must be numeric)')
+
+    # response request
+    response = users.get_assignees(chore_id)
+    return response
+
 
 #
 # Handle HTTP and application errors
