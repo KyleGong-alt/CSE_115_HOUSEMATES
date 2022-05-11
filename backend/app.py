@@ -66,8 +66,11 @@ def signup():
     password = request.form.get('password')
     mobile_number = request.form.get('mobile_number')
 
+    # list of field values
+    fields = [email, first_name, last_name, password, mobile_number]
+
     # validate form-data for null values
-    if '' in [email, first_name, last_name, password, mobile_number]:
+    if '' in fields or None in fields:
         return utils.encode_response(status='failure', code=602, desc='invalid signup form-data')
 
     # perform signup
