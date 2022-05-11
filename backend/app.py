@@ -203,8 +203,9 @@ def get_assignees():
     response = users.get_assignees(chore_id)
     return response
 
+
 #
-# Get chores and assignees
+# get chores and assignees
 #
 @app.route('/get_chores', methods=['GET'])
 def get_chores():

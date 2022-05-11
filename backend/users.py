@@ -134,6 +134,8 @@ def get_assignees(chore_id):
 #
 def get_chores(house_code):
     # build sql string
+    # get users assigned to chores from given house_code
+    # get all chores from given house_code, combine the results
     sql_string = "SELECT c.id, c.name, c.due_date, c.house_code, c.description, a.user_id, u.email, u.first_name, u.last_name " \
                  "FROM chores_assignee a " \
                  "JOIN chores c on a.chore_id = c.id " \
