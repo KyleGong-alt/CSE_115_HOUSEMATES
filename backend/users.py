@@ -35,10 +35,16 @@ def create_user(email, first_name, last_name, password, mobile_number):
     # insert user into users table
     result = db.db_insert(sql_string)
 
-    # return encoded response
+    # validate the insertion
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to create new user')
-    return utils.encode_response(status='success', code=200, desc='signup successful')
+
+    # fetch newly created user
+    sql_string = "SELECT * FROM users WHERE email='{}'".format(email)
+    data = db.db_query(sql_string)
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='signup successful', data=data)
 
 #
 # get single user

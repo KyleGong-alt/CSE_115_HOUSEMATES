@@ -42,7 +42,7 @@ def hello():
 #
 # list all users in db
 #
-@app.route('/list_users', methods=['GET', 'POST'])
+@app.route('/list_users', methods=['GET'])
 def get_users():
     response = users.list_users()
     return response
@@ -59,19 +59,23 @@ def get_profile_pic():
 #
 @app.route('/signup', methods=['POST'])
 def signup():
-    # get form-data fields
-    email = request.form.get('email')
-    first_name = request.form.get('first_name')
-    last_name = request.form.get('last_name')
-    password = request.form.get('password')
-    mobile_number = request.form.get('mobile_number')
 
-    # list of field values
-    fields = [email, first_name, last_name, password, mobile_number]
+    # validate request json
+    signup_fields = ['email', 'first_name', 'last_name', 'password', 'mobile_number']
+    valid_json, desc = utils.validate_json_request(signup_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
 
-    # validate form-data for null values
-    if '' in fields or None in fields:
-        return utils.encode_response(status='failure', code=602, desc='invalid signup form-data')
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get signup fields
+    email = request_dict.get('email')
+    first_name = request_dict.get('first_name')
+    last_name = request_dict.get('last_name')
+    password = request_dict.get('password')
+    mobile_number = request_dict.get('mobile_number')
 
     # perform signup
     response = users.create_user(email=email, first_name=first_name, last_name=last_name, password=password,
@@ -226,13 +230,28 @@ def get_chores():
 #
 @app.route('/post_json', methods=['POST'])
 def process_json():
-    content_type = request.headers.get('Content-Type')
-    if content_type == 'application/json':
-        data = request.get_json()
-        response = utils.encode_response(status="success", code=200, desc="successful json post", data=data)
+
+    # validate JSON request
+    fields_list = ['field1', 'field2', 'field3']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
         return response
-    else:
-        return utils.encode_response(status='failure', code=602, desc='content-type not supported: ' + content_type)
+
+    # at this point the JSON is valid...
+
+    # request_dict holds all field,value pairs
+    request_dict = request.get_json()
+    print("Request Dict: ", request_dict)
+
+    # extract values from fields
+    field1 = request_dict.get('field1')
+    field2 = request_dict.get('field2')
+    field3 = request_dict.get('field3')
+    print("Field values: ", field1, field2, field3)
+
+    response = utils.encode_response(status='success', code=200, desc="successful json post", data=request_dict)
+    return response
 
 #
 # Handle HTTP and application errors
