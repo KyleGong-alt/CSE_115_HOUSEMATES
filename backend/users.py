@@ -127,3 +127,28 @@ def get_assignees(chore_id):
     # return encoded response
     response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
     return response
+
+
+#
+# get chores
+#
+def get_chores(house_code):
+    # build sql string
+    # get users assigned to chores from given house_code
+    # get all chores from given house_code, combine the results
+    sql_string = "SELECT c.id, c.name, c.due_date, c.house_code, c.description, a.user_id, u.email, u.first_name, u.last_name " \
+                 "FROM chores_assignee a " \
+                 "JOIN chores c on a.chore_id = c.id " \
+                 "JOIN users u on a.user_id = u.id " \
+                 "WHERE a.house_code = '{}' " \
+                 "UNION " \
+                 "SELECT c.id, c.name, c.due_date, c.house_code, c.description, Null as user_id ,Null as email, Null as first_name, Null as last_name " \
+                 "FROM chores as c " \
+                 "WHERE c.house_code = '{}' AND c.id NOT IN(SELECT chore_id FROM chores_assignee)" \
+                 "".format(house_code, house_code)
+    # fetch chores and assignees
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
+    return response
