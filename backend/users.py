@@ -150,19 +150,3 @@ def get_chores(house_code):
     # return encoded response
     response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
     return response
-
-# SELECT c.id, c.name, c.due_date, c.house_code, c.description, u.email, u.first_name, u.last_name
-# FROM chores_assignee a
-#     JOIN chores c
-#         on a.chore_id = c.id
-#     JOIN users u
-#         on a.user_id = u.id
-# WHERE
-# a.house_code = "ABCDEF"
-#
-# UNION
-#
-# SELECT c.id, c.name, c.due_date, c.house_code, c.description, Null as email, Null as first_name, Null as last_name
-# FROM chores as c
-# WHERE c.house_code = "ABCDEF" AND c.id NOT IN(SELECT chore_id FROM chores_assignee)
-
