@@ -222,6 +222,19 @@ def get_chores():
 
 
 #
+# sample json post request
+#
+@app.route('/post_json', methods=['POST'])
+def process_json():
+    content_type = request.headers.get('Content-Type')
+    if content_type == 'application/json':
+        data = request.get_json()
+        response = utils.encode_response(status="success", code=200, desc="successful json post", data=data)
+        return response
+    else:
+        return utils.encode_response(status='failure', code=602, desc='content-type not supported: ' + content_type)
+
+#
 # Handle HTTP and application errors
 #
 @app.errorhandler(Exception)
