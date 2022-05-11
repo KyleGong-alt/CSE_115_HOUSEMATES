@@ -200,6 +200,22 @@ def get_assignees():
     response = users.get_assignees(chore_id)
     return response
 
+#
+# Get chores and assignees
+#
+@app.route('/get_chores', methods=['GET'])
+def get_chores():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_chores(house_code)
+    return response
+
 
 #
 # Handle HTTP and application errors
