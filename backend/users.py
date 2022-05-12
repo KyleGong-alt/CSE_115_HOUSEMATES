@@ -119,6 +119,20 @@ def get_house_chores(house_code):
     # response = jsonify(data)
     return response
 
+#
+# get list of house rules by house_code
+#
+def get_house_rules(house_code):
+    # build sql string
+    sql_string = "SELECT * FROM house_rules WHERE house_code = '{}'".format(house_code)
+
+    # fetch chores from DB
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
+    # response = jsonify(data)
+    return response
 
 #
 # get assignees by chore_id
