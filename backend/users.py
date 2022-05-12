@@ -115,7 +115,7 @@ def get_house_chores(house_code):
     data = db.db_query(sql_string, many=True)
 
     # return encoded response
-    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     # response = jsonify(data)
     return response
 
@@ -130,7 +130,7 @@ def get_house_rules(house_code):
     data = db.db_query(sql_string, many=True)
 
     # return encoded response
-    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     # response = jsonify(data)
     return response
 
@@ -145,7 +145,7 @@ def get_assignees(chore_id):
     data = db.db_query(sql_string, many=True)
 
     # return encoded response
-    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     return response
 
 
@@ -170,5 +170,5 @@ def get_chores(house_code):
     data = db.db_query(sql_string, many=True)
 
     # return encoded response
-    response = utils.encode_response(status='success', code='200', desc='successful query', data=data)
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     return response
