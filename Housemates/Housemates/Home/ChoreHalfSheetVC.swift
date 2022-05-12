@@ -15,6 +15,10 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
     @IBOutlet var exButton: UIButton!
     @IBOutlet var descriptionText: UITextView!
     @IBOutlet var membersTableView: UITableView!
+    @IBOutlet var dateLabel: UILabel!
+    @IBOutlet var timeLabel: UILabel!
+    
+    var chore: chore!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +29,9 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         setBottomBorder(label: choreTitle, height: 4, color: UIColor.black.cgColor)
         descriptionText.layer.cornerRadius = 13
         descriptionText.contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        
+        choreTitle.text = chore.name
+        descriptionText.text = chore.description
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -53,19 +53,67 @@ class LoginVC: UIViewController, UITextFieldDelegate {
             passwordTextField.becomeFirstResponder()
         } else if textField == passwordTextField {
             textField.resignFirstResponder()
-            //sign in
+            signin(email: emailTextField.text!, password: passwordTextField.text!)
         }
         return true
     }
     
     @IBAction func onSignIn(_ sender: Any) {
         //segue to home
-        performSegue(withIdentifier: "SignInSegue", sender: nil)
+        signin(email: emailTextField.text!, password: passwordTextField.text!)
         return
     }
     
     @IBAction func onCreateAccount(_ sender: Any) {
         performSegue(withIdentifier: "segueToSignUp", sender: nil)
+    }
+    
+    func errorSignin() {
+        let alert = UIAlertController(title: "Incorrect Email or Password", message: "The email or password you entered is incorrect. Please try again.", preferredStyle: UIAlertController.Style.alert)
+
+        alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func signin(email: String, password: String) {
+        let url = URL(string: "http://127.0.0.1:8080/login")!
+        
+        var request = URLRequest(url: url)
+        
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.httpMethod = "POST"
+        
+        let parameters: [String: Any] = [
+            "email": email,
+            "password": password,
+        ]
+        
+        let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        request.httpBody = httpBody
+        request.timeoutInterval = 20
+        print(email, password)
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:signUpResponse
+            do {
+                result = try JSONDecoder().decode(signUpResponse.self, from: data!)
+                
+                if (result.code == 600) {
+                    DispatchQueue.main.async {
+                        self.errorSignin()
+                    }
+                    return
+                }
+                print(result)
+//                DispatchQueue.main.async {
+//                    self.performSegue(withIdentifier: "SignInSegue", sender: result.data)
+//                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
     }
 }
 
