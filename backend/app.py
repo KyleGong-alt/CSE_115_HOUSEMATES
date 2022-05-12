@@ -159,7 +159,7 @@ def get_chores_by_user():
     user_id = request.args.get('user_id')
 
     # validate form-data for null values
-    if '' in [user_id]:
+    if '' in [user_id] or (user_id == None):
         return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no id provided)')
 
     # perform request
