@@ -111,7 +111,9 @@ def login():
     print(response)
     if(password != response['password']):
         return utils.encode_response(status='failure', code=602, desc='email or password is wrong')
-    return utils.encode_response(status='success', code=200, desc='login successful')
+
+    # return users data (included the password!!)
+    return utils.encode_response(status='success', code=200, desc='login successful', data=response)
 
 #
 # get single user info
