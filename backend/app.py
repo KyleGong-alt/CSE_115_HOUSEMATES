@@ -87,13 +87,20 @@ def signup():
 #
 @app.route('/login', methods=['POST'])
 def login():
-    # get form-data fields
-    email = request.form.get('email')
-    password = request.form.get('password')
 
-    # validate form-data for null values
-    if '' in [email]:
-        return utils.encode_response(status='failure', code=602, desc='invalid login form-data')
+    # validate JSON request
+    fields_list = ['email', 'password']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    email = request_dict.get('email')
+    password = request_dict.get('password')
 
     # perform login
     response = users.get_user(email=email)
@@ -224,6 +231,21 @@ def get_chores():
     response = users.get_chores(house_code)
     return response
 
+#
+# get chores and assignees
+#
+@app.route('/get_house_rules', methods=['GET'])
+def get_house_rules():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_rules(house_code)
+    return response
 
 #
 # sample json post request
