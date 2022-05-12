@@ -7,10 +7,37 @@
 
 import UIKit
 
+struct user: Codable {
+    let id: Int
+    let first_name: String
+    let last_name: String
+    let house_code: String?
+    let mobile_number: String
+    let email: String
+    let password: String
+}
+
+struct signUpResponse: Codable{
+    let status: String
+    let code: Int
+    let description: String
+    let data: user?
+}
+
+
+
 class PasswordVC: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var doneButton: UIButton!
+    
+    var firstName: String!
+    var lastName: String!
+    var email: String!
+    var phoneNumber: String!
+    
+    var user: user?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +46,7 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
         
         passwordTextField.delegate = self
         setBottomBorder(textfield: passwordTextField)
+        
     }
     
     // End text editing when tapping screen other than textfield
@@ -39,23 +67,70 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == passwordTextField {
             textField.resignFirstResponder()
-            // blank
+            signup(firstName: firstName, lastName: lastName, email: email, phone: phoneNumber, password: passwordTextField.text!)
         }
         return true
     }
     
     @IBAction func onDone(_ sender: Any) {
-        //blank
+        signup(firstName: firstName, lastName: lastName, email: email, phone: phoneNumber, password: passwordTextField.text!)
     }
     
-    /*
-    // MARK: - Navigation
+    func errorSignup() {
+        let alert = UIAlertController(title: "Invalid Signup", message: "Email already in use. Please use another email.", preferredStyle: UIAlertController.Style.alert)
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: {_ in
+            self.navigationController?.popViewController(animated: true)
+        }))
+
+        self.present(alert, animated: true, completion: nil)
     }
-    */
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! TabBarController
+        destinationVC.currentUser = sender as? user
+    }
+    
+    func signup(firstName: String, lastName: String, email: String, phone: String, password: String) {
+        let url = URL(string: "http://127.0.0.1:8080/signup")!
+        
+        var request = URLRequest(url: url)
+        
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.httpMethod = "POST"
+        
+        let parameters: [String: Any] = [
+            "email": email,
+            "first_name": firstName,
+            "last_name": lastName,
+            "password": password,
+            "mobile_number": phone
+        ]
+        
+        let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        request.httpBody = httpBody
+        request.timeoutInterval = 20
 
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:signUpResponse
+            do {
+                result = try JSONDecoder().decode(signUpResponse.self, from: data!)
+                
+                if (result.code == 600) {
+                    DispatchQueue.main.async {
+                        self.errorSignup()
+                    }
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.performSegue(withIdentifier: "segueFinishSignUp", sender: result.data)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
 }
+

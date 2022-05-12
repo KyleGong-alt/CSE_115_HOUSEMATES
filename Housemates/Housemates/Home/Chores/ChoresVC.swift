@@ -15,6 +15,10 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet var currentChoresTableView: UITableView!
     @IBOutlet var unassignedChoresTableView: UITableView!
     
+    var currentUser: user?
+    
+    var choreList = [chore]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -27,6 +31,8 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         setBottomBorder(label: currentChoresLabel, height: 8, color: UIColor.white.cgColor)
         
         setBottomBorder(label: unassignedChoresLabel, height: 8, color: UIColor.white.cgColor)
+        
+        getChoreByHouseCode(houseCode: currentUser!.house_code!)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -53,12 +59,38 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             //navigationController?.pushViewController(segue.destination, animated: true)
         }
     }
-    @IBAction func onReturn(_ sender: Any) {
-        performSegue(withIdentifier: "segueCloseChores", sender: nil)
-    }
     
     @IBAction func onAddChore(_ sender: Any) {
         performSegue(withIdentifier: "segueAddChores", sender: nil)
     }
     
+    func getChoreByHouseCode(houseCode: String) {
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_chores_by_house_code")!
+        components.queryItems = [
+            URLQueryItem(name: "house_code", value: houseCode)
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            print(data, response)
+            var result:choreResponse
+            do {
+                result = try JSONDecoder().decode(choreResponse.self, from: data!)
+                //print(result)
+                self.choreList = result.data  ?? []
+                print(self.choreList)
+//                DispatchQueue.main.async {
+//                    self.choreTableView.reloadData()
+//                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
 }
