@@ -14,6 +14,9 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var phoneTextField: UITextField!
     @IBOutlet weak var nextButton: UIButton!
     
+    var firstName: String!
+    var lastName: String!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -56,5 +59,14 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
     @IBAction func onNext(_ sender: Any) {
         //segue to password
         performSegue(withIdentifier: "segueToPassword", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! PasswordVC
+        
+        destinationVC.firstName = firstName
+        destinationVC.lastName = lastName
+        destinationVC.email = emailTextField.text
+        destinationVC.phoneNumber = phoneTextField.text
     }
 }

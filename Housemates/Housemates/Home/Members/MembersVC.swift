@@ -12,6 +12,8 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
     @IBOutlet var houseCodeLabel: UILabel!
     @IBOutlet var memberTableView: UITableView!
     
+    var currentUser: user?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,6 +29,13 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
 
     @IBAction func onClose(_ sender: Any) {
         performSegue(withIdentifier: "segueCloseRightNav", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "segueCloseRightNav" {
+            let destinationVC = segue.destination as! HomeVC
+            destinationVC.currentUser = self.currentUser
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

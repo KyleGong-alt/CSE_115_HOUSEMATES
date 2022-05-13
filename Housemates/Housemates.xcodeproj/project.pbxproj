@@ -32,6 +32,7 @@
 		C76F0FF9281F1F590071C82A /* MembersVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FF8281F1F590071C82A /* MembersVC.swift */; };
 		C76F0FFD281F26FE0071C82A /* DimmingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FFC281F26FE0071C82A /* DimmingVC.swift */; };
 		C76F1003282049C10071C82A /* MemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F1002282049C10071C82A /* MemberCell.swift */; };
+		C79794BC282D99A20067BEBC /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79794BB282D99A20067BEBC /* TabBarController.swift */; };
 		C7D453B32825A35400DFBB83 /* AddChoresVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D453B22825A35300DFBB83 /* AddChoresVC.swift */; };
 /* End PBXBuildFile section */
 
@@ -82,6 +83,7 @@
 		C76F0FF8281F1F590071C82A /* MembersVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembersVC.swift; sourceTree = "<group>"; };
 		C76F0FFC281F26FE0071C82A /* DimmingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimmingVC.swift; sourceTree = "<group>"; };
 		C76F1002282049C10071C82A /* MemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCell.swift; sourceTree = "<group>"; };
+		C79794BB282D99A20067BEBC /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		C7D453B22825A35300DFBB83 /* AddChoresVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoresVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -167,6 +169,7 @@
 		C73FEBDD280DE8D100C11888 /* Housemates */ = {
 			isa = PBXGroup;
 			children = (
+				C79794BA282D99650067BEBC /* Navigation */,
 				1CA8CF66281B8B81004AC253 /* Profile */,
 				C722BF5F2818AFE100458FAC /* Home */,
 				C7077AF7280F46BF00B52A0C /* LogIn */,
@@ -216,6 +219,14 @@
 				C7D453B22825A35300DFBB83 /* AddChoresVC.swift */,
 			);
 			path = Chores;
+			sourceTree = "<group>";
+		};
+		C79794BA282D99650067BEBC /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				C79794BB282D99A20067BEBC /* TabBarController.swift */,
+			);
+			path = Navigation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -367,6 +378,7 @@
 				1CA8CF68281B8EC0004AC253 /* profileVC.swift in Sources */,
 				C73FEBE1280DE8D100C11888 /* SceneDelegate.swift in Sources */,
 				C76F0FF5281C85020071C82A /* ChoresVC.swift in Sources */,
+				C79794BC282D99A20067BEBC /* TabBarController.swift in Sources */,
 				C76F0FF9281F1F590071C82A /* MembersVC.swift in Sources */,
 				C722BF67281A213000458FAC /* ChoreHalfSheetVC.swift in Sources */,
 			);
