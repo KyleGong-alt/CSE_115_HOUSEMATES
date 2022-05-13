@@ -14,7 +14,7 @@ class TabBarController: UITabBarController {
         super.viewDidLoad()
         print(viewControllers!)
         let testing = user(id: 1, first_name: "test_fn", last_name: "carrera", house_code: "AKZXCOPQ", mobile_number: "1234567890", email: "test@ucsc.edu", password: "password")
-        currentUser = testing
+        //currentUser = testing
         if (currentUser?.house_code == nil) {
             viewControllers?.remove(at:0)
             

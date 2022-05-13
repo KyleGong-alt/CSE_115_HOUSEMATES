@@ -76,6 +76,13 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         self.present(alert, animated: true, completion: nil)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "SignInSegue") {
+            let destinationVC = segue.destination as! TabBarController
+            destinationVC.currentUser = sender as? user
+        }
+    }
+    
     func signin(email: String, password: String) {
         let url = URL(string: "http://127.0.0.1:8080/login")!
         
@@ -105,10 +112,10 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                     }
                     return
                 }
-                print(result)
-//                DispatchQueue.main.async {
-//                    self.performSegue(withIdentifier: "SignInSegue", sender: result.data)
-//                }
+                
+                DispatchQueue.main.async {
+                    self.performSegue(withIdentifier: "SignInSegue", sender: result.data)
+                }
             } catch {
                 print(error.localizedDescription)
             }

@@ -69,19 +69,18 @@ class RightNavSegue: UIStoryboardSegue {
         dimmingView.frame = initialView.frame
         
         let appWindow = UIApplication.shared.connectedScenes.lazy.compactMap { $0.activationState == .foregroundActive ? ($0 as? UIWindowScene) : nil}.first(where: {$0.keyWindow != nil})?.keyWindow
+        print(appWindow?.rootViewController.)
         appWindow?.rootViewController = self.destination
         appWindow?.insertSubview(initialView, belowSubview: destView)
         appWindow?.insertSubview(dimmingView, aboveSubview: initialView)
    
         initialView.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
         destView.frame = CGRect(x: screenWidth, y: 0, width: screenWidth, height: screenHeight)
-        
         UIView.animate(withDuration: 0.3, animations: {
             initialView.frame = (initialView.frame.offsetBy(dx: -screenWidth + 80, dy: 0))
             dimmingView.frame = (dimmingView.frame.offsetBy(dx: -screenWidth + 80, dy: 0))
             dimmingView.alpha = 1
             destView.frame = (destView.frame.offsetBy(dx: -screenWidth + 80, dy: 0))
-            
         }) { (Bool) in
             //self.source.present(self.destination, animated: false, completion: nil)
             //self.source.
