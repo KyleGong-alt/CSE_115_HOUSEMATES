@@ -35,10 +35,16 @@ def create_user(email, first_name, last_name, password, mobile_number):
     # insert user into users table
     result = db.db_insert(sql_string)
 
-    # return encoded response
+    # validate the insertion
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to create new user')
-    return utils.encode_response(status='success', code=200, desc='signup successful')
+
+    # fetch newly created user
+    sql_string = "SELECT * FROM users WHERE email='{}'".format(email)
+    data = db.db_query(sql_string)
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='signup successful', data=data)
 
 #
 # get single user
@@ -55,6 +61,23 @@ def get_user(email):
     if not result:
         return None
     return result
+
+def get_user_chores(user_id):
+    # build sql string
+    sql_string = "SELECT * FROM chores WHERE id IN \
+                (SELECT chore_id FROM chores_assignee WHERE \
+                (user_id='{}' AND house_code = \
+                (SELECT house_code FROM users WHERE id = '{}')))".format(user_id, user_id)
+
+    # sql_string = "SELECT * FROM chores"
+    data = '{}'
+
+    # query the chores that associate with user_id
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='', data=data)
+    return response
 
 #
 # add single chore
@@ -102,3 +125,72 @@ def add_house_rules(title, description, house_code, voted_num):
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to create the house rule')
     return utils.encode_response(status='success', code=200, desc='house chore scucessfully created')
+
+#
+# get list of chores by house_code
+#
+def get_house_chores(house_code):
+    # build sql string
+    sql_string = "SELECT * FROM chores WHERE house_code = '{}'".format(house_code)
+
+    # fetch chores from DB
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    # response = jsonify(data)
+    return response
+
+#
+# get list of house rules by house_code
+#
+def get_house_rules(house_code):
+    # build sql string
+    sql_string = "SELECT * FROM house_rules WHERE house_code = '{}'".format(house_code)
+
+    # fetch chores from DB
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    # response = jsonify(data)
+    return response
+
+#
+# get assignees by chore_id
+#
+def get_assignees(chore_id):
+    # build sql string
+    sql_string = "SELECT * FROM users WHERE id IN (SELECT user_id FROM chores_assignee WHERE chore_id = {})".format(chore_id)
+
+    # fetch users assigned to chore
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    return response
+
+
+#
+# get chores
+#
+def get_chores(house_code):
+    # build sql string
+    # get users assigned to chores from given house_code
+    # get all chores from given house_code, combine the results
+    sql_string = "SELECT c.id, c.name, c.due_date, c.house_code, c.description, a.user_id, u.email, u.first_name, u.last_name " \
+                 "FROM chores_assignee a " \
+                 "JOIN chores c on a.chore_id = c.id " \
+                 "JOIN users u on a.user_id = u.id " \
+                 "WHERE a.house_code = '{}' " \
+                 "UNION " \
+                 "SELECT c.id, c.name, c.due_date, c.house_code, c.description, Null as user_id ,Null as email, Null as first_name, Null as last_name " \
+                 "FROM chores as c " \
+                 "WHERE c.house_code = '{}' AND c.id NOT IN(SELECT chore_id FROM chores_assignee)" \
+                 "".format(house_code, house_code)
+    # fetch chores and assignees
+    data = db.db_query(sql_string, many=True)
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    return response

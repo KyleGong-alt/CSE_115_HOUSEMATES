@@ -43,27 +43,40 @@ def hello():
 #
 # list all users in db
 #
-@app.route('/list_users', methods=['GET', 'POST'])
+@app.route('/list_users', methods=['GET'])
 def get_users():
     response = users.list_users()
     return response
 
+#
+# list all users in db
+#
+@app.route('/profilePic', methods=['GET'])
+def get_profile_pic():
+    return send_file('./ProfilePic/img.png')
 
 #
 # account signup
 #
 @app.route('/signup', methods=['POST'])
 def signup():
-    # get form-data fields
-    email = request.form.get('email')
-    first_name = request.form.get('first_name')
-    last_name = request.form.get('last_name')
-    password = request.form.get('password')
-    mobile_number = request.form.get('mobile_number')
 
-    # validate form-data for null values
-    if '' in [email, first_name, last_name, password, mobile_number]:
-        return utils.encode_response(status='failure', code=602, desc='invalid signup form-data')
+    # validate request json
+    signup_fields = ['email', 'first_name', 'last_name', 'password', 'mobile_number']
+    valid_json, desc = utils.validate_json_request(signup_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get signup fields
+    email = request_dict.get('email')
+    first_name = request_dict.get('first_name')
+    last_name = request_dict.get('last_name')
+    password = request_dict.get('password')
+    mobile_number = request_dict.get('mobile_number')
 
     # perform signup
     response = users.create_user(email=email, first_name=first_name, last_name=last_name, password=password,
@@ -75,13 +88,20 @@ def signup():
 #
 @app.route('/login', methods=['POST'])
 def login():
-    # get form-data fields
-    email = request.form.get('email')
-    password = request.form.get('password')
 
-    # validate form-data for null values
-    if '' in [email]:
-        return utils.encode_response(status='failure', code=602, desc='invalid login form-data')
+    # validate JSON request
+    fields_list = ['email', 'password']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    email = request_dict.get('email')
+    password = request_dict.get('password')
 
     # perform login
     response = users.get_user(email=email)
@@ -92,16 +112,17 @@ def login():
     print(response)
     if(password != response['password']):
         return utils.encode_response(status='failure', code=602, desc='email or password is wrong')
-    return utils.encode_response(status='success', code=200, desc='login successful')
+
+    # return users data (included the password!!)
+    return utils.encode_response(status='success', code=200, desc='login successful', data=response)
 
 #
 # get single user info
 #
 @app.route('/get_user', methods=['GET'])
 def get_user():
-    # get form-data fields
-    email = request.form.get('email')
-    print(email)
+    # get params fields
+    email = request.args.get('email')
 
     # validate form-data for null values
     if '' in [email]:
@@ -166,6 +187,124 @@ def create_house_rules():
         return utils.encode_response(status='failure', code=404, desc='house_rules not found')
 
     #return the form-data values
+    return response
+
+#
+# description
+#
+@app.route('/get_chores_by_user', methods=['GET'])
+def get_chores_by_user():
+    # get params fields
+    user_id = request.args.get('user_id')
+
+    # validate form-data for null values
+    if '' in [user_id] or (user_id == None):
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no id provided)')
+
+    # perform request
+    response = users.get_user_chores(user_id=user_id)
+
+    # return appropriate response
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='cannot get chores')
+    return response
+
+
+#
+# get chores by house code
+#
+@app.route('/get_chores_by_house_code', methods=['GET'])
+def get_chores_by_house_code():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_chores(house_code)
+    return response
+
+
+#
+# get chore assignees
+#
+@app.route('/get_assignees', methods=['GET'])
+def get_assignees():
+    # get params field
+    chore_id = request.args.get('chore_id')
+
+    # validate params for null values
+    if '' in [chore_id] or None in [chore_id]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no chore id provided)')
+    # enforce a numeric chore_id
+    elif not chore_id.isnumeric():
+        return utils.encode_response(status='failure', code=602, desc='invalid user paramters (chore id must be numeric)')
+
+    # response request
+    response = users.get_assignees(chore_id)
+    return response
+
+
+#
+# get chores and assignees
+#
+@app.route('/get_chores', methods=['GET'])
+def get_chores():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_chores(house_code)
+    return response
+
+#
+# get chores and assignees
+#
+@app.route('/get_house_rules', methods=['GET'])
+def get_house_rules():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_rules(house_code)
+    return response
+
+#
+# sample json post request
+#
+@app.route('/post_json', methods=['POST'])
+def process_json():
+
+    # validate JSON request
+    fields_list = ['field1', 'field2', 'field3']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # at this point the JSON is valid...
+
+    # request_dict holds all field,value pairs
+    request_dict = request.get_json()
+    print("Request Dict: ", request_dict)
+
+    # extract values from fields
+    field1 = request_dict.get('field1')
+    field2 = request_dict.get('field2')
+    field3 = request_dict.get('field3')
+    print("Field values: ", field1, field2, field3)
+
+    response = utils.encode_response(status='success', code=200, desc="successful json post", data=request_dict)
     return response
 
 #
