@@ -19,7 +19,6 @@ def list_users():
     response = utils.encode_response(status='success', code=200, desc='', data=data)
     return response
 
-
 #
 # create user in users table
 #
@@ -103,7 +102,6 @@ def add_chore(name, desc, due_date, house_code):
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
     return utils.encode_response(status='success', code=200, desc='create chore successful')
 
-
 #
 # get list of chores by house_code
 #
@@ -148,7 +146,6 @@ def get_assignees(chore_id):
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     return response
 
-
 #
 # get chores
 #
@@ -172,3 +169,17 @@ def get_chores(house_code):
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     return response
+
+#
+# edit chore
+#
+def edit_chore(chore_id, name, due_date, description):
+    # build sql string
+    sql_string = "UPDATE chores SET name = '{}', due_date = '{}', description = '{}' " \
+                 "WHERE id = '{}'".format(name, due_date, description, chore_id)
+
+    # update chore info
+    data = db.db_insert(sql_string)
+    if not data:
+        return utils.encode_response(status='failure', code=601, desc='unable to update chore')
+    return utils.encode_response(status='success', code=200, desc='successfully updated chore')

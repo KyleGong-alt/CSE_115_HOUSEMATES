@@ -216,7 +216,6 @@ def get_assignees():
     response = users.get_assignees(chore_id)
     return response
 
-
 #
 # get chores and assignees
 #
@@ -247,6 +246,28 @@ def get_house_rules():
 
     # response request
     response = users.get_house_rules(house_code)
+    return response
+
+#
+# edit a chore
+#
+@app.route('/edit_chore', methods=['PUT'])
+def edit_chore():
+    # validate JSON request
+    chore_fields = ['chore_id', 'name', 'due_date', 'description']
+    valid_json, desc = utils.validate_json_request(chore_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # get dict from json
+    request_dict = request.get_json()
+    chore_id = request_dict.get('chore_id')
+    chore_name = request_dict.get('name')
+    due_date = request_dict.get('due_date')
+    description = request_dict.get('description')
+
+    response = users.edit_chore(chore_id, chore_name, due_date, description)
     return response
 
 #
