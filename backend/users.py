@@ -46,6 +46,43 @@ def create_user(email, first_name, last_name, password, mobile_number):
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='signup successful', data=data)
 
+
+#
+# update user in users table
+#
+def update_user(email, first_name, last_name, password, mobile_number):
+
+    # build sql string
+    sqlString = "UPDATE users SET "
+    sqlOptions = ""
+    if first_name:
+        sqlOptions += "first_name " + first_name+","
+    if last_name:
+        sqlOptions += "last_name " + last_name+","
+    if password:
+        sqlOptions += "password " + password+","
+    if mobile_number:
+        sqlOptions += "mobile_number " + mobile_number+","
+    if sqlOptions.endswith(','):
+        sqlOptions = sqlOptions[:-1]
+
+    sqlString += sqlOption + "WHERE email={}".format(email)
+
+    # insert user into users table
+    result = db.db_query(sql_string)
+    print(sql_string)
+
+    # validate the insertion
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to create new user')
+
+    # fetch newly created user
+    sql_string = "SELECT * FROM users WHERE email='{}'".format(email)
+    data = db.db_query(sql_string)
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='signup successful', data=data)
+
 #
 # get single user
 #

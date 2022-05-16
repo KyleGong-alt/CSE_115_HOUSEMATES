@@ -1,5 +1,5 @@
 from unicodedata import name
-from flask import Flask, request
+from flask import Flask, request, send_file
 from werkzeug.exceptions import HTTPException
 from datetime import datetime
 import os
@@ -48,12 +48,43 @@ def get_users():
     return response
 
 #
-# list all users in db
+# returns profile pic of a specific user
 #
 @app.route('/profilePic', methods=['GET'])
 def get_profile_pic():
-    return send_file('./ProfilePic/img.png')
+    email = request.args.get('email')
+    email = email.replace('@', '-')
+    email = email.replace('.', '-')
+    img_path = os.path.join('./ProfilePics', email+'.png')
+    if os.path.exists(img_path):
+        return send_file(img_path)
+    else:
+        return utils.encode_response(status='failure', code=404, desc='Profile Pic not found')
 
+
+@app.route('/update_user',methods=['POST'])
+def update_user():
+    # validate request json
+    signup_fields = ['email', 'first_name', 'last_name', 'password', 'mobile_number']
+    valid_json, desc = utils.validate_json_request(signup_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get signup fields
+    email = request_dict.get('email')
+    first_name = request_dict.get('first_name')
+    last_name = request_dict.get('last_name')
+    password = request_dict.get('password')
+    mobile_number = request_dict.get('mobile_number')
+
+    response = users.updateUser(email=email, first_name=first_name, last_name=last_name, password=password,
+                                 mobile_number=mobile_number)
+
+    return response
 #
 # account signup
 #
