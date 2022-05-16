@@ -135,7 +135,7 @@ def get_user():
 
     # return user data
     # print(response)
-    return response
+    return utils.encode_response(status='success', code=200, desc='get_user successful', data=response)
 
 #
 # add a chore
@@ -180,7 +180,7 @@ def create_house_rules():
     # validate that housecode-data has no null values
     if '' in [house_code]:
         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
-    
+
     # get all the form-data value and check if its present
     response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num)
     if not response:
