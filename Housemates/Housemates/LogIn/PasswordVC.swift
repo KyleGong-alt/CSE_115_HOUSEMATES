@@ -7,23 +7,6 @@
 
 import UIKit
 
-struct user: Codable {
-    let id: Int
-    let first_name: String
-    let last_name: String
-    let house_code: String?
-    let mobile_number: String
-    let email: String
-    let password: String
-}
-
-struct signUpResponse: Codable{
-    let status: String
-    let code: Int
-    let description: String
-    let data: user?
-}
-
 
 
 class PasswordVC: UIViewController, UITextFieldDelegate {
@@ -113,9 +96,9 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
         request.timeoutInterval = 20
 
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:signUpResponse
+            var result:userResponse
             do {
-                result = try JSONDecoder().decode(signUpResponse.self, from: data!)
+                result = try JSONDecoder().decode(userResponse.self, from: data!)
                 
                 if (result.code == 600) {
                     DispatchQueue.main.async {

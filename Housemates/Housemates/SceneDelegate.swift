@@ -17,6 +17,42 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
+        
+        let email = UserDefaults.standard.string(forKey: "email")
+        
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_user")!
+        components.queryItems = [
+            URLQueryItem(name: "email", value: email)
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let semaphore = DispatchSemaphore.init(value: 0)
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:user
+            do {
+                result = try JSONDecoder().decode(user.self, from: data!)
+                print(result)
+                DispatchQueue.main.async {
+                    let main = UIStoryboard(name: "Main", bundle: nil)
+                    let tabBarNavigation = main.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                    tabBarNavigation.currentUser = result
+                    self.window?.rootViewController = tabBarNavigation
+                }
+                semaphore.signal()
+            } catch {
+                print(error.localizedDescription)
+                semaphore.signal()
+            }
+        }
+        dataTask.resume()
+        semaphore.wait()
+        
+        
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
