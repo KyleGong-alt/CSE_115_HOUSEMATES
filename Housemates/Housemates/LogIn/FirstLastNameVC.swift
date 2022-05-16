@@ -53,12 +53,17 @@ class FirstLastNameVC: UIViewController, UITextFieldDelegate {
         return true
     }
     
-    
     @IBAction func onNext(_ sender: Any) {
         performSegue(withIdentifier: "segueToEmailPhone", sender: nil)
     }
     
     @IBAction func onCancel(_ sender: Any) {
         dismiss(animated: true, completion: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! EmailPhoneVC
+        destinationVC.firstName = firstNameTextField.text
+        destinationVC.lastName = lastNameTextField.text
     }
 }

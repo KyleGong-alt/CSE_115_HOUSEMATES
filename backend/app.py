@@ -1,3 +1,4 @@
+from turtle import title
 from unicodedata import name
 from flask import Flask, request, send_file
 from werkzeug.exceptions import HTTPException
@@ -118,13 +119,20 @@ def signup():
 #
 @app.route('/login', methods=['POST'])
 def login():
-    # get form-data fields
-    email = request.form.get('email')
-    password = request.form.get('password')
 
-    # validate form-data for null values
-    if '' in [email]:
-        return utils.encode_response(status='failure', code=602, desc='invalid login form-data')
+    # validate JSON request
+    fields_list = ['email', 'password']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    email = request_dict.get('email')
+    password = request_dict.get('password')
 
     # perform login
     response = users.get_user(email=email)
@@ -135,7 +143,9 @@ def login():
     print(response)
     if(password != response['password']):
         return utils.encode_response(status='failure', code=602, desc='email or password is wrong')
-    return utils.encode_response(status='success', code=200, desc='login successful')
+
+    # return users data (included the password!!)
+    return utils.encode_response(status='success', code=200, desc='login successful', data=response)
 
 #
 # get single user info
@@ -161,7 +171,7 @@ def get_user():
 #
 # add a chore
 # due_date should be of type string -- "May 1 2022 10:00AM"
-#
+
 @app.route('/create_chore', methods=['POST'])
 def create_chore():
     # get form-data fields
@@ -179,6 +189,35 @@ def create_chore():
     response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
 
     # return appropriate response
+    return response
+
+@app.route('/create_house_rules', methods=['GET'])
+def create_house_rules():
+
+    #get form-data files
+    title = request.form.get('title')
+    description = request.form.get('description')
+    house_code = request.form.get('house_code')
+    voted_num = request.form.get('voted_num')
+
+    # validate that title-data has no null values
+    if '' in [title]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty house rule)')
+
+     # validate that vote-data has no null values
+    if '' in [voted_num]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty voters)')
+
+    # validate that housecode-data has no null values
+    if '' in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
+    
+    # get all the form-data value and check if its present
+    response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num)
+    if not response:
+        return utils.encode_response(status='failure', code=404, desc='house_rules not found')
+
+    #return the form-data values
     return response
 
 #
@@ -238,7 +277,6 @@ def get_assignees():
     response = users.get_assignees(chore_id)
     return response
 
-
 #
 # get chores and assignees
 #
@@ -255,6 +293,43 @@ def get_chores():
     response = users.get_chores(house_code)
     return response
 
+#
+# get chores and assignees
+#
+@app.route('/get_house_rules', methods=['GET'])
+def get_house_rules():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_rules(house_code)
+    return response
+
+#
+# edit a chore
+#
+@app.route('/edit_chore', methods=['PUT'])
+def edit_chore():
+    # validate JSON request
+    chore_fields = ['chore_id', 'name', 'due_date', 'description']
+    valid_json, desc = utils.validate_json_request(chore_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # get dict from json
+    request_dict = request.get_json()
+    chore_id = request_dict.get('chore_id')
+    chore_name = request_dict.get('name')
+    due_date = request_dict.get('due_date')
+    description = request_dict.get('description')
+
+    response = users.edit_chore(chore_id, chore_name, due_date, description)
+    return response
 
 #
 # sample json post request
