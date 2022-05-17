@@ -103,24 +103,24 @@ def add_chore(name, desc, due_date, house_code):
     return utils.encode_response(status='success', code=200, desc='create chore successful')
 
 def add_house_rules(title, description, house_code, voted_num):
-    
+
     # check for duplicate house_rules
     dup_check = db.count_rows(table = 'house_rules', field='title', value=title)
     if dup_check > 0:
         return utils.encode_response(status='failure', code=600, desc='duplicate house rule')
-    
+
     # check if the house exists in our database
     house_created = db.count_rows(table='house_groups', field='house_code', value=house_code)
     if house_created == 0:
         return utils.encode_response(status='failure', code=404, desc='house not found')
-    
+
     # format the table by building sql string
     sql_string = "INSERT INTO house_rules (title, description, house_code, voted_num) VALUES ('{}','{}','{}','{}')".format(title, description, house_code, voted_num)
-    
-    #save the formated string 
+
+    #save the formated string
     result = db.db_insert(sql_string)
 
-    # return encoded response 
+    # return encoded response
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to create the house rule')
     return utils.encode_response(status='success', code=200, desc='house chore scucessfully created')
@@ -206,3 +206,19 @@ def edit_chore(chore_id, name, due_date, description):
     if not data:
         return utils.encode_response(status='failure', code=601, desc='unable to update chore')
     return utils.encode_response(status='success', code=200, desc='successfully updated chore')
+
+#
+# join house given user_id and house_code
+#
+def join_house(user_id, house_code):
+    # build sql string
+    sql_string = "UPDATE users SET house_code = '{}' WHERE id = '{}'".format(house_code, user_id)
+
+    # fetch users assigned to chore
+    data = db.db_insert(sql_string)
+
+    # return encoded response
+    if not data:
+        return utils.encode_response(status='failure', code=601, desc='unable to join house')
+    response = utils.encode_response(status='success', code=200, desc='successful join house', data=data)
+    return response
