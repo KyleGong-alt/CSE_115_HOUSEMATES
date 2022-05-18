@@ -211,6 +211,10 @@ def edit_chore(chore_id, name, due_date, description):
 # join house given user_id and house_code
 #
 def join_house(user_id, house_code):
+    # check if house_code is valid
+    if(db.count_rows("house_groups", "house_code", house_code)):
+        return utils.encode_response(status='failure', code=601, desc='invalid house_code')
+
     # build sql string
     sql_string = "UPDATE users SET house_code = '{}' WHERE id = '{}'".format(house_code, user_id)
 
