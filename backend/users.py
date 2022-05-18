@@ -212,7 +212,7 @@ def edit_chore(chore_id, name, due_date, description):
 #
 def join_house(user_id, house_code):
     # check if house_code is valid
-    if(db.count_rows("house_groups", "house_code", house_code)):
+    if(db.count_rows("house_groups", "house_code", house_code)) == 0:
         return utils.encode_response(status='failure', code=601, desc='invalid house_code')
 
     # build sql string
@@ -225,6 +225,26 @@ def join_house(user_id, house_code):
     if not data:
         return utils.encode_response(status='failure', code=601, desc='unable to join house')
     response = utils.encode_response(status='success', code=200, desc='successful join house', data=data)
+    return response
+
+#
+# leave house given user_id and house_code
+#
+def leave_house(user_id, house_code):
+    # check if house_code is valid
+    if(db.count_rows("house_groups", "house_code", house_code)) == 0:
+        return utils.encode_response(status='failure', code=601, desc='invalid house_code')
+
+    # build sql string
+    sql_string = "UPDATE users SET house_code = null WHERE id = '{}'".format(user_id)
+
+    # fetch users assigned to chore
+    data = db.db_insert(sql_string)
+
+    # return encoded response
+    if not data:
+        return utils.encode_response(status='failure', code=601, desc='unable to leave house')
+    response = utils.encode_response(status='success', code=200, desc='successful leave house', data=data)
     return response
 
 #
