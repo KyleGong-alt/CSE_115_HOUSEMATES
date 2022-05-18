@@ -222,3 +222,16 @@ def join_house(user_id, house_code):
         return utils.encode_response(status='failure', code=601, desc='unable to join house')
     response = utils.encode_response(status='success', code=200, desc='successful join house', data=data)
     return response
+
+#
+# given house_code, return members
+#
+def get_house_members(house_code):
+    # build sql string
+    sql_string = "SELECT * FROM users WHERE house_code = '{}'".format(house_code)
+    # fetch chores from DB
+    data = db.db_query(sql_string, many=True)
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    # response = jsonify(data)
+    return response

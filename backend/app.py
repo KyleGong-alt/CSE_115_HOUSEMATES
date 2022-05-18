@@ -166,6 +166,9 @@ def create_chore():
     # return appropriate response
     return response
 
+#
+# Creates the house rule, #note that voted_num is the # of members
+#
 @app.route('/create_house_rules', methods=['GET'])
 def create_house_rules():
 
@@ -269,7 +272,7 @@ def get_chores():
     return response
 
 #
-# get chores and assignees
+# get house rules
 #
 @app.route('/get_house_rules', methods=['GET'])
 def get_house_rules():
@@ -334,6 +337,9 @@ def process_json():
     response = utils.encode_response(status='success', code=200, desc="successful json post", data=request_dict)
     return response
 
+#
+#
+#
 @app.route('/join_house', methods=['POST'])
 def join_house():
     # validate JSON request
@@ -355,6 +361,20 @@ def join_house():
 
     # return appropriate response
     return response
+
+@app.route('/get_house_members', methods=['GET'])
+def get_house_memebers():
+    # Gets the house code with ?house_code=*HOUSE CODE*
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_members(house_code)
+    return response
+
 
 #
 # Handle HTTP and application errors
@@ -379,4 +399,5 @@ def handle_exception(e):
 if __name__ == "__main__":
     # run app on localhost:8080
     app.run(host='127.0.0.1', port=8080, debug=True)
+
 
