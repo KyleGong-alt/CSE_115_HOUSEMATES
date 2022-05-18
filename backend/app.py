@@ -398,6 +398,27 @@ def assign_chore():
     response = users.assign_chore(user_id, chore_id, house_code)
     return response
 
+#
+# unassign user from chore
+#
+@app.route('/unassign_chore', methods=['PUT'])
+def unassign_chore():
+    # validate JSON request
+    fields_list = ['user_id', 'chore_id']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    user_id = request_dict.get('user_id')
+    chore_id = request_dict.get('chore_id')
+
+    # response request
+    response = users.unassign_chore(user_id, chore_id)
+    return response
 
 #
 # Handle HTTP and application errors

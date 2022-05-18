@@ -263,3 +263,26 @@ def assign_chore(user_id, chore_id, house_code):
 
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='chore assignment successful')
+
+#
+# unassign a user from a chore
+#
+def unassign_chore(user_id, chore_id):
+    # a user can only be assigned to a chore once
+    sql_string_check = "SELECT * FROM chores_assignee WHERE chore_id={} AND user_id={}".format(chore_id, user_id)
+    dup_check = db.count_rows_custom(sql_string_check)
+    if dup_check < 1:
+        return utils.encode_response(status='failure', code=600, desc="user isn't assigned to this chore")
+
+    # build sql string
+    sql_string = "DELETE FROM chores_assignee WHERE chore_id={} AND user_id={}".format(chore_id, user_id)
+
+    # delete chores_assignee row
+    result = db.db_insert(sql_string)
+
+    # validate deletion
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to unassign user from chore')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='chore unassignment successful')
