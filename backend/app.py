@@ -375,6 +375,29 @@ def get_house_memebers():
     response = users.get_house_members(house_code)
     return response
 
+#
+# assign chore to user in house
+#
+@app.route('/assign_chore', methods=['POST'])
+def assign_chore():
+    # validate JSON request
+    fields_list = ['user_id', 'chore_id', 'house_code']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    user_id = request_dict.get('user_id')
+    chore_id = request_dict.get('chore_id')
+    house_code = request_dict.get('house_code')
+
+    # response request
+    response = users.assign_chore(user_id, chore_id, house_code)
+    return response
+
 
 #
 # Handle HTTP and application errors

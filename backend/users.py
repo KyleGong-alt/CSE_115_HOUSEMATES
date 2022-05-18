@@ -239,3 +239,27 @@ def get_house_members(house_code):
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     # response = jsonify(data)
     return response
+
+#
+# assign a user to a chore
+#
+def assign_chore(user_id, chore_id, house_code):
+    # a user can only be assigned to a chore once
+    sql_string_check = "SELECT * FROM chores_assignee WHERE chore_id={} AND user_id={}".format(chore_id, user_id)
+    dup_check = db.count_rows_custom(sql_string_check)
+    if dup_check > 0:
+        return utils.encode_response(status='failure', code=600, desc='user already assigned to this chore')
+
+    # build sql string
+    sql_string = "INSERT INTO chores_assignee (user_id, chore_id, house_code) VALUES (" \
+                 "'{}', '{}', '{}')".format(user_id, chore_id, house_code)
+
+    # insert user into chores_assignee table
+    result = db.db_insert(sql_string)
+
+    # validate the insertion
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to assign chore to user')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='chore assignment successful')
