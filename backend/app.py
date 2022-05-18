@@ -135,7 +135,7 @@ def get_user():
 
     # return user data
     # print(response)
-    return response
+    return utils.encode_response(status='success', code=200, desc='get_user successful', data=response)
 
 #
 # add a chore
@@ -143,15 +143,21 @@ def get_user():
 
 @app.route('/create_chore', methods=['POST'])
 def create_chore():
-    # get form-data fields
-    name = request.form.get('name')
-    desc = request.form.get('desc')
-    due_date = request.form.get('due_date')
-    house_code = request.form.get('house_code')
+    # validate JSON request
+    fields_list = ['desc', 'due_date', 'house_code', 'name']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
 
-    # validate form-data for null values
-    if '' in [house_code]:
-        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    desc = request_dict.get('desc')
+    due_date = request_dict.get('due_date')
+    house_code = request_dict.get('house_code')
+    name = request_dict.get('name')
 
     # perform request
     datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
@@ -160,6 +166,9 @@ def create_chore():
     # return appropriate response
     return response
 
+#
+# Creates the house rule, #note that voted_num is the # of members
+#
 @app.route('/create_house_rules', methods=['GET'])
 def create_house_rules():
 
@@ -180,7 +189,7 @@ def create_house_rules():
     # validate that housecode-data has no null values
     if '' in [house_code]:
         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
-    
+
     # get all the form-data value and check if its present
     response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num)
     if not response:
@@ -263,7 +272,7 @@ def get_chores():
     return response
 
 #
-# get chores and assignees
+# get house rules
 #
 @app.route('/get_house_rules', methods=['GET'])
 def get_house_rules():
@@ -329,6 +338,45 @@ def process_json():
     return response
 
 #
+#
+#
+@app.route('/join_house', methods=['POST'])
+def join_house():
+    # validate JSON request
+    fields_list = ['user_id', 'house_code']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    user_id = request_dict.get('user_id')
+    house_code = request_dict.get('house_code')
+
+    # perform request
+    response = users.join_house(house_code=house_code, user_id=user_id)
+
+    # return appropriate response
+    return response
+
+@app.route('/get_house_members', methods=['GET'])
+def get_house_memebers():
+    # Gets the house code with ?house_code=*HOUSE CODE*
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_members(house_code)
+    return response
+
+
+#
 # Handle HTTP and application errors
 #
 @app.errorhandler(Exception)
@@ -351,4 +399,5 @@ def handle_exception(e):
 if __name__ == "__main__":
     # run app on localhost:8080
     app.run(host='127.0.0.1', port=8080, debug=True)
+
 

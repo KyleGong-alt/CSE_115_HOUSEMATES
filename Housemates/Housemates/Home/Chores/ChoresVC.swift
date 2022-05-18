@@ -40,8 +40,12 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         setBottomBorder(label: currentChoresLabel, height: 8, color: UIColor.white.cgColor)
         
         setBottomBorder(label: unassignedChoresLabel, height: 8, color: UIColor.white.cgColor)
-        
-        getChoreByHouseCode(houseCode: currentUser!.house_code!)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tabBarController?.tabBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
+        tabBarController?.tabBar.tintColor = UIColor.white
+        navigationController?.navigationBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -71,8 +75,6 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.choreTime.text = chore.due_date
             return cell
         }
-        let cell = tableView.dequeueReusableCell(withIdentifier: "YourChoreCell") as! YourChoreCell
-        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -87,70 +89,14 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             //navigationController?.pushViewController(segue.destination, animated: true)
         }
     }
+    override func viewWillDisappear(_ animated: Bool) {
+        tabBarController?.tabBar.barTintColor = UIColor.init(red: 255/255, green: 252/255, blue: 230/255, alpha: 1)
+        tabBarController?.tabBar.tintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
+        
+        navigationController?.navigationBar.barTintColor = UIColor.init(red: 255/255, green: 252/255, blue: 230/255, alpha: 1)
+    }
     
     @IBAction func onAddChore(_ sender: Any) {
         performSegue(withIdentifier: "segueAddChores", sender: nil)
-    }
-    
-    func getChoreByHouseCode(houseCode: String) {
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_chores_by_house_code")!
-        components.queryItems = [
-            URLQueryItem(name: "house_code", value: houseCode)
-        ]
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
-        var request = URLRequest(url: components.url!)
-
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        request.httpMethod = "GET"
-        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:choreResponse
-            do {
-                result = try JSONDecoder().decode(choreResponse.self, from: data!)
-                //print(result)
-                let choreList = result.data ?? []
-                for chore in choreList {
-                    self.getAssignees(chore: chore)
-                }
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        dataTask.resume()
-    }
-    
-    func getAssignees(chore: chore){
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
-        components.queryItems = [
-            URLQueryItem(name: "chore_id", value: String(chore.id))
-        ]
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
-        var request = URLRequest(url: components.url!)
-
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        request.httpMethod = "GET"
-        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:assigneeResponse
-            do {
-                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
-                print(result)
-                print(result.data?.count ?? 0)
-                if ((result.data?.count ?? 0) != 0) {
-                    self.assignedchoreList.append(chore)
-                } else {
-                    self.unassignedchoreList.append(chore)
-                }
-                DispatchQueue.main.async {
-                    self.currentChoresTableView.reloadData()
-                    self.unassignedChoresTableView.reloadData()
-                }
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        dataTask.resume()
     }
 }

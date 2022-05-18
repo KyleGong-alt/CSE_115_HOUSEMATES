@@ -100,13 +100,16 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         request.httpBody = httpBody
         request.timeoutInterval = 20
-        print(email, password)
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:signUpResponse
+            var result: userResponse
+            guard let data = data else {
+                print("OUT")
+                return
+            }
             do {
-                result = try JSONDecoder().decode(signUpResponse.self, from: data!)
+                result = try JSONDecoder().decode(userResponse.self, from: data)
                 
-                if (result.code == 600) {
+                if (result.code != 200) {
                     DispatchQueue.main.async {
                         self.errorSignin()
                     }
@@ -114,6 +117,8 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                 }
                 
                 DispatchQueue.main.async {
+                    UserDefaults.standard.set(result.data!.email, forKey: "email")
+                    UserDefaults.standard.synchronize()
                     self.performSegue(withIdentifier: "SignInSegue", sender: result.data)
                 }
             } catch {

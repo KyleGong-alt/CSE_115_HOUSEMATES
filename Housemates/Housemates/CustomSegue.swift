@@ -69,7 +69,6 @@ class RightNavSegue: UIStoryboardSegue {
         dimmingView.frame = initialView.frame
         
         let appWindow = UIApplication.shared.connectedScenes.lazy.compactMap { $0.activationState == .foregroundActive ? ($0 as? UIWindowScene) : nil}.first(where: {$0.keyWindow != nil})?.keyWindow
-        print(appWindow?.rootViewController.)
         appWindow?.rootViewController = self.destination
         appWindow?.insertSubview(initialView, belowSubview: destView)
         appWindow?.insertSubview(dimmingView, aboveSubview: initialView)
