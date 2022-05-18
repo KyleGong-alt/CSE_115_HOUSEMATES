@@ -75,3 +75,18 @@ def count_rows(table, field, value):
         num_rows = cursor.rowcount
     conn.close()
     return num_rows
+
+
+#
+# perform sql SELECT query
+# returns > 0 if exists
+# returns 0 if doesn't exist
+#
+def count_rows_general(sql_string):
+    conn = db_open_connection()
+    num_rows = 0
+    with conn.cursor() as cursor:
+        cursor.execute(sql_string)
+        num_rows = cursor.rowcount
+    conn.close()
+    return num_rows
