@@ -246,7 +246,7 @@ def get_house_members(house_code):
 def assign_chore(user_id, chore_id, house_code):
     # a user can only be assigned to a chore once
     sql_string_check = "SELECT * FROM chores_assignee WHERE chore_id={} AND user_id={}".format(chore_id, user_id)
-    dup_check = db.count_rows_general(sql_string_check)
+    dup_check = db.count_rows_custom(sql_string_check)
     if dup_check > 0:
         return utils.encode_response(status='failure', code=600, desc='user already assigned to this chore')
 
