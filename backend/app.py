@@ -368,7 +368,7 @@ def join_house():
 @app.route('/leave_house', methods=['POST'])
 def leave_house():
     # validate JSON request
-    fields_list = ['user_id', 'house_code']
+    fields_list = ['user_id']
     valid_json, desc = utils.validate_json_request(fields_list, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
@@ -379,10 +379,9 @@ def leave_house():
 
     # get fields
     user_id = request_dict.get('user_id')
-    house_code = request_dict.get('house_code')
 
     # perform request
-    response = users.leave_house(house_code=house_code, user_id=user_id)
+    response = users.leave_house(user_id=user_id)
 
     # return appropriate response
     return response

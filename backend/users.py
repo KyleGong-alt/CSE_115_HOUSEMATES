@@ -230,10 +230,7 @@ def join_house(user_id, house_code):
 #
 # leave house given user_id and house_code
 #
-def leave_house(user_id, house_code):
-    # check if house_code is valid
-    if(db.count_rows("house_groups", "house_code", house_code)) == 0:
-        return utils.encode_response(status='failure', code=601, desc='invalid house_code')
+def leave_house(user_id):
 
     # build sql string
     sql_string = "UPDATE users SET house_code = null WHERE id = '{}'".format(user_id)
