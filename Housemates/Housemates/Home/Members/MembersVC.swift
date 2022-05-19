@@ -13,6 +13,7 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
     @IBOutlet var memberTableView: UITableView!
     
     var currentUser: user?
+    var choreList = [chore]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +34,7 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "segueCloseRightNav" {
-            let destinationVC = segue.destination as! HomeVC
+            let destinationVC = segue.destination as! TabBarController
             destinationVC.currentUser = self.currentUser
         }
     }
@@ -46,5 +47,4 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MemberCell") as! MemberCell
         return cell
     }
-
 }
