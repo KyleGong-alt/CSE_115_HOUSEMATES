@@ -26,7 +26,7 @@ class MemberCell: UITableViewCell {
         memberView.layer.shadowOffset = .zero
         memberView.layer.shadowRadius = 5
         
-        memberImage.layer.cornerRadius = 30
+        memberImage.layer.cornerRadius = memberImage.frame.height/2
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

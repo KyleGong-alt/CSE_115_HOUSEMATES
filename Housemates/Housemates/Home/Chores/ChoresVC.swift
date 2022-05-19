@@ -40,6 +40,8 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         setBottomBorder(label: currentChoresLabel, height: 8, color: UIColor.white.cgColor)
         
         setBottomBorder(label: unassignedChoresLabel, height: 8, color: UIColor.white.cgColor)
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,15 +80,22 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "seguePickChore", sender: nil)
+        if(tableView == currentChoresTableView) {
+            performSegue(withIdentifier: "seguePickChore", sender: assignedchoreList[indexPath.row])
+        } else {
+            performSegue(withIdentifier: "seguePickChore", sender: unassignedchoreList[indexPath.row])
+        }
         
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "seguePickChore" {
             let destinationVC = segue.destination as! ChoreHalfSheetVC
             destinationVC.sheetPresentationController?.detents = [.medium(), .large()]
-        } else {
-            //navigationController?.pushViewController(segue.destination, animated: true)
+            let chore = sender as! chore
+            destinationVC.chore = chore
+        } else if segue.identifier == "segueAddChores" {
+            let destinationVC = segue.destination as! AddChoresVC
+            destinationVC.currentUser = self.currentUser
         }
     }
     override func viewWillDisappear(_ animated: Bool) {
