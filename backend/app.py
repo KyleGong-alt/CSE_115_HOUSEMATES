@@ -337,8 +337,8 @@ def process_json():
     response = utils.encode_response(status='success', code=200, desc="successful json post", data=request_dict)
     return response
 
-#
 # 
+# join house given an user_id and valid house code
 #
 @app.route('/join_house', methods=['POST'])
 def join_house():
@@ -363,8 +363,29 @@ def join_house():
     return response
 
 #
-# Given house_code, returns all house_memebers
+# leave house given an user_id and valid house code
 #
+@app.route('/leave_house', methods=['POST'])
+def leave_house():
+    # validate JSON request
+    fields_list = ['user_id']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    user_id = request_dict.get('user_id')
+
+    # perform request
+    response = users.leave_house(user_id=user_id)
+
+    # return appropriate response
+    return response
+
 @app.route('/get_house_members', methods=['GET'])
 def get_house_memebers():
     # Gets the house code with ?house_code=*HOUSE CODE*
@@ -379,18 +400,13 @@ def get_house_memebers():
     return response
 
 #
-#
+#Creates New House
 #
 @app.route('/create_house', methods=['POST'])
 def create_house():
     # if New_House_code is in 
     fields_list = ['user_id']
-    valid_json, desc = utils.validate_json_request(fields_list, request)
-    if not valid_json:
-        response = utils.encode_response(status='failure', code=602, desc=desc)
-        return response
-
-     # build dict from json
+      # build dict from json
     request_dict = request.get_json()
 
     # get fields
@@ -401,7 +417,52 @@ def create_house():
 
     # return appropriate response
     return response
+    
+#
+# assign chore to user in house
+#
+@app.route('/assign_chore', methods=['POST'])
+def assign_chore():
+    # validate JSON request
+    fields_list = ['user_id', 'chore_id', 'house_code']
 
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    user_id = request_dict.get('user_id')
+    chore_id = request_dict.get('chore_id')
+    house_code = request_dict.get('house_code')
+
+    # response request
+    response = users.assign_chore(user_id, chore_id, house_code)
+    return response
+
+#
+# unassign user from chore
+#
+@app.route('/unassign_chore', methods=['PUT'])
+def unassign_chore():
+    # validate JSON request
+    fields_list = ['user_id', 'chore_id']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    user_id = request_dict.get('user_id')
+    chore_id = request_dict.get('chore_id')
+
+    # response request
+    response = users.unassign_chore(user_id, chore_id)
+    return response
 
 #
 # Handle HTTP and application errors

@@ -212,6 +212,10 @@ def edit_chore(chore_id, name, due_date, description):
 # join house given user_id and house_code
 #
 def join_house(user_id, house_code):
+    # check if house_code is valid
+    if(db.count_rows("house_groups", "house_code", house_code)) == 0:
+        return utils.encode_response(status='failure', code=601, desc='invalid house_code')
+
     # build sql string
     sql_string = "UPDATE users SET house_code = '{}' WHERE id = '{}'".format(house_code, user_id)
 
@@ -222,6 +226,23 @@ def join_house(user_id, house_code):
     if not data:
         return utils.encode_response(status='failure', code=601, desc='unable to join house')
     response = utils.encode_response(status='success', code=200, desc='successful join house', data=data)
+    return response
+
+#
+# leave house given user_id and house_code
+#
+def leave_house(user_id):
+
+    # build sql string
+    sql_string = "UPDATE users SET house_code = null WHERE id = '{}'".format(user_id)
+
+    # fetch users assigned to chore
+    data = db.db_insert(sql_string)
+
+    # return encoded response
+    if not data:
+        return utils.encode_response(status='failure', code=601, desc='unable to leave house')
+    response = utils.encode_response(status='success', code=200, desc='successful leave house', data=data)
     return response
 
 #
@@ -245,7 +266,6 @@ def get_house_members(house_code):
 #
 # Generates a random House code
 #
-# def create_house(user_id,house_code):
 def create_house(user_id):
 
     while (1):
@@ -278,3 +298,50 @@ def create_house(user_id):
     response = utils.encode_response(status='success', code=200, desc='successful query',data=house_code_data)
     return response
    
+#
+# assign a user to a chore
+#
+def assign_chore(user_id, chore_id, house_code):
+    # a user can only be assigned to a chore once
+    sql_string_check = "SELECT * FROM chores_assignee WHERE chore_id={} AND user_id={}".format(chore_id, user_id)
+    dup_check = db.count_rows_custom(sql_string_check)
+    if dup_check > 0:
+        return utils.encode_response(status='failure', code=600, desc='user already assigned to this chore')
+
+    # build sql string
+    sql_string = "INSERT INTO chores_assignee (user_id, chore_id, house_code) VALUES (" \
+                 "'{}', '{}', '{}')".format(user_id, chore_id, house_code)
+
+    # insert user into chores_assignee table
+    result = db.db_insert(sql_string)
+
+    # validate the insertion
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to assign chore to user')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='chore assignment successful')
+
+#
+# unassign a user from a chore
+#
+def unassign_chore(user_id, chore_id):
+    # a user can only be assigned to a chore once
+    sql_string_check = "SELECT * FROM chores_assignee WHERE chore_id={} AND user_id={}".format(chore_id, user_id)
+    dup_check = db.count_rows_custom(sql_string_check)
+    if dup_check < 1:
+        return utils.encode_response(status='failure', code=600, desc="user isn't assigned to this chore")
+
+    # build sql string
+    sql_string = "DELETE FROM chores_assignee WHERE chore_id={} AND user_id={}".format(chore_id, user_id)
+
+    # delete chores_assignee row
+    result = db.db_insert(sql_string)
+
+    # validate deletion
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to unassign user from chore')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='chore unassignment successful')
+

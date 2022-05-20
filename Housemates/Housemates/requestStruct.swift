@@ -38,3 +38,16 @@ struct userResponse: Codable{
     let description: String
     let data: user?
 }
+
+struct multiUserResponse: Codable{
+    let status: String
+    let code: Int
+    let description: String
+    let data: [user]?
+}
+
+struct postResponse: Codable{
+    let status: String
+    let code: Int
+    let description: String
+}
