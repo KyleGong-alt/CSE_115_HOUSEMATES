@@ -197,6 +197,10 @@ def get_chores(house_code):
 # edit chore
 #
 def edit_chore(chore_id, name, due_date, description):
+    dup_check = db.count_rows('chores', 'id', chore_id)
+    if dup_check < 1:
+        return utils.encode_response(status='failure', code=600, desc="chore doesn't exist")
+
     # build sql string
     sql_string = "UPDATE chores SET name = '{}', due_date = '{}', description = '{}' " \
                  "WHERE id = '{}'".format(name, due_date, description, chore_id)
@@ -303,3 +307,25 @@ def unassign_chore(user_id, chore_id):
 
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='chore unassignment successful')
+
+#
+# edit a house rule
+#
+def edit_house_rules(rule_id, title, description):
+    # house rule must exist
+    dup_check = db.count_rows('house_rules', 'id', rule_id)
+    if dup_check < 1:
+        return utils.encode_response(status='failure', code=600, desc="house rule doesn't exist")
+
+    # build sql string
+    sql_string = "UPDATE house_rules SET title = '{}', description = '{}' WHERE id='{}'".format(title, description, rule_id)
+
+    # update house rule
+    result = db.db_insert(sql_string)
+
+    # validate the update
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to update house rule')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='house rule update successful')

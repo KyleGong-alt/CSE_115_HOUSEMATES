@@ -445,6 +445,29 @@ def unassign_chore():
     return response
 
 #
+# edit house rules
+#
+@app.route('/edit_house_rules', methods=['PUT'])
+def edit_house_rules():
+    # validate JSON request
+    house_rules_list = ['title', 'description', 'rule_id']
+    valid_json, desc = utils.validate_json_request(house_rules_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    rule_id = request_dict.get('rule_id')
+    rule_title = request_dict.get('title')
+    rule_description = request_dict.get('description')
+
+    # response request
+    response = users.edit_house_rules(rule_id, rule_title, rule_description)
+    return response
+
+#
 # Handle HTTP and application errors
 #
 @app.errorhandler(Exception)
