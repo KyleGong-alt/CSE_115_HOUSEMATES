@@ -1,6 +1,7 @@
 from flask import jsonify, request
 import pymysql
-
+import random
+import string
 import db
 import utils
 
@@ -254,13 +255,53 @@ def leave_house(user_id):
 def get_house_members(house_code):
     # build sql string
     sql_string = "SELECT * FROM users WHERE house_code = '{}'".format(house_code)
+
     # fetch chores from DB
     data = db.db_query(sql_string, many=True)
+
+    #Check if house_code is present
+    if not data:
+        return utils.encode_response(status='failure', code=404, desc='house_code not found')
+
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
-    # response = jsonify(data)
     return response
 
+#
+# Generates a random House code
+#
+def create_house(user_id):
+
+    while (1):
+        letters = string.ascii_uppercase
+        New_House_Code = (''.join(random.choice(letters) for i in range(8)))
+        dup_check = db.count_rows(table='house_groups', field='house_code', value=New_House_Code)
+        if dup_check == 0:
+            break
+
+    #Updates the user with the user_id to have the new house_code
+    sql_string = "UPDATE users SET house_code = '{}' WHERE id = '{}'".format(New_House_Code, user_id)
+
+    #Creates the new house group with the user_id as the new house_admin_id
+    sql_string1 = "INSERT INTO house_groups(house_code, house_admin_id) VALUES ('{}', '{}')".format(New_House_Code, user_id)
+
+    # insert new house group
+    data1 = db.db_insert(sql_string1)
+    # Check if new house_group exists
+    if not data1:
+        return utils.encode_response(status='failure', code=601, desc='unable to create house')
+
+    # Update user to have new house code from user_id
+    data = db.db_insert(sql_string)
+    if not data:
+        return utils.encode_response(status='failure', code=601, desc='unable to update user to house')
+
+    #Sends back the New house code
+    house_code_data = {"house_code":New_House_Code}
+
+    response = utils.encode_response(status='success', code=200, desc='successful query',data=house_code_data)
+    return response
+   
 #
 # assign a user to a chore
 #

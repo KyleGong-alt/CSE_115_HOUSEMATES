@@ -27,6 +27,8 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var unassignedchoreList = [chore]()
     var assignedchoreList = [chore]()
+    var toDateFormatter = DateFormatter()
+    var printDateFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +43,9 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         setBottomBorder(label: unassignedChoresLabel, height: 8, color: UIColor.white.cgColor)
         
-        
+        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        printDateFormatter.dateStyle = DateFormatter.Style.long
+        printDateFormatter.timeStyle = DateFormatter.Style.short
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,14 +71,17 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let chore = assignedchoreList[indexPath.row] as chore
             cell.choreTitle.text = chore.name
             cell.choreDescription.text = chore.description
-            cell.choreTime.text = chore.due_date
+            
+            let dateFromString: Date? = toDateFormatter.date(from: chore.due_date)
+            cell.choreTime.text = printDateFormatter.string(from: dateFromString!)
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "YourChoreCell") as! YourChoreCell
             let chore = unassignedchoreList[indexPath.row] as chore
             cell.choreTitle.text = chore.name
             cell.choreDescription.text = chore.description
-            cell.choreTime.text = chore.due_date
+            let dateFromString: Date? = toDateFormatter.date(from: chore.due_date)
+            cell.choreTime.text = printDateFormatter.string(from: dateFromString!)
             return cell
         }
     }

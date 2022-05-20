@@ -28,6 +28,12 @@ class TabBarController: UITabBarController {
             vc.currentUser = self.currentUser
         }
         
+        let nc2 = self.viewControllers?[2] as? UINavigationController
+        
+        if let vc = nc2?.viewControllers[0] as? profileVC {
+            vc.currentUser = self.currentUser
+        }
+        
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(swipeGesture))
         swipeLeft.numberOfTouchesRequired = 1
         swipeLeft.direction = .left
