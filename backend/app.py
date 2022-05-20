@@ -337,7 +337,7 @@ def process_json():
     response = utils.encode_response(status='success', code=200, desc="successful json post", data=request_dict)
     return response
 
-#
+# 
 # join house given an user_id and valid house code
 #
 @app.route('/join_house', methods=['POST'])
@@ -400,12 +400,32 @@ def get_house_memebers():
     return response
 
 #
+#Creates New House
+#
+@app.route('/create_house', methods=['POST'])
+def create_house():
+    # if New_House_code is in 
+    fields_list = ['user_id']
+      # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    user_id = request_dict.get('user_id')
+
+    # perform request
+    response = users.create_house(user_id=user_id)
+
+    # return appropriate response
+    return response
+    
+#
 # assign chore to user in house
 #
 @app.route('/assign_chore', methods=['POST'])
 def assign_chore():
     # validate JSON request
     fields_list = ['user_id', 'chore_id', 'house_code']
+
     valid_json, desc = utils.validate_json_request(fields_list, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
