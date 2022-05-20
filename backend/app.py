@@ -338,7 +338,7 @@ def process_json():
     return response
 
 #
-#
+# 
 #
 @app.route('/join_house', methods=['POST'])
 def join_house():
@@ -362,6 +362,9 @@ def join_house():
     # return appropriate response
     return response
 
+#
+# Given house_code, returns all house_memebers
+#
 @app.route('/get_house_members', methods=['GET'])
 def get_house_memebers():
     # Gets the house code with ?house_code=*HOUSE CODE*
@@ -373,6 +376,30 @@ def get_house_memebers():
 
     # response request
     response = users.get_house_members(house_code)
+    return response
+
+#
+#
+#
+@app.route('/create_house', methods=['POST'])
+def create_house():
+    # if New_House_code is in 
+    fields_list = ['user_id']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+     # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    user_id = request_dict.get('user_id')
+
+    # perform request
+    response = users.create_house(user_id=user_id)
+
+    # return appropriate response
     return response
 
 
