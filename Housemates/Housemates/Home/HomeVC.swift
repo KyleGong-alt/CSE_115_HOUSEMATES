@@ -24,6 +24,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var choreList = [chore]()
     var unassignedchoreList = [chore]()
     var assignedchoreList = [chore]()
+    var toDateFormatter = DateFormatter()
+    var printDateFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,8 +53,9 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         addRuleButton.layer.cornerRadius = 40/2
         
-        //let leftSwipe = UISwipeGestureRecognizer(target: <#T##Any?#>, action: <#T##Selector?#>)
-        //print(currentUser)
+        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        printDateFormatter.dateStyle = DateFormatter.Style.long
+        printDateFormatter.timeStyle = DateFormatter.Style.short
         getChoreByUser(userID: String(currentUser!.id))
         getChoreByHouseCode(houseCode: currentUser!.house_code!)
     }
@@ -71,12 +74,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         case choreTableView:
             let cell = tableView.dequeueReusableCell(withIdentifier: "YourChoreCell") as! YourChoreCell
             let chore = choreList[indexPath.row] as chore
-            var dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "E, d MMM yyyy HH:mm:ss z"
-            var dateFromString: Date? = dateFormatter.date(from: chore.due_date)
+            let dateFromString: Date? = toDateFormatter.date(from: chore.due_date)
             cell.choreTitle.text = chore.name
             cell.choreDescription.text = chore.description
-            cell.choreTime.text = chore.due_date
+            cell.choreTime.text = printDateFormatter.string(from: dateFromString!)
             return cell
         case ruleTableView:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell") as! RuleCell

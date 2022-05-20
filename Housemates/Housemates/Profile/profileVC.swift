@@ -28,7 +28,8 @@ class profileVC: UIViewController {
     @IBOutlet weak var passwordView: UIView!
     @IBOutlet weak var phoneNumberView: UIView!
     @IBOutlet weak var stackView: UIStackView!
-    var user = users()
+    
+    var currentUser: user?
     override func viewDidLoad() {
         super.viewDidLoad()
         profilePic.layer.masksToBounds = true
@@ -61,10 +62,11 @@ class profileVC: UIViewController {
         stackView.layer.shadowOffset = .zero
         stackView.layer.shadowRadius = 10
         
-        let url = "http://localhost:8080/list_users"
-        getData(from: url)
-        
-    
+        firstNameTextField.text = currentUser?.first_name
+        lastNameTextField.text = currentUser?.last_name
+        emailTextField.text = currentUser?.email
+        phoneNumberTextField.text = currentUser?.mobile_number
+        touche
 //        setProfilePic()
 //        firstName.text = user.first_name
         // Do any additional setup after loading the view.
@@ -92,34 +94,6 @@ class profileVC: UIViewController {
         delegate.window?.layer.add(transition, forKey: kCATransition)
     }
     
-    private func getData(from input: String){
-        let url = URL(string: input)!
-        var request = URLRequest(url: url)
-        
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "GET"
-        let dataTask =  URLSession.shared.dataTask(with: request) {data, response, error in
-            var result:Response?
-            do {
-                result = try JSONDecoder().decode(Response.self, from: data!)
-            }
-            catch{
-                print(error.localizedDescription)
-            }
-            guard let json =  result else{
-                return
-            }
-            let locUser = json.data![0]
-            DispatchQueue.main.async{
-                self.firstNameTextField.text = locUser.first_name
-                self.lastNameTextField.text = locUser.last_name
-                self.emailTextField.text = locUser.email
-                self.updatePhone(phone: locUser.mobile_number)
-            }
-        }
-        dataTask.resume()
-    }
-    
     private func setProfilePic(){
         let urlString = "http://localhost:8080/profilePic"
         guard let url = URL(string: urlString) else { return }
@@ -138,32 +112,5 @@ class profileVC: UIViewController {
                 self.profilePic.image = UIImage(data: data!)
             }
         }.resume()
-    }
-}
-
-
-struct Response: Codable{
-    let status: String
-    let code: Int
-    let description: String
-    let data: [users]?
-}
-
-struct users: Codable{
-    let id: Int
-    let email: String
-    let first_name: String
-    let last_name: String
-    let password: String
-    let mobile_number: String
-    let house_code: String?
-    init(){
-        id = -1;
-        email = ""
-        first_name = ""
-        last_name = ""
-        password  = ""
-        mobile_number = ""
-        house_code = ""
     }
 }
