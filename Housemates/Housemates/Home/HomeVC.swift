@@ -47,6 +47,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         rulesView.layer.shadowOpacity = 0.3
         rulesView.layer.shadowOffset = .zero
         rulesView.layer.shadowRadius = 10
+        ruleTableView.layer.cornerRadius = 13
         
         addRuleButton.layer.cornerRadius = 40/2
         

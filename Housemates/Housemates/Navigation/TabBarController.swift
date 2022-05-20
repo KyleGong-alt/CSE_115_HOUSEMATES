@@ -14,19 +14,47 @@ class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let testing = user(id: 1, first_name: "test_fn", last_name: "carrera", house_code: "AKZXCOPQ", mobile_number: "1234567890", email: "test@ucsc.edu", password: "password")
-        //currentUser = testing
-        print(currentUser)
         if (currentUser?.house_code == nil) {
             viewControllers?.remove(at:0)
             
         } else {
             viewControllers?.remove(at:1)
         }
-        let nc1 = self.viewControllers?[0] as? UINavigationController
-        if let vc1 = nc1?.viewControllers[0] as? HomeVC {
-            vc1.currentUser = self.currentUser
+        
+        let nc = self.viewControllers?[0] as? UINavigationController
+        if let vc = nc?.viewControllers[0] as? HomeVC {
+            vc.currentUser = self.currentUser
+        } else if let vc = nc?.viewControllers[0] as? HomelessVC {
+            vc.currentUser = self.currentUser
         }
+        
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(swipeGesture))
+        swipeLeft.numberOfTouchesRequired = 1
+        swipeLeft.direction = .left
+        self.view.addGestureRecognizer(swipeLeft)
+        
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(swipeGesture))
+        swipeRight.numberOfTouchesRequired = 1
+        swipeRight.direction = .right
+        self.view.addGestureRecognizer(swipeRight)
+    }
+    @objc private func swipeGesture(swipe: UISwipeGestureRecognizer) {
+        print(swipe.direction)
+        switch swipe.direction {
+        case .left:
+            if selectedIndex > 0 {
+                self.selectedIndex = self.selectedIndex - 1
+            }
+            break
+        case .right:
+            if selectedIndex < 3 {
+                self.selectedIndex = self.selectedIndex + 1
+            }
+            break
+        default:
+            break
+        }
+        
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -35,8 +63,4 @@ class TabBarController: UITabBarController {
             destinationVC.currentUser = currentUser
         }
     }
-    
-
-    
-
 }
