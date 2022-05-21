@@ -228,7 +228,7 @@ def join_house(user_id, house_code):
     return response
 
 #
-# leave house given user_id and house_code
+# leave house given user_id
 #
 def leave_house(user_id):
 
