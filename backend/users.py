@@ -107,6 +107,8 @@ def add_chore(name, desc, due_date, house_code, assignees):
 
     chore_id = result['id']
 
+    result1 = True
+
     # make changes to assignees
     for id in assignees:
         sql_string = "INSERT INTO chores_assignee (user_id, chore_id, house_code) VALUES (" \
@@ -115,7 +117,7 @@ def add_chore(name, desc, due_date, house_code, assignees):
         result1 = db.db_insert(sql_string)
 
     # return encoded response
-    if not result1:
+    if (not result1) or (not result):
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
     return utils.encode_response(status='success', code=200, desc='create chore successful', data=result)
 
