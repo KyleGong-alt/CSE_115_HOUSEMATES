@@ -144,7 +144,7 @@ def get_user():
 @app.route('/create_chore', methods=['POST'])
 def create_chore():
     # validate JSON request
-    fields_list = ['desc', 'due_date', 'house_code', 'name']
+    fields_list = ['desc', 'due_date', 'house_code', 'name', 'assignees']
     valid_json, desc = utils.validate_json_request(fields_list, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
@@ -158,10 +158,11 @@ def create_chore():
     due_date = request_dict.get('due_date')
     house_code = request_dict.get('house_code')
     name = request_dict.get('name')
+    assignees = request_dict.get('assignees')
 
     # perform request
     datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
-    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
+    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code, assignees=assignees)
 
     # return appropriate response
     return response
@@ -363,7 +364,7 @@ def join_house():
     return response
 
 #
-# leave house given an user_id and valid house code
+# leave house given an user_id
 #
 @app.route('/leave_house', methods=['POST'])
 def leave_house():
