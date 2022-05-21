@@ -82,26 +82,42 @@ def get_user_chores(user_id):
 #
 # add single chore
 #
-def add_chore(name, desc, due_date, house_code):
-    # email must be unique
-    dup_check = db.count_rows(table='chores', field='name', value=name)
-    if dup_check > 0:
-        return utils.encode_response(status='failure', code=600, desc='duplicate chore')
+def add_chore(name, desc, due_date, house_code, assignees):
+
+    # dup_check = db.count_rows(table='chores', field='name', value=name)
+    # if dup_check > 0:
+    #     return utils.encode_response(status='failure', code=600, desc='duplicate chore')
 
     house_check = db.count_rows(table='house_groups', field='house_code', value=house_code)
     if house_check == 0:
         return utils.encode_response(status='failure', code=404, desc='house not found')
 
     # build sql string
+    # insert new chore into the "chores" table
     sql_string = "INSERT INTO chores (name, due_date, house_code, description) VALUES ("\
         "'{}', '{}', '{}', '{}')".format(name, due_date, house_code, desc)
-
     result = db.db_insert(sql_string)
+
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to create chore')
+
+    # query the recent created chore
+    sql_string = "SELECT * FROM chores WHERE id = (SELECT MAX(id) FROM chores)"
+    result = db.db_query(sql_string)
+
+    chore_id = result['id']
+
+    # make changes to assignees
+    for id in assignees:
+        sql_string = "INSERT INTO chores_assignee (user_id, chore_id, house_code) VALUES (" \
+                 "'{}', '{}', '{}')".format(id, chore_id, house_code)
+        # insert user into chores_assignee table
+        result = db.db_insert(sql_string)
 
     # return encoded response
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
-    return utils.encode_response(status='success', code=200, desc='create chore successful')
+    return utils.encode_response(status='success', code=200, desc='create chore successful', data=result)
 
 def add_house_rules(title, description, house_code, voted_num):
 
@@ -233,7 +249,7 @@ def join_house(user_id, house_code):
     return response
 
 #
-# leave house given user_id and house_code
+# leave house given user_id
 #
 def leave_house(user_id):
 
