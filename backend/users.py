@@ -112,10 +112,10 @@ def add_chore(name, desc, due_date, house_code, assignees):
         sql_string = "INSERT INTO chores_assignee (user_id, chore_id, house_code) VALUES (" \
                  "'{}', '{}', '{}')".format(id, chore_id, house_code)
         # insert user into chores_assignee table
-        result = db.db_insert(sql_string)
+        result1 = db.db_insert(sql_string)
 
     # return encoded response
-    if not result:
+    if not result1:
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
     return utils.encode_response(status='success', code=200, desc='create chore successful', data=result)
 
@@ -317,7 +317,7 @@ def create_house(user_id):
 
     response = utils.encode_response(status='success', code=200, desc='successful query',data=house_code_data)
     return response
-   
+
 #
 # assign a user to a chore
 #
