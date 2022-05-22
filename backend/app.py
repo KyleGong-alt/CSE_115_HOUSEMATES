@@ -51,16 +51,26 @@ def get_users():
 #
 # returns profile pic of a specific user
 #
-@app.route('/profilePic', methods=['GET'])
+@app.route('/profilePic', methods=['GET','POST'])
 def get_profile_pic():
+    print("BREAK POINT")
     email = request.args.get('email')
     email = email.replace('@', '-')
     email = email.replace('.', '-')
-    img_path = os.path.join('./ProfilePics', email+'.png')
-    if os.path.exists(img_path):
+    picFolder = os.path.join('./ProfilePics', email)
+    if not os.path.exists(picFolder):
+        os.mkdir(picFolder)
+    if request.method == 'POST':
+        utils.delete_dir_contents(picFolder)
+        file = request.files['file']
+        img_path = os.path.join(picFolder, file.filename)
+        file.save(img_path)
+        # return utils.encode_response(status='success', code=200, desc='post image successful')
         return send_file(img_path)
-    else:
-        return utils.encode_response(status='failure', code=404, desc='Profile Pic not found')
+    if os.path.exists(picFolder):
+        if len(os.listdir(picFolder))> 0:
+            return send_file(os.path.join(picFolder, os.listdir(picFolder)[0]))
+    return utils.encode_response(status='failure', code=404, desc='Profile Pic not found')
 
 
 @app.route('/update_user',methods=['PUT'])
