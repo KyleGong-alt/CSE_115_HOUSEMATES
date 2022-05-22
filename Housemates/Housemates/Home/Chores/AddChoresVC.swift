@@ -21,6 +21,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     @IBOutlet var assignTopView: UIView!
     @IBOutlet weak var memberTableView: UITableView!
     
+    var parentVC: ChoresVC?
     
     let dateFormatter = DateFormatter()
     var dateHidden = true
@@ -112,14 +113,27 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     }
     
     @IBAction func onAddChore(_ sender: Any) {
+        if (titleTextField.text!.isEmpty) {
+            errorAddChore()
+            return
+        }
+        
         let templateDateFormatter = DateFormatter()
 
 //        templateDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         templateDateFormatter.dateFormat = "MMMM dd yyyy hh:mma"
         let date = templateDateFormatter.string(from: datePicker.date)
-
+        
         createChore(name: titleTextField.text!, desc: descriptionTextView.text!, due_date: date, house_code: currentUser!.house_code!)
         dismiss(animated: true, completion: nil)
+    }
+    
+    func errorAddChore() {
+        let alert = UIAlertController(title: "Title Field Required", message: "The Title field is empty. Please enter a viable chore title.", preferredStyle: UIAlertController.Style.alert)
+
+        alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+        self.present(alert, animated: true, completion: nil)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -146,8 +160,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             cell.memberName.textColor = .black
             cell.memberImage.layer.borderWidth = 0
         }
-        
-        
     }
     
     override func viewWillLayoutSubviews() {
@@ -200,11 +212,18 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         
         request.httpMethod = "POST"
         
+        var list_id_selected = [Int]()
+        for i in 0..<selectedList.count {
+            if selectedList[i] {
+                list_id_selected.append(memberList[i].id)
+            }
+        }
         let parameters: [String: Any] = [
             "name": name,
             "desc": desc,
             "due_date": due_date,
             "house_code": house_code,
+            "assignees": list_id_selected
         ]
         
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
@@ -212,13 +231,22 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         request.timeoutInterval = 20
 
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:postResponse
+            var result:chorePostResponse
             do {
-                result = try JSONDecoder().decode(postResponse.self, from: data!)
+                result = try JSONDecoder().decode(chorePostResponse.self, from: data!)
                 print(result)
                 if result.code != 200 {
                     print(result)
                     return
+                }
+                DispatchQueue.main.async {
+                    if list_id_selected.isEmpty {
+                        self.parentVC?.unassignedchoreList.append(result.data)
+                        self.parentVC?.unassignedChoresTableView.reloadData()
+                    } else {
+                        self.parentVC?.assignedchoreList.append(result.data)
+                        self.parentVC?.currentChoresTableView.reloadData()
+                    }
                 }
             } catch {
                 print(error.localizedDescription)

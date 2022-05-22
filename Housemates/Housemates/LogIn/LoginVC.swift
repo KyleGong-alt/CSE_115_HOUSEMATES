@@ -117,8 +117,6 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                 }
                 
                 DispatchQueue.main.async {
-                    UserDefaults.standard.set(result.data!.email, forKey: "email")
-                    UserDefaults.standard.synchronize()
                     self.performSegue(withIdentifier: "SignInSegue", sender: result.data)
                 }
             } catch {

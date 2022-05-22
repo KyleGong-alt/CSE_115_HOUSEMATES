@@ -29,6 +29,10 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         join_house()
     }
     
+    @IBAction func onCreateHouse(_ sender: Any) {
+        create_house()
+    }
+    
     func errorAddHouse() {
         let alert = UIAlertController(title: "The house code you entered does not exist", message: "The house code you entered does not exist. Please try again.", preferredStyle: UIAlertController.Style.alert)
 
@@ -38,9 +42,13 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "segueAddedHouse" {
-            let updatedUser = user(id: self.currentUser!.id, first_name: self.currentUser!.first_name, last_name: self.currentUser!.last_name, house_code: self.houseCodeTextField.text, mobile_number: self.currentUser!.mobile_number, email: self.currentUser!.email, password: self.currentUser!.password)
             let destinationVC = segue.destination as! TabBarController
-            destinationVC.currentUser = updatedUser
+            if currentUser!.house_code != nil{
+                destinationVC.currentUser = currentUser
+            } else {
+                let updatedUser = user(id: self.currentUser!.id, first_name: self.currentUser!.first_name, last_name: self.currentUser!.last_name, house_code: self.houseCodeTextField.text, mobile_number: self.currentUser!.mobile_number, email: self.currentUser!.email, password: self.currentUser!.password)
+                destinationVC.currentUser = updatedUser
+            }
         }
     }
     
@@ -77,6 +85,76 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
                     return
                 }
 
+                DispatchQueue.main.async {
+                    self.performSegue(withIdentifier: "segueAddedHouse", sender: nil)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    func create_house() {
+        let url = URL(string: "http://127.0.0.1:8080/create_house")!
+        
+        var request = URLRequest(url: url)
+        
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.httpMethod = "POST"
+        guard let _ = currentUser?.id else {return}
+        
+        let parameters: [String: Any] = [
+            "user_id": String(currentUser!.id),
+        ]
+        
+        let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        request.httpBody = httpBody
+        request.timeoutInterval = 20
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result: postResponse
+            guard let data = data else {
+                print("OUT")
+                return
+            }
+            do {
+                result = try JSONDecoder().decode(postResponse.self, from: data)
+                if (result.code != 200) {
+                    return
+                }
+
+                DispatchQueue.main.async {
+                    self.get_user()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    func get_user() {
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_user")!
+        components.queryItems = [
+            URLQueryItem(name: "email", value: currentUser?.email)
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:userResponse
+            do {
+                guard let data = data else {
+                    return
+                }
+                result = try JSONDecoder().decode(userResponse.self, from: data)
+                if (result.data == nil) {
+                    return
+                }
+                self.currentUser = result.data
                 DispatchQueue.main.async {
                     self.performSegue(withIdentifier: "segueAddedHouse", sender: nil)
                 }

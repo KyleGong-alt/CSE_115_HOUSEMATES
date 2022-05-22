@@ -51,3 +51,10 @@ struct postResponse: Codable{
     let code: Int
     let description: String
 }
+
+struct chorePostResponse: Codable {
+    let status: String
+    let code: Int
+    let description: String
+    let data: chore
+}

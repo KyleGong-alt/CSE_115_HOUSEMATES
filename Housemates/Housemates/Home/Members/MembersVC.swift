@@ -28,10 +28,6 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
         memberTableView.delegate = self
         memberTableView.dataSource = self
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        getHouseMembers()
-    }
 
     @IBAction func onClose(_ sender: Any) {
         performSegue(withIdentifier: "segueCloseRightNav", sender: nil)
@@ -71,40 +67,43 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    func getHouseMembers() {
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_house_members")!
-        components.queryItems = [
-            URLQueryItem(name: "house_code", value: currentUser?.house_code)
-        ]
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+    @IBAction func onLeaveHouse(_ sender: Any) {
+        let url = URL(string: "http://127.0.0.1:8080/leave_house")!
         
-        var request = URLRequest(url: components.url!)
-
+        var request = URLRequest(url: url)
+        
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        request.httpMethod = "GET"
-        let semaphore = DispatchSemaphore.init(value: 0)
+        
+        request.httpMethod = "POST"
+        guard let _ = currentUser?.id else {return}
+        
+        let parameters: [String: Any] = [
+            "user_id": String(currentUser!.id),
+        ]
+        
+        let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        request.httpBody = httpBody
+        request.timeoutInterval = 20
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:multiUserResponse
+            var result: postResponse
+            guard let data = data else {
+                print("FAILED TO LEAVE HOUSE")
+                return
+            }
             do {
-                result = try JSONDecoder().decode(multiUserResponse.self, from: data!)
-                
-                if result.code != 200 {
-                    semaphore.signal()
+                result = try JSONDecoder().decode(postResponse.self, from: data)
+                if (result.code != 200) {
                     return
                 }
-                
-                self.memberList = result.data ?? []
+                let updatedUser = user(id: self.currentUser!.id, first_name: self.currentUser!.first_name, last_name: self.currentUser!.last_name, house_code: nil, mobile_number: self.currentUser!.mobile_number, email: self.currentUser!.email, password: self.currentUser!.password)
+                self.currentUser = updatedUser
                 DispatchQueue.main.async {
-                    self.memberTableView.reloadData()
+                    self.performSegue(withIdentifier: "segueCloseRightNav", sender: nil)
                 }
-                
             } catch {
                 print(error.localizedDescription)
             }
-            semaphore.signal()
         }
         dataTask.resume()
-        semaphore.wait()
     }
 }
