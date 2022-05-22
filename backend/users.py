@@ -50,37 +50,36 @@ def create_user(email, first_name, last_name, password, mobile_number):
 # update user in users table
 #
 def update_user(email, first_name, last_name, password, mobile_number):
-
     # build sql string
-    sqlString = "UPDATE users SET "
+    sql_string = "UPDATE users SET"
     sqlOptions = ""
     if first_name:
-        sqlOptions += "first_name " + first_name+","
+        sqlOptions += " first_name='{}',".format(first_name)
     if last_name:
-        sqlOptions += "last_name " + last_name+","
+        sqlOptions += " last_name='{}',".format(last_name)
     if password:
-        sqlOptions += "password " + password+","
+        sqlOptions += " password='{}',".format(password)
     if mobile_number:
-        sqlOptions += "mobile_number " + mobile_number+","
+        sqlOptions += " mobile_number='{}',".format(mobile_number)
     if sqlOptions.endswith(','):
         sqlOptions = sqlOptions[:-1]
 
-    sqlString += sqlOption + "WHERE email={}".format(email)
+    sql_string += sqlOptions + " WHERE email='{}'".format(email)
 
-    # insert user into users table
-    result = db.db_query(sql_string)
-    print(sql_string)
+    # update user
+    result = db.db_insert(sql_string)
+    print(result)
 
     # validate the insertion
     if not result:
-        return utils.encode_response(status='failure', code=601, desc='unable to create new user')
+        return utils.encode_response(status='failure', code=601, desc='unable to update user')
 
     # fetch newly created user
     sql_string = "SELECT * FROM users WHERE email='{}'".format(email)
     data = db.db_query(sql_string)
 
     # return encoded response
-    return utils.encode_response(status='success', code=200, desc='signup successful', data=data)
+    return utils.encode_response(status='success', code=200, desc='update successful', data=data)
 
 #
 # get single user
@@ -323,3 +322,18 @@ def unassign_chore(user_id, chore_id):
 
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='chore unassignment successful')
+
+#
+#delete user
+#
+def delete_chore(user_id):
+    sql_string = "DELETE FROM chores WHERE id={}".format(user_id)
+    #deletes the chore from
+    result = db.db_insert(sql_string)
+
+    # validate deletion
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to delete chore')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='delete chore successful')

@@ -63,7 +63,7 @@ def get_profile_pic():
         return utils.encode_response(status='failure', code=404, desc='Profile Pic not found')
 
 
-@app.route('/update_user',methods=['POST'])
+@app.route('/update_user',methods=['PUT'])
 def update_user():
     # validate request json
     signup_fields = ['email', 'first_name', 'last_name', 'password', 'mobile_number']
@@ -82,7 +82,7 @@ def update_user():
     password = request_dict.get('password')
     mobile_number = request_dict.get('mobile_number')
 
-    response = users.updateUser(email=email, first_name=first_name, last_name=last_name, password=password,
+    response = users.update_user(email=email, first_name=first_name, last_name=last_name, password=password,
                                  mobile_number=mobile_number)
 
     return response
@@ -339,6 +339,35 @@ def edit_chore():
 
     response = users.edit_chore(chore_id, chore_name, due_date, description)
     return response
+#
+#delete chore
+#
+@app.route('/delete_chore', methods=['PUT'])
+def delete_chore():
+    # validate JSON request
+    chore_fields = ['chore_id', 'name', 'due_date', 'description']
+    valid_json, desc = utils.validate_json_request(chore_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response    # get dict from json
+
+    request_dict = request.get_json()
+    chore_id = request_dict.get('chore_id')
+
+#
+#delete house rule
+#
+@app.route('/delete_house_rule', methods=['PUT'])
+def delete_house_rule():
+    # validate JSON request
+    chore_fields = ['chore_id', 'name', 'due_date', 'description']
+    valid_json, desc = utils.validate_json_request(chore_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response    # get dict from json
+
+    request_dict = request.get_json()
+    chore_id = request_dict.get('chore_id')
 
 #
 # sample json post request
