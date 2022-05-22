@@ -241,7 +241,6 @@ def join_house(user_id, house_code):
     # build sql string
     sql_string = "UPDATE users SET house_code = '{}' WHERE id = '{}'".format(house_code, user_id)
 
-    # fetch users assigned to chore
     data = db.db_insert(sql_string)
 
     # return encoded response
@@ -258,11 +257,14 @@ def leave_house(user_id):
     # build sql string
     sql_string = "UPDATE users SET house_code = null WHERE id = '{}'".format(user_id)
 
-    # fetch users assigned to chore
     data = db.db_insert(sql_string)
 
+    sql_string = "DELETE FROM chores_assignee WHERE user_id = '{}'".format(user_id)
+
+    data2 = db.db_insert(sql_string)
+
     # return encoded response
-    if not data:
+    if (not data) or (not data2):
         return utils.encode_response(status='failure', code=601, desc='unable to leave house')
     response = utils.encode_response(status='success', code=200, desc='successful leave house', data=data)
     return response
