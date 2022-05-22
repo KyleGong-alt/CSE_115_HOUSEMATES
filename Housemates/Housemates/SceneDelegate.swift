@@ -32,26 +32,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         request.httpMethod = "GET"
         let semaphore = DispatchSemaphore.init(value: 0)
+        
+        var user:user?
+        
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:user
+            var result:userResponse
             do {
-                result = try JSONDecoder().decode(user.self, from: data!)
-                print(result)
-                DispatchQueue.main.async {
-                    let main = UIStoryboard(name: "Main", bundle: nil)
-                    let tabBarNavigation = main.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
-                    tabBarNavigation.currentUser = result
-                    self.window?.rootViewController = tabBarNavigation
+                guard let data = data else {
+                    semaphore.signal()
+                    return
                 }
-                semaphore.signal()
+                result = try JSONDecoder().decode(userResponse.self, from: data)
+                if (result.data == nil) {
+                    semaphore.signal()
+                    return
+                }
+                user = result.data
             } catch {
                 print(error.localizedDescription)
-                semaphore.signal()
             }
+            semaphore.signal()
         }
         dataTask.resume()
         semaphore.wait()
-        
+        if let user = user {
+            print(user)
+            let main = UIStoryboard(name: "Main", bundle: nil)
+            let tabBarNavigation = main.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+            tabBarNavigation.currentUser = user
+            self.window?.rootViewController = tabBarNavigation
+        } else {
+            print("NO")
+        }
         
     }
 

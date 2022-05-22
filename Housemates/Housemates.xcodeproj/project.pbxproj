@@ -37,7 +37,11 @@
 		C79794BC282D99A20067BEBC /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79794BB282D99A20067BEBC /* TabBarController.swift */; };
 		C7CF5D2B2831D0AF00B315D6 /* NeedApprovalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF5D2A2831D0AF00B315D6 /* NeedApprovalCell.swift */; };
 		C7CF5D2D2831D65800B315D6 /* RuleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF5D2C2831D65800B315D6 /* RuleCell.swift */; };
+		C7CF5D332834164D00B315D6 /* AddChoreMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF5D322834164D00B315D6 /* AddChoreMemberCell.swift */; };
 		C7D453B32825A35400DFBB83 /* AddChoresVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D453B22825A35300DFBB83 /* AddChoresVC.swift */; };
+		C7F9E52628344E8E007B3256 /* AddHouseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E52528344E8E007B3256 /* AddHouseVC.swift */; };
+		C7F9E528283800C3007B3256 /* SlideUpViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */; };
+		C7F9E52A28383902007B3256 /* ProfilePicVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E52928383902007B3256 /* ProfilePicVC.swift */; };
 		CC696BFB496AEE65886BDDA7 /* Pods_Housemates_HousematesUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BC5D0656B8B26E1442477C /* Pods_Housemates_HousematesUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -100,7 +104,11 @@
 		C79794BB282D99A20067BEBC /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		C7CF5D2A2831D0AF00B315D6 /* NeedApprovalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedApprovalCell.swift; sourceTree = "<group>"; };
 		C7CF5D2C2831D65800B315D6 /* RuleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleCell.swift; sourceTree = "<group>"; };
+		C7CF5D322834164D00B315D6 /* AddChoreMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoreMemberCell.swift; sourceTree = "<group>"; };
 		C7D453B22825A35300DFBB83 /* AddChoresVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoresVC.swift; sourceTree = "<group>"; };
+		C7F9E52528344E8E007B3256 /* AddHouseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHouseVC.swift; sourceTree = "<group>"; };
+		C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideUpViewCell.swift; sourceTree = "<group>"; };
+		C7F9E52928383902007B3256 /* ProfilePicVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +143,8 @@
 			isa = PBXGroup;
 			children = (
 				1CA8CF67281B8EC0004AC253 /* profileVC.swift */,
+				C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */,
+				C7F9E52928383902007B3256 /* ProfilePicVC.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -186,6 +196,7 @@
 				C76F0FFC281F26FE0071C82A /* DimmingVC.swift */,
 				C7CF5D2A2831D0AF00B315D6 /* NeedApprovalCell.swift */,
 				C7CF5D2C2831D65800B315D6 /* RuleCell.swift */,
+				C7F9E52528344E8E007B3256 /* AddHouseVC.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -263,6 +274,7 @@
 			children = (
 				C76F0FF4281C85020071C82A /* ChoresVC.swift */,
 				C7D453B22825A35300DFBB83 /* AddChoresVC.swift */,
+				C7CF5D322834164D00B315D6 /* AddChoreMemberCell.swift */,
 			);
 			path = Chores;
 			sourceTree = "<group>";
@@ -562,9 +574,13 @@
 				C722BF612818B01100458FAC /* HomeVC.swift in Sources */,
 				C722BF652819CF6B00458FAC /* YourChoreCell.swift in Sources */,
 				C76F0FF3281C7BEC0071C82A /* requestStruct.swift in Sources */,
+				C7F9E52628344E8E007B3256 /* AddHouseVC.swift in Sources */,
 				C722BF632818F1AC00458FAC /* HomelessVC.swift in Sources */,
+				C7CF5D332834164D00B315D6 /* AddChoreMemberCell.swift in Sources */,
 				C73FEC13280DF40600C11888 /* LoginVC.swift in Sources */,
 				1C6C6836280FA3BE006D3338 /* PasswordVC.swift in Sources */,
+				C7F9E528283800C3007B3256 /* SlideUpViewCell.swift in Sources */,
+				C7F9E52A28383902007B3256 /* ProfilePicVC.swift in Sources */,
 				C7077AF6280F469C00B52A0C /* EmailPhoneVC.swift in Sources */,
 				C722BF69281A55E500458FAC /* AssignedMemberCell.swift in Sources */,
 				1CA8CF68281B8EC0004AC253 /* profileVC.swift in Sources */,
@@ -755,6 +771,8 @@
 				DEVELOPMENT_TEAM = 97A6A6Z9V4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Housemates/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access your camera to take photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Need access to photo library for profile pic";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -784,6 +802,8 @@
 				DEVELOPMENT_TEAM = 97A6A6Z9V4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Housemates/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access your camera to take photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Need access to photo library for profile pic";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

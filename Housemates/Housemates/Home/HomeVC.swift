@@ -22,8 +22,11 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var currentUser: user?
 
     var choreList = [chore]()
+    var choreAssigneesList = [[user]]()
     var unassignedchoreList = [chore]()
     var assignedchoreList = [chore]()
+    var toDateFormatter = DateFormatter()
+    var printDateFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,15 +50,18 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         rulesView.layer.shadowOpacity = 0.3
         rulesView.layer.shadowOffset = .zero
         rulesView.layer.shadowRadius = 10
+        ruleTableView.layer.cornerRadius = 13
         
         addRuleButton.layer.cornerRadius = 40/2
         
-        //let leftSwipe = UISwipeGestureRecognizer(target: <#T##Any?#>, action: <#T##Selector?#>)
-        //print(currentUser)
+        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        printDateFormatter.dateStyle = DateFormatter.Style.long
+        printDateFormatter.timeStyle = DateFormatter.Style.short
+    }
+    override func viewWillAppear(_ animated: Bool) {
         getChoreByUser(userID: String(currentUser!.id))
         getChoreByHouseCode(houseCode: currentUser!.house_code!)
     }
-    
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
@@ -70,12 +76,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         case choreTableView:
             let cell = tableView.dequeueReusableCell(withIdentifier: "YourChoreCell") as! YourChoreCell
             let chore = choreList[indexPath.row] as chore
-            var dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "E, d MMM yyyy HH:mm:ss z"
-            var dateFromString: Date? = dateFormatter.date(from: chore.due_date)
+            let dateFromString: Date? = toDateFormatter.date(from: chore.due_date)
             cell.choreTitle.text = chore.name
             cell.choreDescription.text = chore.description
-            cell.choreTime.text = chore.due_date
+            cell.choreTime.text = printDateFormatter.string(from: dateFromString!)
             return cell
         case ruleTableView:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell") as! RuleCell
@@ -87,7 +91,16 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "seguePickChore", sender: indexPath)
+        switch tableView {
+        case choreTableView:
+            performSegue(withIdentifier: "seguePickChore", sender: indexPath)
+            return
+        case ruleTableView:
+            return
+        default:
+            return
+        
+        }
         
     }
     
@@ -98,6 +111,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let indexPath = sender as! IndexPath
             let chore = choreList[indexPath.row] as chore
             destinationVC.chore = chore
+            destinationVC.assignees = choreAssigneesList[indexPath.row]
         } else if segue.identifier == "segueAllChore" {
             let destinationVC = segue.destination as! ChoresVC
             destinationVC.currentUser = self.currentUser
@@ -127,12 +141,16 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         request.httpMethod = "GET"
         let semaphore = DispatchSemaphore.init(value: 0)
-        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+        let dataTask = URLSession.shared.dataTask(with: request) { [self] data, response, error in
             var result:choreResponse
             do {
                 result = try JSONDecoder().decode(choreResponse.self, from: data!)
                 //print(result)
                 self.choreList = result.data  ?? []
+                self.choreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
+                for chore in choreList {
+                    self.getAssigneesYourChore(chore: chore)
+                }
                 DispatchQueue.main.async {
                     self.choreTableView.reloadData()
                     self.ruleTableView.reloadData()
@@ -164,6 +182,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 result = try JSONDecoder().decode(choreResponse.self, from: data!)
                 //print(result)
                 let choreList = result.data ?? []
+                self.unassignedchoreList = []
+                self.assignedchoreList = []
                 for chore in choreList {
                     self.getAssignees(chore: chore)
                 }
@@ -195,6 +215,30 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 } else {
                     self.unassignedchoreList.append(chore)
                 }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    
+    func getAssigneesYourChore(chore: chore){
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
+        components.queryItems = [
+            URLQueryItem(name: "chore_id", value: String(chore.id))
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:assigneeResponse
+            do {
+                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
+                self.choreAssigneesList.append(result.data ?? [])
             } catch {
                 print(error.localizedDescription)
             }

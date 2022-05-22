@@ -185,7 +185,7 @@ def get_user():
 @app.route('/create_chore', methods=['POST'])
 def create_chore():
     # validate JSON request
-    fields_list = ['desc', 'due_date', 'house_code', 'name']
+    fields_list = ['desc', 'due_date', 'house_code', 'name', 'assignees']
     valid_json, desc = utils.validate_json_request(fields_list, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
@@ -199,10 +199,11 @@ def create_chore():
     due_date = request_dict.get('due_date')
     house_code = request_dict.get('house_code')
     name = request_dict.get('name')
+    assignees = request_dict.get('assignees')
 
     # perform request
     datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
-    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
+    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code, assignees=assignees)
 
     # return appropriate response
     return response
@@ -413,8 +414,8 @@ def process_json():
     response = utils.encode_response(status='success', code=200, desc="successful json post", data=request_dict)
     return response
 
-#
-#
+# 
+# join house given an user_id and valid house code
 #
 @app.route('/join_house', methods=['POST'])
 def join_house():
@@ -438,6 +439,30 @@ def join_house():
     # return appropriate response
     return response
 
+#
+# leave house given an user_id
+#
+@app.route('/leave_house', methods=['POST'])
+def leave_house():
+    # validate JSON request
+    fields_list = ['user_id']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    user_id = request_dict.get('user_id')
+
+    # perform request
+    response = users.leave_house(user_id=user_id)
+
+    # return appropriate response
+    return response
+
 @app.route('/get_house_members', methods=['GET'])
 def get_house_memebers():
     # Gets the house code with ?house_code=*HOUSE CODE*
@@ -452,12 +477,36 @@ def get_house_memebers():
     return response
 
 #
+#Creates New House
+#
+@app.route('/create_house', methods=['POST'])
+def create_house():
+    # if New_House_code is in 
+    fields_list = ['user_id']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get fields
+    user_id = request_dict.get('user_id')
+
+    # perform request
+    response = users.create_house(user_id=user_id)
+
+    # return appropriate response
+    return response
+    
+#
 # assign chore to user in house
 #
 @app.route('/assign_chore', methods=['POST'])
 def assign_chore():
     # validate JSON request
     fields_list = ['user_id', 'chore_id', 'house_code']
+
     valid_json, desc = utils.validate_json_request(fields_list, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
@@ -494,6 +543,29 @@ def unassign_chore():
 
     # response request
     response = users.unassign_chore(user_id, chore_id)
+    return response
+
+#
+# edit house rules
+#
+@app.route('/edit_house_rules', methods=['PUT'])
+def edit_house_rules():
+    # validate JSON request
+    house_rules_list = ['title', 'description', 'rule_id']
+    valid_json, desc = utils.validate_json_request(house_rules_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    rule_id = request_dict.get('rule_id')
+    rule_title = request_dict.get('title')
+    rule_description = request_dict.get('description')
+
+    # response request
+    response = users.edit_house_rules(rule_id, rule_title, rule_description)
     return response
 
 #

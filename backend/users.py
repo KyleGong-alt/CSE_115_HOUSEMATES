@@ -1,6 +1,7 @@
 from flask import jsonify, request
 import pymysql
-
+import random
+import string
 import db
 import utils
 
@@ -117,26 +118,44 @@ def get_user_chores(user_id):
 #
 # add single chore
 #
-def add_chore(name, desc, due_date, house_code):
-    # email must be unique
-    dup_check = db.count_rows(table='chores', field='name', value=name)
-    if dup_check > 0:
-        return utils.encode_response(status='failure', code=600, desc='duplicate chore')
+def add_chore(name, desc, due_date, house_code, assignees):
+
+    # dup_check = db.count_rows(table='chores', field='name', value=name)
+    # if dup_check > 0:
+    #     return utils.encode_response(status='failure', code=600, desc='duplicate chore')
 
     house_check = db.count_rows(table='house_groups', field='house_code', value=house_code)
     if house_check == 0:
         return utils.encode_response(status='failure', code=404, desc='house not found')
 
     # build sql string
+    # insert new chore into the "chores" table
     sql_string = "INSERT INTO chores (name, due_date, house_code, description) VALUES ("\
         "'{}', '{}', '{}', '{}')".format(name, due_date, house_code, desc)
-
     result = db.db_insert(sql_string)
 
-    # return encoded response
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
-    return utils.encode_response(status='success', code=200, desc='create chore successful')
+
+    # query the recent created chore
+    sql_string = "SELECT * FROM chores WHERE id = (SELECT MAX(id) FROM chores)"
+    result = db.db_query(sql_string)
+
+    chore_id = result['id']
+
+    result1 = True
+
+    # make changes to assignees
+    for id in assignees:
+        sql_string = "INSERT INTO chores_assignee (user_id, chore_id, house_code) VALUES (" \
+                 "'{}', '{}', '{}')".format(id, chore_id, house_code)
+        # insert user into chores_assignee table
+        result1 = db.db_insert(sql_string)
+
+    # return encoded response
+    if (not result1) or (not result):
+        return utils.encode_response(status='failure', code=601, desc='unable to create chore')
+    return utils.encode_response(status='success', code=200, desc='create chore successful', data=result)
 
 def add_house_rules(title, description, house_code, voted_num):
 
@@ -233,6 +252,10 @@ def get_chores(house_code):
 # edit chore
 #
 def edit_chore(chore_id, name, due_date, description):
+    dup_check = db.count_rows('chores', 'id', chore_id)
+    if dup_check < 1:
+        return utils.encode_response(status='failure', code=600, desc="chore doesn't exist")
+
     # build sql string
     sql_string = "UPDATE chores SET name = '{}', due_date = '{}', description = '{}' " \
                  "WHERE id = '{}'".format(name, due_date, description, chore_id)
@@ -248,13 +271,12 @@ def edit_chore(chore_id, name, due_date, description):
 #
 def join_house(user_id, house_code):
     # check if house_code is valid
-    if(db.count_rows("house_groups", "house_code", house_code)):
+    if(db.count_rows("house_groups", "house_code", house_code)) == 0:
         return utils.encode_response(status='failure', code=601, desc='invalid house_code')
 
     # build sql string
     sql_string = "UPDATE users SET house_code = '{}' WHERE id = '{}'".format(house_code, user_id)
 
-    # fetch users assigned to chore
     data = db.db_insert(sql_string)
 
     # return encoded response
@@ -264,16 +286,76 @@ def join_house(user_id, house_code):
     return response
 
 #
+# leave house given user_id
+#
+def leave_house(user_id):
+
+    # build sql string
+    sql_string = "UPDATE users SET house_code = null WHERE id = '{}'".format(user_id)
+
+    data = db.db_insert(sql_string)
+
+    sql_string = "DELETE FROM chores_assignee WHERE user_id = '{}'".format(user_id)
+
+    data2 = db.db_insert(sql_string)
+
+    # return encoded response
+    if (not data) or (not data2):
+        return utils.encode_response(status='failure', code=601, desc='unable to leave house')
+    response = utils.encode_response(status='success', code=200, desc='successful leave house', data=data)
+    return response
+
+#
 # given house_code, return members
 #
 def get_house_members(house_code):
     # build sql string
     sql_string = "SELECT * FROM users WHERE house_code = '{}'".format(house_code)
+
     # fetch chores from DB
     data = db.db_query(sql_string, many=True)
+
+    #Check if house_code is present
+    if not data:
+        return utils.encode_response(status='failure', code=404, desc='house_code not found')
+
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
-    # response = jsonify(data)
+    return response
+
+#
+# Generates a random House code
+#
+def create_house(user_id):
+
+    while (1):
+        letters = string.ascii_uppercase
+        New_House_Code = (''.join(random.choice(letters) for i in range(8)))
+        dup_check = db.count_rows(table='house_groups', field='house_code', value=New_House_Code)
+        if dup_check == 0:
+            break
+
+    #Updates the user with the user_id to have the new house_code
+    sql_string = "UPDATE users SET house_code = '{}' WHERE id = '{}'".format(New_House_Code, user_id)
+
+    #Creates the new house group with the user_id as the new house_admin_id
+    sql_string1 = "INSERT INTO house_groups(house_code, house_admin_id) VALUES ('{}', '{}')".format(New_House_Code, user_id)
+
+    # insert new house group
+    data1 = db.db_insert(sql_string1)
+    # Check if new house_group exists
+    if not data1:
+        return utils.encode_response(status='failure', code=601, desc='unable to create house')
+
+    # Update user to have new house code from user_id
+    data = db.db_insert(sql_string)
+    if not data:
+        return utils.encode_response(status='failure', code=601, desc='unable to update user to house')
+
+    #Sends back the New house code
+    house_code_data = {"house_code":New_House_Code}
+
+    response = utils.encode_response(status='success', code=200, desc='successful query',data=house_code_data)
     return response
 
 #
@@ -352,3 +434,25 @@ def delete_house_rule(house_rule_id):
 
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='delete house rule successful')
+
+#
+# edit a house rule
+#
+def edit_house_rules(rule_id, title, description):
+    # house rule must exist
+    dup_check = db.count_rows('house_rules', 'id', rule_id)
+    if dup_check < 1:
+        return utils.encode_response(status='failure', code=600, desc="house rule doesn't exist")
+
+    # build sql string
+    sql_string = "UPDATE house_rules SET title = '{}', description = '{}' WHERE id='{}'".format(title, description, rule_id)
+
+    # update house rule
+    result = db.db_insert(sql_string)
+
+    # validate the update
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to update house rule')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='house rule update successful')
