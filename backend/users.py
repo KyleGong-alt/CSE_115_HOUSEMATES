@@ -337,3 +337,18 @@ def delete_chore(user_id):
 
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='delete chore successful')
+
+#
+#delete house rule
+#
+def delete_house_rule(house_rule_id):
+    sql_string = "DELETE FROM house_rules WHERE id={}".format(house_rule_id)
+    #deletes the chore from
+    result = db.db_insert(sql_string)
+
+    # validate deletion
+    if not result:
+        return utils.encode_response(status='failure', code=601, desc='unable to delete house rule')
+
+    # return encoded response
+    return utils.encode_response(status='success', code=200, desc='delete house rule successful')

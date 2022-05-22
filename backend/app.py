@@ -342,10 +342,10 @@ def edit_chore():
 #
 #delete chore
 #
-@app.route('/delete_chore', methods=['PUT'])
+@app.route('/delete_chore', methods=['DELETE'])
 def delete_chore():
     # validate JSON request
-    chore_fields = ['chore_id', 'name', 'due_date', 'description']
+    chore_fields = ['chore_id']
     valid_json, desc = utils.validate_json_request(chore_fields, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
@@ -353,21 +353,27 @@ def delete_chore():
 
     request_dict = request.get_json()
     chore_id = request_dict.get('chore_id')
+
+    response = users.delete_chore(chore_id)
+    return response
 
 #
 #delete house rule
 #
-@app.route('/delete_house_rule', methods=['PUT'])
+@app.route('/delete_house_rule', methods=['DELETE'])
 def delete_house_rule():
     # validate JSON request
-    chore_fields = ['chore_id', 'name', 'due_date', 'description']
+    chore_fields = ['house_rule_id']
     valid_json, desc = utils.validate_json_request(chore_fields, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
         return response    # get dict from json
 
     request_dict = request.get_json()
-    chore_id = request_dict.get('chore_id')
+    house_rule_id = request_dict.get('house_rule_id')
+
+    response = users.delete_house_rule(house_rule_id)
+    return response
 
 #
 # sample json post request
