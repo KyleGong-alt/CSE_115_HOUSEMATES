@@ -111,12 +111,21 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let indexPath = sender as! IndexPath
             let chore = choreList[indexPath.row] as chore
             destinationVC.chore = chore
+            destinationVC.parentVC = self
             destinationVC.assignees = choreAssigneesList[indexPath.row]
         } else if segue.identifier == "segueAllChore" {
             let destinationVC = segue.destination as! ChoresVC
             destinationVC.currentUser = self.currentUser
             destinationVC.unassignedchoreList = self.unassignedchoreList
             destinationVC.assignedchoreList = self.assignedchoreList
+        } else if segue.identifier == "segueAddChores" {
+            let destinationVC = segue.destination as! AddChoresVC
+            destinationVC.currentUser = self.currentUser
+            destinationVC.parentVC = self
+            destinationVC.isEditting = true
+            if let choreData = sender as? (chore: chore, assignees: [user]) {
+                destinationVC.choreData = choreData
+            }
         }
     }
     

@@ -20,8 +20,9 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     @IBOutlet var datePicker: UIDatePicker!
     @IBOutlet var assignTopView: UIView!
     @IBOutlet weak var memberTableView: UITableView!
+    @IBOutlet weak var addButton: UIButton!
     
-    var parentVC: ChoresVC?
+    var parentVC: UIViewController?
     
     let dateFormatter = DateFormatter()
     var dateHidden = true
@@ -30,8 +31,16 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     var currentUser: user?
     var memberList = [user]()
     var selectedList = [Bool]()
+    var isEditting = false
+    var choreData: (chore: chore, assignees: [user])?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let parentVC = self.parentVC as? ChoresVC {
+            print("CHORESVC")
+        } else if let parentVC = self.parentVC as? HomeVC{
+            print("HOMEVC")
+        }
 
         titleTextField.delegate = self
         setBottomBorder(textfield: titleTextField)
@@ -39,8 +48,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         descriptionTextView.delegate = self
         descriptionTextView.layer.cornerRadius = 13
         descriptionTextView.contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        descriptionTextView.text = "Add a Description"
-        descriptionTextView.textColor = UIColor.lightGray
         
         dateTopView.layer.cornerRadius = 13
         dateTopView.layer.borderWidth = 1
@@ -57,10 +64,30 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         let date = Date()
         dateFormatter.dateStyle = DateFormatter.Style.long
         dateFormatter.timeStyle = DateFormatter.Style.short
-        dateButton.setTitle(dateFormatter.string(from: date), for: .normal)
         dateBottomView.isHidden = true
         datePicker.layer.isHidden = true
         datePicker.minimumDate = date
+        
+        if isEditting {
+            if let chore = choreData?.chore {
+                titleTextField.text = chore.name
+                descriptionTextView.text = chore.description
+                if descriptionTextView.text == "Add a Description" {
+                    descriptionTextView.textColor = UIColor.lightGray
+                }
+                let toDateFormatter = DateFormatter()
+                toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+                if let dateFromString = toDateFormatter.date(from: chore.due_date) {
+                    datePicker.date = dateFromString
+                    dateButton.setTitle(dateFormatter.string(from: dateFromString), for: .normal)
+                }
+            }
+            addButton.setTitle("Done", for: .normal)
+        } else {
+            descriptionTextView.text = "Add a Description"
+            descriptionTextView.textColor = UIColor.lightGray
+            dateButton.setTitle(dateFormatter.string(from: date), for: .normal)
+        }
         
         memberTableView.layer.cornerRadius = 13
         memberTableView.layer.borderWidth = 1
@@ -82,6 +109,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             textView.textColor = UIColor.black
         }
     }
+    
     func textViewDidEndEditing(_ textView: UITextView) {
         if descriptionTextView.text.isEmpty {
             descriptionTextView.text = "Add a Description"
@@ -145,6 +173,11 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         
         let member = memberList[indexPath.row]
         cell.memberName.text = member.first_name + " " + member.last_name
+        if self.selectedList[indexPath.row] {
+            cell.memberName.textColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)
+            cell.memberImage.layer.borderWidth = 2
+            cell.memberImage.layer.borderColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1).cgColor
+        }
         return cell
     }
     
@@ -190,8 +223,16 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                     return
                 }
                 self.memberList = result.data ?? []
-                for _ in 0..<self.memberList.count {
-                    self.selectedList.append(false)
+                for member in self.memberList {
+                    if self.isEditting, let assignees = self.choreData?.assignees {
+                        if assignees.contains(where: {$0.id == member.id}) {
+                            self.selectedList.append(true)
+                        } else {
+                            self.selectedList.append(false)
+                        }
+                    } else {
+                        self.selectedList.append(false)
+                    }
                 }
                 DispatchQueue.main.async {
                     self.memberTableView.reloadData()
@@ -240,12 +281,14 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                     return
                 }
                 DispatchQueue.main.async {
-                    if list_id_selected.isEmpty {
-                        self.parentVC?.unassignedchoreList.append(result.data)
-                        self.parentVC?.unassignedChoresTableView.reloadData()
-                    } else {
-                        self.parentVC?.assignedchoreList.append(result.data)
-                        self.parentVC?.currentChoresTableView.reloadData()
+                    if let parentVC = self.parentVC as? ChoresVC{
+                        if list_id_selected.isEmpty {
+                            parentVC.unassignedchoreList.append(result.data)
+                            parentVC.unassignedChoresTableView.reloadData()
+                        } else {
+                            parentVC.assignedchoreList.append(result.data)
+                            parentVC.currentChoresTableView.reloadData()
+                        }
                     }
                 }
             } catch {

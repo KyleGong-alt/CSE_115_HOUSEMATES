@@ -106,14 +106,19 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             destinationVC.sheetPresentationController?.detents = [.medium(), .large()]
             let chore = sender as! chore
             destinationVC.chore = chore
-            
+            destinationVC.parentVC = self
             let assignedIndex = assignedchoreList.firstIndex(where: {$0.id == chore.id })
             if assignedIndex != nil {
                 destinationVC.assignees = choreAssigneesList[assignedIndex!]
+                
             }
         } else if segue.identifier == "segueAddChores" {
             let destinationVC = segue.destination as! AddChoresVC
             destinationVC.currentUser = self.currentUser
+            if let choreData = sender as? (chore: chore, assignees: [user]) {
+                destinationVC.isEditting = true
+                destinationVC.choreData = choreData
+            }
             destinationVC.parentVC = self
         }
     }

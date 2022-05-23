@@ -41,7 +41,6 @@
 		C7D453B32825A35400DFBB83 /* AddChoresVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D453B22825A35300DFBB83 /* AddChoresVC.swift */; };
 		C7F9E52628344E8E007B3256 /* AddHouseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E52528344E8E007B3256 /* AddHouseVC.swift */; };
 		C7F9E528283800C3007B3256 /* SlideUpViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */; };
-		C7F9E52A28383902007B3256 /* ProfilePicVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E52928383902007B3256 /* ProfilePicVC.swift */; };
 		CC696BFB496AEE65886BDDA7 /* Pods_Housemates_HousematesUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BC5D0656B8B26E1442477C /* Pods_Housemates_HousematesUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -108,7 +107,6 @@
 		C7D453B22825A35300DFBB83 /* AddChoresVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoresVC.swift; sourceTree = "<group>"; };
 		C7F9E52528344E8E007B3256 /* AddHouseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHouseVC.swift; sourceTree = "<group>"; };
 		C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideUpViewCell.swift; sourceTree = "<group>"; };
-		C7F9E52928383902007B3256 /* ProfilePicVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,7 +142,6 @@
 			children = (
 				1CA8CF67281B8EC0004AC253 /* profileVC.swift */,
 				C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */,
-				C7F9E52928383902007B3256 /* ProfilePicVC.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -580,7 +577,6 @@
 				C73FEC13280DF40600C11888 /* LoginVC.swift in Sources */,
 				1C6C6836280FA3BE006D3338 /* PasswordVC.swift in Sources */,
 				C7F9E528283800C3007B3256 /* SlideUpViewCell.swift in Sources */,
-				C7F9E52A28383902007B3256 /* ProfilePicVC.swift in Sources */,
 				C7077AF6280F469C00B52A0C /* EmailPhoneVC.swift in Sources */,
 				C722BF69281A55E500458FAC /* AssignedMemberCell.swift in Sources */,
 				1CA8CF68281B8EC0004AC253 /* profileVC.swift in Sources */,
