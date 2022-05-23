@@ -335,7 +335,7 @@ def get_house_rules():
 @app.route('/edit_chore', methods=['PUT'])
 def edit_chore():
     # validate JSON request
-    chore_fields = ['chore_id', 'name', 'due_date', 'description']
+    chore_fields = ['chore_id', 'name', 'due_date', 'description', 'house_code', 'assignees']
     valid_json, desc = utils.validate_json_request(chore_fields, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
@@ -347,9 +347,12 @@ def edit_chore():
     chore_name = request_dict.get('name')
     due_date = request_dict.get('due_date')
     description = request_dict.get('description')
+    assignees = request_dict.get('assignees')
+    house_code = request_dict.get('house_code')
 
-    response = users.edit_chore(chore_id, chore_name, due_date, description)
+    response = users.edit_chore(chore_id, chore_name, due_date, description, assignees, house_code)
     return response
+
 #
 #delete chore
 #
