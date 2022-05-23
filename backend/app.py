@@ -1,6 +1,6 @@
 from turtle import title
 from unicodedata import name
-from flask import Flask, request
+from flask import Flask, request, send_file
 from werkzeug.exceptions import HTTPException
 from datetime import datetime
 import os
@@ -49,12 +49,53 @@ def get_users():
     return response
 
 #
-# list all users in db
+# returns profile pic of a specific user
 #
-@app.route('/profilePic', methods=['GET'])
+@app.route('/profilePic', methods=['GET','POST'])
 def get_profile_pic():
-    return send_file('./ProfilePic/img.png')
+    print("BREAK POINT")
+    email = request.args.get('email')
+    email = email.replace('@', '-')
+    email = email.replace('.', '-')
+    picFolder = os.path.join('./ProfilePics', email)
+    if not os.path.exists(picFolder):
+        os.mkdir(picFolder)
+    if request.method == 'POST':
+        utils.delete_dir_contents(picFolder)
+        file = request.files['file']
+        img_path = os.path.join(picFolder, file.filename)
+        file.save(img_path)
+        # return utils.encode_response(status='success', code=200, desc='post image successful')
+        return send_file(img_path)
+    if os.path.exists(picFolder):
+        if len(os.listdir(picFolder))> 0:
+            return send_file(os.path.join(picFolder, os.listdir(picFolder)[0]))
+    return utils.encode_response(status='failure', code=404, desc='Profile Pic not found')
 
+
+@app.route('/update_user',methods=['PUT'])
+def update_user():
+    # validate request json
+    signup_fields = ['email', 'first_name', 'last_name', 'password', 'mobile_number']
+    valid_json, desc = utils.validate_json_request(signup_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get signup fields
+    email = request_dict.get('email')
+    first_name = request_dict.get('first_name')
+    last_name = request_dict.get('last_name')
+    password = request_dict.get('password')
+    mobile_number = request_dict.get('mobile_number')
+
+    response = users.update_user(email=email, first_name=first_name, last_name=last_name, password=password,
+                                 mobile_number=mobile_number)
+
+    return response
 #
 # account signup
 #
@@ -144,7 +185,7 @@ def get_user():
 @app.route('/create_chore', methods=['POST'])
 def create_chore():
     # validate JSON request
-    fields_list = ['desc', 'due_date', 'house_code', 'name']
+    fields_list = ['desc', 'due_date', 'house_code', 'name', 'assignees']
     valid_json, desc = utils.validate_json_request(fields_list, request)
     if not valid_json:
         response = utils.encode_response(status='failure', code=602, desc=desc)
@@ -158,10 +199,11 @@ def create_chore():
     due_date = request_dict.get('due_date')
     house_code = request_dict.get('house_code')
     name = request_dict.get('name')
+    assignees = request_dict.get('assignees')
 
     # perform request
     datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
-    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code)
+    response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code, assignees=assignees)
 
     # return appropriate response
     return response
@@ -308,6 +350,41 @@ def edit_chore():
 
     response = users.edit_chore(chore_id, chore_name, due_date, description)
     return response
+#
+#delete chore
+#
+@app.route('/delete_chore', methods=['DELETE'])
+def delete_chore():
+    # validate JSON request
+    chore_fields = ['chore_id']
+    valid_json, desc = utils.validate_json_request(chore_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response    # get dict from json
+
+    request_dict = request.get_json()
+    chore_id = request_dict.get('chore_id')
+
+    response = users.delete_chore(chore_id)
+    return response
+
+#
+#delete house rule
+#
+@app.route('/delete_house_rule', methods=['DELETE'])
+def delete_house_rule():
+    # validate JSON request
+    chore_fields = ['house_rule_id']
+    valid_json, desc = utils.validate_json_request(chore_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response    # get dict from json
+
+    request_dict = request.get_json()
+    house_rule_id = request_dict.get('house_rule_id')
+
+    response = users.delete_house_rule(house_rule_id)
+    return response
 
 #
 # sample json post request
@@ -363,7 +440,7 @@ def join_house():
     return response
 
 #
-# leave house given an user_id and valid house code
+# leave house given an user_id
 #
 @app.route('/leave_house', methods=['POST'])
 def leave_house():

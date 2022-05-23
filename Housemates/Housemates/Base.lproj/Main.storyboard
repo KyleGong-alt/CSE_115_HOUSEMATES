@@ -492,12 +492,15 @@
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUC-Hq-pnb">
                                         <rect key="frame" x="8" y="811" width="313" height="31"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="tintColor" systemColor="systemRedColor"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" imagePlacement="leading" title="Settings" imagePadding="8" titleAlignment="automatic">
-                                            <imageReference key="image" image="gearshape" catalog="system" symbolScale="default"/>
+                                        <buttonConfiguration key="configuration" style="plain" imagePlacement="leading" title="Leave House" imagePadding="8" titleAlignment="automatic">
+                                            <imageReference key="image" image="rectangle.portrait.and.arrow.right" catalog="system" symbolScale="default"/>
                                             <directionalEdgeInsets key="contentInsets" top="0.0" leading="14" bottom="0.0" trailing="0.0"/>
                                         </buttonConfiguration>
+                                        <connections>
+                                            <action selector="onLeaveHouse:" destination="pDo-4Y-R6U" eventType="touchUpInside" id="m89-EN-dmR"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -789,6 +792,7 @@
                         <outlet property="rulesView" destination="jxS-eH-27J" id="PAX-g8-MjP"/>
                         <segue destination="vi4-wc-3oq" kind="presentation" identifier="seguePickChore" id="Lx6-0z-wG7"/>
                         <segue destination="X2d-sq-7XE" kind="show" identifier="segueAllChore" id="hzr-n1-DjT"/>
+                        <segue destination="1UH-VR-mjj" kind="presentation" identifier="segueAddChores" id="k0I-aw-CJz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D6E-VS-Oiw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -851,6 +855,7 @@
                                     <color key="baseBackgroundColor" red="0.26878321170000002" green="0.49023824929999998" blue="0.47787421940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </buttonConfiguration>
                                 <connections>
+                                    <action selector="onCreateHouse:" destination="VNm-dY-BN0" eventType="touchUpInside" id="bk2-nH-6Fk"/>
                                     <action selector="onSignIn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="l2e-cb-DaZ"/>
                                 </connections>
                             </button>
@@ -1182,7 +1187,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BzZ-Hj-VQx">
-                                <rect key="frame" x="333" y="20" width="61" height="31"/>
+                                <rect key="frame" x="333" y="20" width="73" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="0.26878321170000002" green="0.49023824929999998" blue="0.47787421940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="Button"/>
@@ -1203,7 +1208,7 @@
                                                     <constraint firstAttribute="height" constant="50" id="KUo-8G-yEu"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                             </textField>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LHh-bE-rhW">
                                                 <rect key="frame" x="20" y="66" width="374" height="191"/>
@@ -1365,6 +1370,7 @@
                     </view>
                     <size key="freeformSize" width="414" height="1200"/>
                     <connections>
+                        <outlet property="addButton" destination="BzZ-Hj-VQx" id="zj3-LC-u7f"/>
                         <outlet property="assignTopView" destination="Ef5-F0-iur" id="VEf-sn-tog"/>
                         <outlet property="dateBottomView" destination="CUK-lG-Ce3" id="aEZ-zS-dSv"/>
                         <outlet property="dateButton" destination="ziR-nh-PRy" id="71m-X5-dA0"/>
@@ -1431,7 +1437,7 @@
                                                     <color key="backgroundColor" red="0.16044625639999999" green="0.28628116850000002" blue="0.28216123580000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iC6-ap-okY">
-                                                    <rect key="frame" x="99" y="19" width="45" height="21"/>
+                                                    <rect key="frame" x="99" y="19" width="244" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -1466,12 +1472,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dns-Vg-ej9">
-                                <rect key="frame" x="88" y="251" width="38" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Repetition" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HfO-Fy-fhS">
                                 <rect key="frame" x="48" y="278" width="78" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -1479,7 +1479,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KzL-Y0-UGa">
-                                <rect key="frame" x="48" y="251" width="36" height="21"/>
+                                <rect key="frame" x="48" y="251" width="356" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -1517,6 +1517,9 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Edit"/>
+                                <connections>
+                                    <action selector="onEdit:" destination="vi4-wc-3oq" eventType="touchUpInside" id="GOI-pv-3ge"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xLm-pY-hPc"/>
@@ -1529,26 +1532,24 @@
                             <constraint firstItem="xLm-pY-hPc" firstAttribute="trailing" secondItem="cqY-q2-yq8" secondAttribute="trailing" constant="20" id="HfV-PH-h6i"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="top" secondItem="Hg5-FF-7iB" secondAttribute="top" constant="210" id="ImJ-nb-Lg9"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="leading" secondItem="jnw-im-lxF" secondAttribute="leading" id="K3H-y8-PIp"/>
-                            <constraint firstItem="Dns-Vg-ej9" firstAttribute="top" secondItem="KzL-Y0-UGa" secondAttribute="top" id="Kuf-MV-ZC8"/>
                             <constraint firstItem="7yB-jN-vef" firstAttribute="leading" secondItem="xLm-pY-hPc" secondAttribute="leading" constant="20" id="Pv6-C9-Efq"/>
                             <constraint firstItem="Ql4-DT-b6h" firstAttribute="trailing" secondItem="7yB-jN-vef" secondAttribute="trailing" id="TVU-tz-nwU"/>
                             <constraint firstItem="9SV-pF-atU" firstAttribute="leading" secondItem="xLm-pY-hPc" secondAttribute="leading" constant="20" id="Wnk-HP-MtW"/>
                             <constraint firstItem="cqY-q2-yq8" firstAttribute="leading" secondItem="xLm-pY-hPc" secondAttribute="leading" constant="20" id="Wsf-U2-RSr"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="leading" secondItem="9SV-pF-atU" secondAttribute="leading" id="b3G-dA-85O"/>
-                            <constraint firstItem="Dns-Vg-ej9" firstAttribute="leading" secondItem="KzL-Y0-UGa" secondAttribute="trailing" constant="4" id="b6h-aW-QpL"/>
+                            <constraint firstItem="HfO-Fy-fhS" firstAttribute="top" secondItem="KzL-Y0-UGa" secondAttribute="bottom" constant="6" id="bD6-lh-v55"/>
                             <constraint firstItem="Ql4-DT-b6h" firstAttribute="leading" secondItem="7yB-jN-vef" secondAttribute="leading" id="bOJ-RK-jC9"/>
                             <constraint firstItem="jDa-CP-38o" firstAttribute="leading" secondItem="Ql4-DT-b6h" secondAttribute="leading" id="crf-Lz-9My"/>
                             <constraint firstItem="9SV-pF-atU" firstAttribute="top" secondItem="xLm-pY-hPc" secondAttribute="top" constant="10" id="cws-7K-kQL"/>
                             <constraint firstItem="xLm-pY-hPc" firstAttribute="trailing" secondItem="7yB-jN-vef" secondAttribute="trailing" constant="20" id="dHM-Oa-8M7"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="trailing" secondItem="9SV-pF-atU" secondAttribute="trailing" id="daF-n3-rce"/>
-                            <constraint firstItem="Dns-Vg-ej9" firstAttribute="bottom" secondItem="KzL-Y0-UGa" secondAttribute="bottom" id="kQc-jj-BHt"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="top" secondItem="cqY-q2-yq8" secondAttribute="bottom" constant="8" id="oPd-jM-1Iw"/>
                             <constraint firstItem="HfO-Fy-fhS" firstAttribute="leading" secondItem="xLm-pY-hPc" secondAttribute="leading" constant="48" id="pIp-nz-oir"/>
                             <constraint firstItem="HfO-Fy-fhS" firstAttribute="leading" secondItem="KzL-Y0-UGa" secondAttribute="leading" id="pal-fA-60J"/>
                             <constraint firstItem="7yB-jN-vef" firstAttribute="top" secondItem="9SV-pF-atU" secondAttribute="bottom" constant="10" id="qKT-zD-z2b"/>
                             <constraint firstItem="jDa-CP-38o" firstAttribute="top" secondItem="Ql4-DT-b6h" secondAttribute="bottom" constant="8" symbolic="YES" id="qSA-0f-m2N"/>
+                            <constraint firstItem="xLm-pY-hPc" firstAttribute="trailing" secondItem="KzL-Y0-UGa" secondAttribute="trailing" constant="10" id="qgg-dd-U7Q"/>
                             <constraint firstAttribute="trailingMargin" secondItem="9SV-pF-atU" secondAttribute="trailing" id="tzb-bN-62H"/>
-                            <constraint firstItem="HfO-Fy-fhS" firstAttribute="top" secondItem="Dns-Vg-ej9" secondAttribute="bottom" constant="6" id="vOl-x3-umI"/>
                             <constraint firstItem="iHz-YK-LHz" firstAttribute="top" secondItem="xLm-pY-hPc" secondAttribute="top" constant="10" id="wso-d4-XgL"/>
                             <constraint firstItem="cqY-q2-yq8" firstAttribute="top" secondItem="7yB-jN-vef" secondAttribute="bottom" constant="4" id="yLS-hS-NVZ"/>
                         </constraints>
@@ -1562,7 +1563,6 @@
                         <outlet property="editButton" destination="iHz-YK-LHz" id="VZd-HH-oqG"/>
                         <outlet property="exButton" destination="iHz-YK-LHz" id="cC8-zR-MQa"/>
                         <outlet property="membersTableView" destination="cqY-q2-yq8" id="apT-5F-lTX"/>
-                        <outlet property="timeLabel" destination="Dns-Vg-ej9" id="6Db-tq-zuB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wmi-zv-Zhf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1683,11 +1683,15 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XQh-5O-xRG">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="285"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Aen-e2-cmo">
+                                    <imageView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Aen-e2-cmo">
                                         <rect key="frame" x="156" y="127.5" width="100" height="100"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <gestureRecognizers/>
                                         <imageReference key="image" image="person.fill" catalog="system" symbolScale="default"/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="Gac-Fx-sej" appends="YES" id="oyk-1g-Yig"/>
+                                        </connections>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.27058823529999998" green="0.49023824929999998" blue="0.47787421940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1884,11 +1888,32 @@
                         <outlet property="signOutButton" destination="j4T-PP-Qaf" id="J6f-gF-JL6"/>
                         <outlet property="stackView" destination="c5r-Ws-Wqi" id="OTe-ct-9Th"/>
                         <outlet property="topView" destination="XQh-5O-xRG" id="UEf-BZ-9Hf"/>
+                        <segue destination="cz2-UM-YsH" kind="presentation" identifier="segueCamera" id="eXy-6I-shq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tdY-uw-dXP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="Gac-Fx-sej">
+                    <connections>
+                        <action selector="onPicLongHold:" destination="Li8-xo-EZZ" id="kbA-p7-m54"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1747.826086956522" y="2410.7142857142858"/>
+            <point key="canvasLocation" x="1748" y="2472"/>
+        </scene>
+        <!--Profile PicVC-->
+        <scene sceneID="rpE-eK-K8x">
+            <objects>
+                <viewController modalPresentationStyle="fullScreen" id="cz2-UM-YsH" customClass="ProfilePicVC" customModule="Housemates" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8A0-hM-XM6">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="UhH-1C-OW8"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QLa-6M-1X6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1748" y="3157"/>
         </scene>
         <!--Profile-->
         <scene sceneID="5Ve-53-npB">
@@ -1932,9 +1957,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="hzr-n1-DjT"/>
         <segue reference="bcU-2R-ZEG"/>
         <segue reference="Lx6-0z-wG7"/>
+        <segue reference="k0I-aw-CJz"/>
         <segue reference="qVs-VN-vV0"/>
     </inferredMetricsTieBreakers>
     <resources>
@@ -1944,12 +1969,12 @@
         <image name="checkmark.square" catalog="system" width="128" height="114"/>
         <image name="chevron.left" catalog="system" width="96" height="128"/>
         <image name="chevron.right" catalog="system" width="96" height="128"/>
-        <image name="gearshape" catalog="system" width="128" height="121"/>
         <image name="house.fill" catalog="system" width="128" height="106"/>
         <image name="person.2" catalog="system" width="128" height="81"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
         <image name="play.fill" catalog="system" width="116" height="128"/>
         <image name="plus" catalog="system" width="128" height="113"/>
+        <image name="rectangle.portrait.and.arrow.right" catalog="system" width="128" height="108"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <image name="xmark.app" catalog="system" width="128" height="114"/>
         <image name="xmark.circle" catalog="system" width="128" height="121"/>
