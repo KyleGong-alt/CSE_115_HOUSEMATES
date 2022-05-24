@@ -351,7 +351,7 @@ def edit_chore():
     house_code = request_dict.get('house_code')
 
     # convert date format
-    due_date = datetime.strptime(due_date, '%b %d %Y %I:%M%p').strftime('%Y-%m-%d %I:%M:%S')
+    due_date = datetime.strptime(due_date, '%B %d %Y %I:%M%p').strftime('%Y-%m-%d %I:%M:%S')
 
     response = users.edit_chore(chore_id, chore_name, due_date, description, assignees, house_code)
     return response
