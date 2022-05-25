@@ -269,34 +269,32 @@ def edit_chore(chore_id, name, due_date, description, assignees, house_code):
     if not data:
         return utils.encode_response(status='failure', code=601, desc='unable to update chore')
 
-    # if optional assignees exist
-    if len(assignees) > 0:
-        # get current users assigned to chore
-        get_assignees_sql = "SELECT user_id FROM chores_assignee WHERE chore_id = '{}'".format(chore_id)
-        result = db.db_query(get_assignees_sql, many=True)
+    # get current users assigned to chore
+    get_assignees_sql = "SELECT user_id FROM chores_assignee WHERE chore_id = '{}'".format(chore_id)
+    result = db.db_query(get_assignees_sql, many=True)
 
-        # extract user_id's from sql result
-        curr_assignees = [d['user_id'] for d in result if 'user_id' in d]
+    # extract user_id's from sql result
+    curr_assignees = [assignee_dict['user_id'] for assignee_dict in result if 'user_id' in assignee_dict]
 
-        # get the user ids that should be unassigned, i.e. users that aren't in the assignees list
-        unassign_ids = [user for user in curr_assignees if user not in assignees]
+    # get the user ids that should be unassigned, i.e. users that aren't in the assignees list
+    unassign_ids = [user for user in curr_assignees if user not in assignees]
 
-        # get the user ids that need to be assigned & skip users that are already assigned
-        assign_ids = [user for user in assignees if user not in curr_assignees]
+    # get the user ids that need to be assigned & skip users that are already assigned
+    assign_ids = [user for user in assignees if user not in curr_assignees]
 
-        # unassign users from chore
-        for user_id in unassign_ids:
-            result = unassign_chore(user_id, chore_id)
-            # return on failed unassignment
-            if '"status": "failure"' in result.get_data(as_text=True):
-                return result
+    # unassign users from chore
+    for user_id in unassign_ids:
+        result = unassign_chore(user_id, chore_id)
+        # return on failed unassignment
+        if '"status": "failure"' in result.get_data(as_text=True):
+            return result
 
-        # assign users to chore
-        for user_id in assign_ids:
-            result = assign_chore(user_id, chore_id, house_code)
-            # return on failed assignment
-            if '"status": "failure"' in result.get_data(as_text=True):
-                return result
+    # assign users to chore
+    for user_id in assign_ids:
+        result = assign_chore(user_id, chore_id, house_code)
+        # return on failed assignment
+        if '"status": "failure"' in result.get_data(as_text=True):
+            return result
 
     # return response
     return utils.encode_response(status='success', code=200, desc='successfully updated chore')
