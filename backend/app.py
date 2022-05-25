@@ -202,7 +202,7 @@ def create_chore():
     assignees = request_dict.get('assignees')
 
     # perform request
-    datetime_object = datetime.strptime(due_date, '%b %d %Y %I:%M%p')
+    datetime_object = datetime.strptime(due_date, '%Y-%m-%d %I:%M:%S')
     response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code, assignees=assignees)
 
     # return appropriate response
@@ -420,7 +420,7 @@ def process_json():
     response = utils.encode_response(status='success', code=200, desc="successful json post", data=request_dict)
     return response
 
-# 
+#
 # join house given an user_id and valid house code
 #
 @app.route('/join_house', methods=['POST'])
@@ -487,7 +487,7 @@ def get_house_memebers():
 #
 @app.route('/create_house', methods=['POST'])
 def create_house():
-    # if New_House_code is in 
+    # if New_House_code is in
     fields_list = ['user_id']
     valid_json, desc = utils.validate_json_request(fields_list, request)
     if not valid_json:
@@ -504,7 +504,7 @@ def create_house():
 
     # return appropriate response
     return response
-    
+
 #
 # assign chore to user in house
 #
@@ -572,6 +572,46 @@ def edit_house_rules():
 
     # response request
     response = users.edit_house_rules(rule_id, rule_title, rule_description)
+    return response
+
+#
+# Return only approved house rules associated by given house_code
+#
+@app.route('/get_approved_house_rules', methods=['GET'])
+def get_approved_house_rules():
+    # get form-data fields
+    house_code = request.args.get('house_code')
+
+    # validate form-data for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid request (empty house code)')
+
+    # perform request
+    response = users.get_approved_house_rules(house_code=house_code)
+
+    # return appropriate response
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='cannot find user')
+    return response
+
+#
+# Return only UNapproved house rules associated by given house_code
+#
+@app.route('/get_not_approved_house_rules', methods=['GET'])
+def get_not_approved_house_rules():
+    # get form-data fields
+    house_code = request.args.get('house_code')
+
+    # validate form-data for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid request (empty house code)')
+
+    # perform request
+    response = users.get_not_approved_house_rules(house_code=house_code)
+
+    # return appropriate response
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='cannot find user')
     return response
 
 #
