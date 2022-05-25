@@ -558,7 +558,7 @@ def get_approved_house_rules(house_code):
 #
 def get_not_approved_house_rules(house_code):
 
-    validate_rules(house_code)
+    # validate_rules(house_code)
 
     # build sql string
     sql_string = "SELECT id, title, description, voted_num FROM house_rules WHERE house_code = '{}' AND valid = 0".format(house_code)
