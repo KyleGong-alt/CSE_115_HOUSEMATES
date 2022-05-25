@@ -491,3 +491,85 @@ def edit_house_rules(rule_id, title, description):
 
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='house rule update successful')
+
+#
+# Run through all house rules of a given house_code and validate whether they're valid
+# return -1 for errors
+# return 0 for empty house
+# return 1 fo success
+#
+def validate_rules(house_code):
+    # validate approved rules
+    sql_string = "SELECT COUNT(*) FROM users WHERE house_code = '{}'".format(house_code)
+    sql_string1 = "SELECT id, voted_num FROM house_rules WHERE house_code = '{}'".format(house_code)
+
+    count = db.db_query(sql_string)
+    rules = db.db_query(sql_string1, many=True)
+
+    # error while getting number of house members/ house_code doesn't exist
+    if not count or not rules:
+        return -1
+
+    num_member = count['COUNT(*)']
+
+    # empty house :(
+    if num_member <= 0:
+        return 0
+
+    # go through each house_rules id and update valid column
+    for rule in rules:
+        voted_num = rule['voted_num']
+        if (voted_num/num_member) >= 0.5:
+            sql_string = "UPDATE house_rules SET valid = 1 WHERE id = {}".format(rule['id'])
+        else:
+            sql_string = "UPDATE house_rules SET valid = 0 WHERE id = {}".format(rule['id'])
+
+        #update the house rule
+        result = db.db_insert(sql_string)
+
+        # validate the update
+        if not result:
+            return -1
+    return 1
+
+#
+# given house_code, return approved house rules
+#
+def get_approved_house_rules(house_code):
+
+    # validate_rules(house_code)
+
+    # build sql string
+    sql_string = "SELECT id, title, description, voted_num FROM house_rules WHERE house_code = '{}' AND valid = 1".format(house_code)
+
+    # fetch house rules from DB
+    data = db.db_query(sql_string, many=True)
+
+    # Check if house rules is present
+    if not data:
+        return utils.encode_response(status='failure', code=404, desc='no approved rules found')
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    return response
+
+#
+# given house_code, return approved house rules
+#
+def get_not_approved_house_rules(house_code):
+
+    validate_rules(house_code)
+
+    # build sql string
+    sql_string = "SELECT id, title, description, voted_num FROM house_rules WHERE house_code = '{}' AND valid = 0".format(house_code)
+
+    # fetch house rules from DB
+    data = db.db_query(sql_string, many=True)
+
+    # Check if house rules is present
+    if not data:
+        return utils.encode_response(status='failure', code=404, desc='no unapproved rules found')
+
+    # return encoded response
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    return response
