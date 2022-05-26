@@ -155,6 +155,10 @@ def add_chore(name, desc, due_date, house_code, assignees):
     # return encoded response
     if (not result1) or (not result):
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
+
+    date_time = result['due_date'].strftime('%Y-%m-%d %H:%M:%S')
+    result['due_date'] = date_time
+
     return utils.encode_response(status='success', code=200, desc='create chore successful', data=result)
 
 def add_house_rules(title, description, house_code, voted_num):
