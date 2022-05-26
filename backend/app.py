@@ -202,7 +202,8 @@ def create_chore():
     assignees = request_dict.get('assignees')
 
     # perform request
-    datetime_object = datetime.strptime(due_date, '%Y-%m-%d %I:%M:%S')
+    # NSdate format: "2022-05-31 14:08:48"
+    datetime_object = datetime.strptime(due_date, '%Y-%m-%d %H:%M:%S')
     response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code, assignees=assignees)
 
     # return appropriate response
