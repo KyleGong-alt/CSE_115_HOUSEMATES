@@ -25,6 +25,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var choreAssigneesList = [[user]]()
     var unassignedchoreList = [chore]()
     var assignedchoreList = [chore]()
+    var approvedRuleList = [rule]()
+    var unapprovedRuleList = [rule]()
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
     
@@ -53,22 +55,47 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         ruleTableView.layer.cornerRadius = 13
         
         addRuleButton.layer.cornerRadius = 40/2
+        addRuleButton.layer.zPosition = 3
         
         toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
     }
     override func viewWillAppear(_ animated: Bool) {
+        getApprovedRules()
+        getUnapprovedRules()
+        
         getChoreByUser(userID: String(currentUser!.id))
         getChoreByHouseCode(houseCode: currentUser!.house_code!)
     }
+    
+    func findRuleWithIndex(index: Int) -> rule {
+        if index < unapprovedRuleList.count {
+            return unapprovedRuleList[index]
+        } else {
+            return approvedRuleList[index - unapprovedRuleList.count]
+        }
+    }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        return 116
+        switch tableView {
+        case choreTableView:
+            return 116
+        case ruleTableView:
+            return 100
+        default:
+            return 116
+        }
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return choreList.count
+        switch tableView {
+        case choreTableView:
+            return choreList.count
+        case ruleTableView:
+            return approvedRuleList.count + unapprovedRuleList.count
+        default:
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -83,6 +110,15 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             return cell
         case ruleTableView:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell") as! RuleCell
+            let rule = findRuleWithIndex(index: indexPath.row)
+            if approvedRuleList.contains(where: { $0.id == rule.id
+            }) {
+                cell.approveButton.isHidden = true
+                cell.unapproveButton.isHidden = true
+            }
+            cell.ruleTitle.text = rule.title
+            cell.ruleDescription.text = rule.description
+            cell.rule = rule
             return cell
             default:
                 return UITableViewCell()
@@ -126,6 +162,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             if let choreData = sender as? (chore: chore, assignees: [user]) {
                 destinationVC.choreData = choreData
             }
+        } else if segue.identifier == "segueAddRule" {
+            let destinationVC = segue.destination as! AddRuleVC
+            destinationVC.sheetPresentationController?.detents = [.medium()]
+            destinationVC.currentUser = self.currentUser
         }
     }
     
@@ -135,6 +175,22 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBAction func onViewMembers(_ sender: Any) {
         self.tabBarController?.performSegue(withIdentifier: "segueMembers", sender: nil)
+    }
+    
+    
+    @IBAction func onAddRule(_ sender: Any) {
+        performSegue(withIdentifier: "segueAddRule", sender: nil)
+    }
+    
+    func sortChoreList() {
+        self.choreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
+    }
+    
+    func getAssigneesForChoreList() {
+        self.choreAssigneesList.removeAll()
+        for chore in choreList {
+            self.getAssigneesYourChore(chore: chore)
+        }
     }
     
     func getChoreByUser(userID: String) {
@@ -156,10 +212,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 result = try JSONDecoder().decode(choreResponse.self, from: data!)
                 //print(result)
                 self.choreList = result.data  ?? []
-                self.choreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
-                for chore in choreList {
-                    self.getAssigneesYourChore(chore: chore)
-                }
+                sortChoreList()
+                getAssigneesForChoreList()
                 DispatchQueue.main.async {
                     self.choreTableView.reloadData()
                     self.ruleTableView.reloadData()
@@ -191,8 +245,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 result = try JSONDecoder().decode(choreResponse.self, from: data!)
                 //print(result)
                 let choreList = result.data ?? []
-                self.unassignedchoreList = []
-                self.assignedchoreList = []
+                self.unassignedchoreList.removeAll()
+                self.assignedchoreList.removeAll()
                 for chore in choreList {
                     self.getAssignees(chore: chore)
                 }
@@ -232,9 +286,9 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     func getAssigneesYourChore(chore: chore){
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_house_rules")!
         components.queryItems = [
-            URLQueryItem(name: "chore_id", value: String(chore.id))
+            URLQueryItem(name: "house_code", value: String(chore.id))
         ]
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         
@@ -248,6 +302,55 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             do {
                 result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
                 self.choreAssigneesList.append(result.data ?? [])
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    
+    func getApprovedRules(){
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_approved_house_rules")!
+        components.queryItems = [
+            URLQueryItem(name: "house_code", value: String(currentUser!.house_code!))
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:ruleResponse
+            do {
+                result = try JSONDecoder().decode(ruleResponse.self, from: data!)
+                self.approvedRuleList = result.data ?? []
+                
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    func getUnapprovedRules(){
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_not_approved_house_rules")!
+        components.queryItems = [
+            URLQueryItem(name: "house_code", value: String(currentUser!.house_code!))
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:ruleResponse
+            do {
+                result = try JSONDecoder().decode(ruleResponse.self, from: data!)
+                self.unapprovedRuleList = result.data ?? []
+                
             } catch {
                 print(error.localizedDescription)
             }
