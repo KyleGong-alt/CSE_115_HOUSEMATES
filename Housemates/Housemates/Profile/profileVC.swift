@@ -29,9 +29,19 @@ class profileVC: UIViewController {
     @IBOutlet weak var phoneNumberView: UIView!
     @IBOutlet weak var stackView: UIStackView!
     
+    var containerView = UIView()
+    var slideUpView = UITableView()
+    let screenSize = UIScreen.main.bounds.size
+    
+    let slideUpViewDataSource: [Int: (UIImage?, String)] = [
+        0: (UIImage(named: "camera"), "Take photo"),
+        1: (UIImage(named: "photo.on.rectangle"), "Choose from library")
+    ]
+    
     var currentUser: user?
     override func viewDidLoad() {
         super.viewDidLoad()
+        testing = "profile"
         profilePic.layer.masksToBounds = true
         profilePic.layer.cornerRadius = profilePic.bounds.width/2
         profilePic.layer.borderWidth = 1
@@ -65,8 +75,25 @@ class profileVC: UIViewController {
         firstNameTextField.text = currentUser?.first_name
         lastNameTextField.text = currentUser?.last_name
         emailTextField.text = currentUser?.email
-        phoneNumberTextField.text = currentUser?.mobile_number
-        touche
+        phoneNumberTextField.text = format(with: "(XXX) XXX-XXX", phone: currentUser!.mobile_number)
+        
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let delegate = windowScene.delegate as? SceneDelegate else { return }
+        containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        containerView.frame = self.view.frame
+        delegate.window?.addSubview(containerView)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(slideUpViewTapped))
+        containerView.addGestureRecognizer(tapGesture)
+        containerView.alpha = 0
+        slideUpView.frame = CGRect(x: 16, y: screenSize.height, width: screenSize.width - 32, height: 100)
+        slideUpView.separatorStyle = .none
+        slideUpView.layer.cornerRadius = 20
+        delegate.window?.addSubview(slideUpView)
+        slideUpView.isScrollEnabled = false
+        slideUpView.delegate = self
+        slideUpView.dataSource = self
+        slideUpView.register(SlideUpViewCell.self, forCellReuseIdentifier: "SlideUpViewCell")
 //        setProfilePic()
 //        firstName.text = user.first_name
         // Do any additional setup after loading the view.
@@ -93,6 +120,35 @@ class profileVC: UIViewController {
         
         delegate.window?.layer.add(transition, forKey: kCATransition)
     }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches.first?.view == self.profilePic {
+            profilePic.layer.borderWidth = 4
+        }
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches.first?.view == self.profilePic {
+            profilePic.layer.borderWidth = 1
+        }
+    }
+    @IBAction func onPicLongHold(_ sender: Any) {
+        profilePic.layer.borderWidth = 1
+        if (containerView.alpha != 0) {
+            return
+        }
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .curveEaseInOut, animations: {
+            self.containerView.alpha = 0.8
+            self.slideUpView.frame = CGRect(x: 16, y: self.screenSize.height - 116, width: self.screenSize.width - 32, height: 100)
+        }, completion: nil)
+        
+    }
+    
+    @objc func slideUpViewTapped() {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .curveEaseInOut, animations: {
+            self.containerView.alpha = 0
+            self.slideUpView.frame = CGRect(x: 16, y: self.screenSize.height, width: self.screenSize.width - 32, height: 100)
+        }, completion: nil)
+        
+    }
     
     private func setProfilePic(){
         let urlString = "http://localhost:8080/profilePic"
@@ -113,4 +169,76 @@ class profileVC: UIViewController {
             }
         }.resume()
     }
+    
+    
+    @IBAction func onEditFirstName(_ sender: Any) {
+        performSegue(withIdentifier: "segueEditProfile", sender: "first_name")
+    }
+    
+    @IBAction func onEditLastName(_ sender: Any) {
+        performSegue(withIdentifier: "segueEditProfile", sender: "last_name")
+    }
+    
+    @IBAction func onEditEmail(_ sender: Any) {
+        performSegue(withIdentifier: "segueEditProfile", sender: "email")
+    }
+    
+    @IBAction func onEditPhoneNumber(_ sender: Any) {
+        performSegue(withIdentifier: "segueEditProfile", sender: "phone")
+    }
+    
+    @IBAction func onEditPassword(_ sender: Any) {
+        performSegue(withIdentifier: "segueEditProfile", sender: "password")
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! EditProfileVC
+        if let sender = sender as? String {
+            destinationVC.editType = sender
+            destinationVC.currentUser = currentUser
+        }
+    }
+    
+}
+
+extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        slideUpViewDataSource.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SlideUpViewCell", for: indexPath) as? SlideUpViewCell
+        else {fatalError("unable to deque SlideUpViewCell")}
+
+        cell.iconView.image = slideUpViewDataSource[indexPath.row]?.0
+        cell.labelView.text = slideUpViewDataSource[indexPath.row]?.1
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        50
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        slideUpViewTapped()
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
+        if indexPath.row == 0 && UIImagePickerController.isSourceTypeAvailable(.camera) {
+            imagePickerController.sourceType = .camera
+            self.present(imagePickerController, animated: true, completion: nil)
+        } else {
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+                imagePickerController.sourceType = .photoLibrary
+                self.present(imagePickerController, animated: true, completion: nil)
+            }
+        }
+    }
+        
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        profilePic.image = image
+        self.dismiss(animated: true, completion: nil)
+    }
+        
 }

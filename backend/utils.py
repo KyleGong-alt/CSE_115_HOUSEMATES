@@ -1,6 +1,6 @@
 from flask import jsonify
 import json
-
+import os
 
 #
 # encode response into JSON
@@ -53,3 +53,12 @@ def validate_json_request(correct_fields, request):
 
     result = True
     return result, desc
+
+
+def delete_dir_contents(dir):
+    for file_name in os.listdir(dir):
+        # construct full file path
+        file = os.path.join(dir,file_name)
+        if os.path.isfile(file):
+            print('Deleting file:', file)
+            os.remove(file)

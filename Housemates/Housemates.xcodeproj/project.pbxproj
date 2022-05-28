@@ -14,6 +14,8 @@
 		C7077AF2280F3EE100B52A0C /* DesignExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7077AF1280F3EE100B52A0C /* DesignExtension.swift */; };
 		C7077AF4280F3F2E00B52A0C /* FirstLastNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7077AF3280F3F2E00B52A0C /* FirstLastNameVC.swift */; };
 		C7077AF6280F469C00B52A0C /* EmailPhoneVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7077AF5280F469C00B52A0C /* EmailPhoneVC.swift */; };
+		C70F3C9E283DB6ED00E3BD98 /* AddRuleVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70F3C9D283DB6ED00E3BD98 /* AddRuleVC.swift */; };
+		C70F3CA0283DBF0700E3BD98 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70F3C9F283DBF0600E3BD98 /* EditProfileVC.swift */; };
 		C722BF612818B01100458FAC /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C722BF602818B01100458FAC /* HomeVC.swift */; };
 		C722BF632818F1AC00458FAC /* HomelessVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C722BF622818F1AC00458FAC /* HomelessVC.swift */; };
 		C722BF652819CF6B00458FAC /* YourChoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C722BF642819CF6B00458FAC /* YourChoreCell.swift */; };
@@ -35,11 +37,11 @@
 		C76F0FFD281F26FE0071C82A /* DimmingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FFC281F26FE0071C82A /* DimmingVC.swift */; };
 		C76F1003282049C10071C82A /* MemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F1002282049C10071C82A /* MemberCell.swift */; };
 		C79794BC282D99A20067BEBC /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79794BB282D99A20067BEBC /* TabBarController.swift */; };
-		C7CF5D2B2831D0AF00B315D6 /* NeedApprovalCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF5D2A2831D0AF00B315D6 /* NeedApprovalCell.swift */; };
 		C7CF5D2D2831D65800B315D6 /* RuleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF5D2C2831D65800B315D6 /* RuleCell.swift */; };
 		C7CF5D332834164D00B315D6 /* AddChoreMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF5D322834164D00B315D6 /* AddChoreMemberCell.swift */; };
 		C7D453B32825A35400DFBB83 /* AddChoresVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D453B22825A35300DFBB83 /* AddChoresVC.swift */; };
 		C7F9E52628344E8E007B3256 /* AddHouseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E52528344E8E007B3256 /* AddHouseVC.swift */; };
+		C7F9E528283800C3007B3256 /* SlideUpViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */; };
 		CC696BFB496AEE65886BDDA7 /* Pods_Housemates_HousematesUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BC5D0656B8B26E1442477C /* Pods_Housemates_HousematesUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -75,6 +77,8 @@
 		C7077AF1280F3EE100B52A0C /* DesignExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignExtension.swift; sourceTree = "<group>"; };
 		C7077AF3280F3F2E00B52A0C /* FirstLastNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstLastNameVC.swift; sourceTree = "<group>"; };
 		C7077AF5280F469C00B52A0C /* EmailPhoneVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailPhoneVC.swift; sourceTree = "<group>"; };
+		C70F3C9D283DB6ED00E3BD98 /* AddRuleVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRuleVC.swift; sourceTree = "<group>"; };
+		C70F3C9F283DBF0600E3BD98 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
 		C722BF602818B01100458FAC /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		C722BF622818F1AC00458FAC /* HomelessVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomelessVC.swift; sourceTree = "<group>"; };
 		C722BF642819CF6B00458FAC /* YourChoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourChoreCell.swift; sourceTree = "<group>"; };
@@ -100,11 +104,11 @@
 		C76F0FFC281F26FE0071C82A /* DimmingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimmingVC.swift; sourceTree = "<group>"; };
 		C76F1002282049C10071C82A /* MemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCell.swift; sourceTree = "<group>"; };
 		C79794BB282D99A20067BEBC /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
-		C7CF5D2A2831D0AF00B315D6 /* NeedApprovalCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedApprovalCell.swift; sourceTree = "<group>"; };
 		C7CF5D2C2831D65800B315D6 /* RuleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleCell.swift; sourceTree = "<group>"; };
 		C7CF5D322834164D00B315D6 /* AddChoreMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoreMemberCell.swift; sourceTree = "<group>"; };
 		C7D453B22825A35300DFBB83 /* AddChoresVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoresVC.swift; sourceTree = "<group>"; };
 		C7F9E52528344E8E007B3256 /* AddHouseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHouseVC.swift; sourceTree = "<group>"; };
+		C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideUpViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +143,8 @@
 			isa = PBXGroup;
 			children = (
 				1CA8CF67281B8EC0004AC253 /* profileVC.swift */,
+				C7F9E527283800C2007B3256 /* SlideUpViewCell.swift */,
+				C70F3C9F283DBF0600E3BD98 /* EditProfileVC.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -188,9 +194,9 @@
 				C722BF66281A213000458FAC /* ChoreHalfSheetVC.swift */,
 				C722BF68281A55E500458FAC /* AssignedMemberCell.swift */,
 				C76F0FFC281F26FE0071C82A /* DimmingVC.swift */,
-				C7CF5D2A2831D0AF00B315D6 /* NeedApprovalCell.swift */,
 				C7CF5D2C2831D65800B315D6 /* RuleCell.swift */,
 				C7F9E52528344E8E007B3256 /* AddHouseVC.swift */,
+				C70F3C9D283DB6ED00E3BD98 /* AddRuleVC.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -562,7 +568,6 @@
 				C76F0FF7281C8A5A0071C82A /* CustomSegue.swift in Sources */,
 				C7077AF4280F3F2E00B52A0C /* FirstLastNameVC.swift in Sources */,
 				C7077AF2280F3EE100B52A0C /* DesignExtension.swift in Sources */,
-				C7CF5D2B2831D0AF00B315D6 /* NeedApprovalCell.swift in Sources */,
 				C73FEBDF280DE8D100C11888 /* AppDelegate.swift in Sources */,
 				C7D453B32825A35400DFBB83 /* AddChoresVC.swift in Sources */,
 				C722BF612818B01100458FAC /* HomeVC.swift in Sources */,
@@ -573,6 +578,8 @@
 				C7CF5D332834164D00B315D6 /* AddChoreMemberCell.swift in Sources */,
 				C73FEC13280DF40600C11888 /* LoginVC.swift in Sources */,
 				1C6C6836280FA3BE006D3338 /* PasswordVC.swift in Sources */,
+				C7F9E528283800C3007B3256 /* SlideUpViewCell.swift in Sources */,
+				C70F3CA0283DBF0700E3BD98 /* EditProfileVC.swift in Sources */,
 				C7077AF6280F469C00B52A0C /* EmailPhoneVC.swift in Sources */,
 				C722BF69281A55E500458FAC /* AssignedMemberCell.swift in Sources */,
 				1CA8CF68281B8EC0004AC253 /* profileVC.swift in Sources */,
@@ -581,6 +588,7 @@
 				C79794BC282D99A20067BEBC /* TabBarController.swift in Sources */,
 				C76F0FF9281F1F590071C82A /* MembersVC.swift in Sources */,
 				C722BF67281A213000458FAC /* ChoreHalfSheetVC.swift in Sources */,
+				C70F3C9E283DB6ED00E3BD98 /* AddRuleVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -763,6 +771,8 @@
 				DEVELOPMENT_TEAM = 97A6A6Z9V4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Housemates/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access your camera to take photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Need access to photo library for profile pic";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -792,6 +802,8 @@
 				DEVELOPMENT_TEAM = 97A6A6Z9V4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Housemates/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access your camera to take photos";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Need access to photo library for profile pic";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

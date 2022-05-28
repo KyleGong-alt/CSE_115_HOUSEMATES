@@ -27,13 +27,13 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var unassignedchoreList = [chore]()
     var assignedchoreList = [chore]()
+    var choreAssigneesList = [[user]]()
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
         currentChoresTableView.delegate = self
         currentChoresTableView.dataSource = self
         unassignedChoresTableView.delegate = self
@@ -46,12 +46,27 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
+        
+        sortChoreList()
+        getChoreListAssignees()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.tabBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
         tabBarController?.tabBar.tintColor = UIColor.white
         navigationController?.navigationBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
+    }
+    
+    func getChoreListAssignees() {
+        choreAssigneesList.removeAll()
+        for chore in assignedchoreList {
+            getAssigneesChore(chore: chore)
+        }
+    }
+    
+    func sortChoreList() {
+        self.unassignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
+        self.assignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -100,9 +115,20 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             destinationVC.sheetPresentationController?.detents = [.medium(), .large()]
             let chore = sender as! chore
             destinationVC.chore = chore
+            destinationVC.parentVC = self
+            let assignedIndex = assignedchoreList.firstIndex(where: {$0.id == chore.id })
+            if assignedIndex != nil {
+                destinationVC.assignees = choreAssigneesList[assignedIndex!]
+                
+            }
         } else if segue.identifier == "segueAddChores" {
             let destinationVC = segue.destination as! AddChoresVC
             destinationVC.currentUser = self.currentUser
+            if let choreData = sender as? (chore: chore, assignees: [user]) {
+                destinationVC.isEditting = true
+                destinationVC.choreData = choreData
+            }
+            destinationVC.parentVC = self
         }
     }
     override func viewWillDisappear(_ animated: Bool) {
@@ -115,4 +141,29 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBAction func onAddChore(_ sender: Any) {
         performSegue(withIdentifier: "segueAddChores", sender: nil)
     }
+    
+    func getAssigneesChore(chore: chore){
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
+        components.queryItems = [
+            URLQueryItem(name: "chore_id", value: String(chore.id))
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:assigneeResponse
+            do {
+                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
+                self.choreAssigneesList.append(result.data ?? [])
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
 }
+
