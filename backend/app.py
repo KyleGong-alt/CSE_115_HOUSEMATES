@@ -58,9 +58,9 @@ def get_profile_pic():
     email = email.replace('@', '-')
     email = email.replace('.', '-')
     picFolder = os.path.join('./ProfilePics', email)
-    if not os.path.exists(picFolder):
-        os.mkdir(picFolder)
     if request.method == 'POST':
+        if not os.path.exists(picFolder):
+            os.mkdir(picFolder)
         utils.delete_dir_contents(picFolder)
         file = request.files['file']
         img_path = os.path.join(picFolder, file.filename)
