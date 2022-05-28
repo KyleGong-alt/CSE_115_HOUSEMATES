@@ -103,7 +103,7 @@ def add_chore(name, desc, due_date, house_code):
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
     return utils.encode_response(status='success', code=200, desc='create chore successful')
 
-def add_house_rules(title, description, house_code, voted_num):
+def add_house_rules(title, description, house_code, voted_num, valid):
 
     # check for duplicate house_rules
     dup_check = db.count_rows(table = 'house_rules', field='title', value=title)
@@ -116,7 +116,7 @@ def add_house_rules(title, description, house_code, voted_num):
         return utils.encode_response(status='failure', code=404, desc='house not found')
 
     # format the table by building sql string
-    sql_string = "INSERT INTO house_rules (title, description, house_code, voted_num) VALUES ('{}','{}','{}','{}')".format(title, description, house_code, voted_num)
+    sql_string = """INSERT INTO house_rules (title, description, house_code, voted_num, valid) VALUES ("{}","{}","{}","{}","{}")""".format(title, description, house_code, voted_num, valid)
 
     #save the formated string
     result = db.db_insert(sql_string)
