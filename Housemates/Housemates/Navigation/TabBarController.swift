@@ -32,7 +32,7 @@ class TabBarController: UITabBarController {
             vc.currentUser = self.currentUser
         }
         
-        let nc2 = self.viewControllers?[2] as? UINavigationController
+        let nc2 = self.viewControllers?[1] as? UINavigationController
         
         if let vc = nc2?.viewControllers[0] as? profileVC {
             vc.currentUser = self.currentUser
@@ -57,7 +57,7 @@ class TabBarController: UITabBarController {
             }
             break
         case .right:
-            if selectedIndex < 3 {
+            if selectedIndex < 2 {
                 self.selectedIndex = self.selectedIndex + 1
             }
             break

@@ -36,11 +36,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let parentVC = self.parentVC as? ChoresVC {
-            print("CHORESVC")
-        } else if let parentVC = self.parentVC as? HomeVC{
-            print("HOMEVC")
-        }
 
         titleTextField.delegate = self
         setBottomBorder(textfield: titleTextField)
@@ -148,11 +143,15 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         
         let templateDateFormatter = DateFormatter()
 
-//        templateDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        templateDateFormatter.dateFormat = "MMMM dd yyyy hh:mma"
+        templateDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        //templateDateFormatter.dateFormat = "MMMM dd yyyy hh:mma"
         let date = templateDateFormatter.string(from: datePicker.date)
         
-        createChore(name: titleTextField.text!, desc: descriptionTextView.text!, due_date: date, house_code: currentUser!.house_code!)
+        if isEditting, let chore = choreData?.chore{
+            editChore(chore_id: chore.id, name: titleTextField.text!, desc: descriptionTextView.text!, due_date: date, house_code: currentUser!.house_code!)
+        } else {
+            createChore(name: titleTextField.text!, desc: descriptionTextView.text!, due_date: date, house_code: currentUser!.house_code!)
+        }
         dismiss(animated: true, completion: nil)
     }
     
@@ -266,6 +265,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             "house_code": house_code,
             "assignees": list_id_selected
         ]
+        print(parameters)
         
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         request.httpBody = httpBody
@@ -296,5 +296,88 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             }
         }
         dataTask.resume()
+    }
+    func editChore(chore_id: Int, name: String, desc: String, due_date: String, house_code: String) {
+        let url = URL(string: "http://127.0.0.1:8080/edit_chore")!
+        
+        var request = URLRequest(url: url)
+        
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.httpMethod = "PUT"
+        
+        var list_id_selected = [Int]()
+        for i in 0..<selectedList.count {
+            if selectedList[i] {
+                list_id_selected.append(memberList[i].id)
+            }
+        }
+        let parameters: [String: Any] = [
+            "chore_id": chore_id,
+            "name": name,
+            "description": desc,
+            "due_date": due_date,
+            "house_code": house_code,
+            "assignees": list_id_selected
+        ]
+        
+        let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        request.httpBody = httpBody
+        request.timeoutInterval = 20
+        print(list_id_selected)
+        let dataTask = URLSession.shared.dataTask(with: request) { [self] data, response, error in
+            var result:postResponse
+            do {
+                result = try JSONDecoder().decode(postResponse.self, from: data!)
+                print(result)
+                if result.code != 200 {
+                    print(result)
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.updateParentChoreList()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    
+    func updateParentChoreList() {
+        let toDateFormatter = DateFormatter()
+        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        let date = toDateFormatter.string(from: datePicker.date)
+        
+        if let parentVC = self.parentVC as? ChoresVC {
+            if let choreIndex = parentVC.assignedchoreList.firstIndex(where: {$0.id == choreData!.chore.id}) {
+                if selectedList.contains(where: {$0 == true}) {
+                    parentVC.assignedchoreList[choreIndex] = chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text)
+                } else {
+                    parentVC.assignedchoreList.remove(at: choreIndex)
+                    parentVC.unassignedchoreList.append(chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text))
+                }
+            } else if let choreIndex = parentVC.unassignedchoreList.firstIndex(where: {$0.id == choreData!.chore.id}) {
+                if selectedList.contains(where: {$0 == true}) {
+                    parentVC.unassignedchoreList.remove(at: choreIndex)
+                    parentVC.assignedchoreList.append(chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text))
+                } else {
+                    parentVC.unassignedchoreList[choreIndex] = chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text)
+                }
+            }
+            parentVC.sortChoreList()
+            parentVC.getChoreListAssignees()
+            parentVC.currentChoresTableView.reloadData()
+            parentVC.unassignedChoresTableView.reloadData()
+        } else if let parentVC = self.parentVC as? HomeVC{
+//            if let choreIndex =  parentVC.choreList.firstIndex(where: {$0.id == choreData!.chore.id}) {
+//                parentVC.choreList[choreIndex] = chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text)
+//                parentVC.choreTableView.reloadData()
+//                parentVC.getAssigneesForChoreList()
+//                parentVC.getChoreByUser(userID: String(currentUser!.id))
+//            }
+            parentVC.getChoreByUser(userID: String(currentUser!.id))
+            parentVC.getChoreByHouseCode(houseCode: currentUser!.house_code!)
+        }
     }
 }
