@@ -41,7 +41,6 @@ class profileVC: UIViewController {
     var currentUser: user?
     override func viewDidLoad() {
         super.viewDidLoad()
-        testing = "profile"
         profilePic.layer.masksToBounds = true
         profilePic.layer.cornerRadius = profilePic.bounds.width/2
         profilePic.layer.borderWidth = 1
@@ -170,36 +169,6 @@ class profileVC: UIViewController {
             }
         }.resume()
     }
-    
-    
-    @IBAction func onEditFirstName(_ sender: Any) {
-        performSegue(withIdentifier: "segueEditProfile", sender: "first_name")
-    }
-    
-    @IBAction func onEditLastName(_ sender: Any) {
-        performSegue(withIdentifier: "segueEditProfile", sender: "last_name")
-    }
-    
-    @IBAction func onEditEmail(_ sender: Any) {
-        performSegue(withIdentifier: "segueEditProfile", sender: "email")
-    }
-    
-    @IBAction func onEditPhoneNumber(_ sender: Any) {
-        performSegue(withIdentifier: "segueEditProfile", sender: "phone")
-    }
-    
-    @IBAction func onEditPassword(_ sender: Any) {
-        performSegue(withIdentifier: "segueEditProfile", sender: "password")
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let destinationVC = segue.destination as! EditProfileVC
-        if let sender = sender as? String {
-            destinationVC.editType = sender
-            destinationVC.currentUser = currentUser
-        }
-    }
-    
 }
 
 extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -235,6 +204,8 @@ extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerCo
             }
         }
     }
+        
+        
         
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage

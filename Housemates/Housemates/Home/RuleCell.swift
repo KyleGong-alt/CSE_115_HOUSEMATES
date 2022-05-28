@@ -9,13 +9,7 @@ import UIKit
 
 class RuleCell: UITableViewCell {
 
-    
-    @IBOutlet weak var ruleTitle: UILabel!
-    @IBOutlet weak var ruleDescription: UITextView!
-    @IBOutlet weak var ruleView: UIView!
-    @IBOutlet weak var approveButton: UIButton!
-    @IBOutlet weak var unapproveButton: UIButton!
-    var rule: rule?
+    @IBOutlet var ruleDescription: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -26,4 +20,5 @@ class RuleCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+
 }

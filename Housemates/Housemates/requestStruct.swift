@@ -15,6 +15,13 @@ struct chore: Codable {
     let description: String?
 }
 
+struct choreResponse: Codable{
+    let status: String
+    let code: Int
+    let description: String
+    let data: [chore]?
+}
+
 struct user: Codable {
     let id: Int
     let first_name: String
@@ -23,28 +30,6 @@ struct user: Codable {
     let mobile_number: String
     let email: String
     let password: String
-}
-
-struct rule: Codable {
-    let id: Int
-    let title: String
-    let description: String
-    let voted_num: Int
-}
-
-struct ruleResponse: Codable {
-    let status: String
-    let code: Int
-    let description: String
-    let data: [rule]?
-}
-
-
-struct choreResponse: Codable{
-    let status: String
-    let code: Int
-    let description: String
-    let data: [chore]?
 }
 
 struct userResponse: Codable{
@@ -73,4 +58,3 @@ struct chorePostResponse: Codable {
     let description: String
     let data: chore
 }
-

@@ -17,7 +17,6 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
     @IBOutlet var membersTableView: UITableView!
     @IBOutlet var dateLabel: UILabel!
     
-    var parentVC: UIViewController?
     var chore: chore!
     var assignees = [user]()
     var toDateFormatter = DateFormatter()
@@ -66,10 +65,5 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
     @IBAction func onCheck(_ sender: Any) {
         animateCheck()
     }
-    @IBAction func onEdit(_ sender: Any) {
-        self.dismiss(animated: true) {
-            let choreData = (chore: self.chore, assignees: self.assignees)
-            self.parentVC?.performSegue(withIdentifier: "segueAddChores", sender: choreData)
-        }
-    }
+    
 }

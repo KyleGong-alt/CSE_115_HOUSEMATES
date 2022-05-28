@@ -155,10 +155,6 @@ def add_chore(name, desc, due_date, house_code, assignees):
     # return encoded response
     if (not result1) or (not result):
         return utils.encode_response(status='failure', code=601, desc='unable to create chore')
-
-    date_time = result['due_date'].strftime('%Y-%m-%d %H:%M:%S')
-    result['due_date'] = date_time
-
     return utils.encode_response(status='success', code=200, desc='create chore successful', data=result)
 
 def add_house_rules(title, description, house_code, voted_num):
@@ -254,53 +250,20 @@ def get_chores(house_code):
 
 #
 # edit chore
-# assignees: optional list of user_id's to assign to the chore
-# if assignees: remove all current assignments not in list & assign users that are in the list
 #
-def edit_chore(chore_id, name, due_date, description, assignees, house_code):
-
-    # check if chore exists before updating
+def edit_chore(chore_id, name, due_date, description):
     dup_check = db.count_rows('chores', 'id', chore_id)
     if dup_check < 1:
         return utils.encode_response(status='failure', code=600, desc="chore doesn't exist")
 
-    # build chore update string
-    update_string = "UPDATE chores SET name = '{}', due_date = '{}', description = '{}' " \
-                    "WHERE id = '{}'".format(name, due_date, description, chore_id)
+    # build sql string
+    sql_string = "UPDATE chores SET name = '{}', due_date = '{}', description = '{}' " \
+                 "WHERE id = '{}'".format(name, due_date, description, chore_id)
 
     # update chore info
-    data = db.db_insert(update_string)
+    data = db.db_insert(sql_string)
     if not data:
         return utils.encode_response(status='failure', code=601, desc='unable to update chore')
-
-    # get current users assigned to chore
-    get_assignees_sql = "SELECT user_id FROM chores_assignee WHERE chore_id = '{}'".format(chore_id)
-    result = db.db_query(get_assignees_sql, many=True)
-
-    # extract user_id's from sql result
-    curr_assignees = [assignee_dict['user_id'] for assignee_dict in result if 'user_id' in assignee_dict]
-
-    # get the user ids that should be unassigned, i.e. users that aren't in the assignees list
-    unassign_ids = [user for user in curr_assignees if user not in assignees]
-
-    # get the user ids that need to be assigned & skip users that are already assigned
-    assign_ids = [user for user in assignees if user not in curr_assignees]
-
-    # unassign users from chore
-    for user_id in unassign_ids:
-        result = unassign_chore(user_id, chore_id)
-        # return on failed unassignment
-        if '"status": "failure"' in result.get_data(as_text=True):
-            return result
-
-    # assign users to chore
-    for user_id in assign_ids:
-        result = assign_chore(user_id, chore_id, house_code)
-        # return on failed assignment
-        if '"status": "failure"' in result.get_data(as_text=True):
-            return result
-
-    # return response
     return utils.encode_response(status='success', code=200, desc='successfully updated chore')
 
 #
@@ -493,85 +456,3 @@ def edit_house_rules(rule_id, title, description):
 
     # return encoded response
     return utils.encode_response(status='success', code=200, desc='house rule update successful')
-
-#
-# Run through all house rules of a given house_code and validate whether they're valid
-# return -1 for errors
-# return 0 for empty house
-# return 1 fo success
-#
-def validate_rules(house_code):
-    # validate approved rules
-    sql_string = "SELECT COUNT(*) FROM users WHERE house_code = '{}'".format(house_code)
-    sql_string1 = "SELECT id, voted_num FROM house_rules WHERE house_code = '{}'".format(house_code)
-
-    count = db.db_query(sql_string)
-    rules = db.db_query(sql_string1, many=True)
-
-    # error while getting number of house members/ house_code doesn't exist
-    if not count or not rules:
-        return -1
-
-    num_member = count['COUNT(*)']
-
-    # empty house :(
-    if num_member <= 0:
-        return 0
-
-    # go through each house_rules id and update valid column
-    for rule in rules:
-        voted_num = rule['voted_num']
-        if (voted_num/num_member) >= 0.5:
-            sql_string = "UPDATE house_rules SET valid = 1 WHERE id = {}".format(rule['id'])
-        else:
-            sql_string = "UPDATE house_rules SET valid = 0 WHERE id = {}".format(rule['id'])
-
-        #update the house rule
-        result = db.db_insert(sql_string)
-
-        # validate the update
-        if not result:
-            return -1
-    return 1
-
-#
-# given house_code, return approved house rules
-#
-def get_approved_house_rules(house_code):
-
-    # validate_rules(house_code)
-
-    # build sql string
-    sql_string = "SELECT id, title, description, voted_num FROM house_rules WHERE house_code = '{}' AND valid = 1".format(house_code)
-
-    # fetch house rules from DB
-    data = db.db_query(sql_string, many=True)
-
-    # Check if house rules is present
-    if not data:
-        return utils.encode_response(status='failure', code=404, desc='no approved rules found')
-
-    # return encoded response
-    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
-    return response
-
-#
-# given house_code, return approved house rules
-#
-def get_not_approved_house_rules(house_code):
-
-    # validate_rules(house_code)
-
-    # build sql string
-    sql_string = "SELECT id, title, description, voted_num FROM house_rules WHERE house_code = '{}' AND valid = 0".format(house_code)
-
-    # fetch house rules from DB
-    data = db.db_query(sql_string, many=True)
-
-    # Check if house rules is present
-    if not data:
-        return utils.encode_response(status='failure', code=404, desc='no unapproved rules found')
-
-    # return encoded response
-    response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
-    return response
