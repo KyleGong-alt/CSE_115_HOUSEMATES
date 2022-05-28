@@ -41,7 +41,6 @@ class profileVC: UIViewController {
     var currentUser: user?
     override func viewDidLoad() {
         super.viewDidLoad()
-        testing = "profile"
         profilePic.layer.masksToBounds = true
         profilePic.layer.cornerRadius = profilePic.bounds.width/2
         profilePic.layer.borderWidth = 1
@@ -94,7 +93,7 @@ class profileVC: UIViewController {
         slideUpView.delegate = self
         slideUpView.dataSource = self
         slideUpView.register(SlideUpViewCell.self, forCellReuseIdentifier: "SlideUpViewCell")
-//        setProfilePic()
+        setProfilePic(currentUser!.email)
 //        firstName.text = user.first_name
         // Do any additional setup after loading the view.
     }
@@ -150,8 +149,8 @@ class profileVC: UIViewController {
         
     }
     
-    private func setProfilePic(){
-        let urlString = "http://localhost:8080/profilePic"
+    private func setProfilePic(_ email: String){
+        let urlString = "http://localhost:8080/profilePic?email="+email
         guard let url = URL(string: urlString) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if error != nil {
@@ -165,6 +164,7 @@ class profileVC: UIViewController {
             }
 
             DispatchQueue.main.async {
+                print("SWITCHING PROFILE PIC")
                 self.profilePic.image = UIImage(data: data!)
             }
         }.resume()
