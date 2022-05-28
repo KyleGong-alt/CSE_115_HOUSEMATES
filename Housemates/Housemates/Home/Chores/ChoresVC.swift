@@ -47,17 +47,26 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
         
-        self.unassignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
-        self.assignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
-        for chore in assignedchoreList {
-            getAssigneesChore(chore: chore)
-        }
+        sortChoreList()
+        getChoreListAssignees()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.tabBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
         tabBarController?.tabBar.tintColor = UIColor.white
         navigationController?.navigationBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
+    }
+    
+    func getChoreListAssignees() {
+        choreAssigneesList.removeAll()
+        for chore in assignedchoreList {
+            getAssigneesChore(chore: chore)
+        }
+    }
+    
+    func sortChoreList() {
+        self.unassignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
+        self.assignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -106,14 +115,19 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             destinationVC.sheetPresentationController?.detents = [.medium(), .large()]
             let chore = sender as! chore
             destinationVC.chore = chore
-            
+            destinationVC.parentVC = self
             let assignedIndex = assignedchoreList.firstIndex(where: {$0.id == chore.id })
             if assignedIndex != nil {
                 destinationVC.assignees = choreAssigneesList[assignedIndex!]
+                
             }
         } else if segue.identifier == "segueAddChores" {
             let destinationVC = segue.destination as! AddChoresVC
             destinationVC.currentUser = self.currentUser
+            if let choreData = sender as? (chore: chore, assignees: [user]) {
+                destinationVC.isEditting = true
+                destinationVC.choreData = choreData
+            }
             destinationVC.parentVC = self
         }
     }

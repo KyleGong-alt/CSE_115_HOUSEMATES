@@ -20,8 +20,9 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     @IBOutlet var datePicker: UIDatePicker!
     @IBOutlet var assignTopView: UIView!
     @IBOutlet weak var memberTableView: UITableView!
+    @IBOutlet weak var addButton: UIButton!
     
-    var parentVC: ChoresVC?
+    var parentVC: UIViewController?
     
     let dateFormatter = DateFormatter()
     var dateHidden = true
@@ -30,6 +31,9 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     var currentUser: user?
     var memberList = [user]()
     var selectedList = [Bool]()
+    var isEditting = false
+    var choreData: (chore: chore, assignees: [user])?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -39,8 +43,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         descriptionTextView.delegate = self
         descriptionTextView.layer.cornerRadius = 13
         descriptionTextView.contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        descriptionTextView.text = "Add a Description"
-        descriptionTextView.textColor = UIColor.lightGray
         
         dateTopView.layer.cornerRadius = 13
         dateTopView.layer.borderWidth = 1
@@ -57,10 +59,30 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         let date = Date()
         dateFormatter.dateStyle = DateFormatter.Style.long
         dateFormatter.timeStyle = DateFormatter.Style.short
-        dateButton.setTitle(dateFormatter.string(from: date), for: .normal)
         dateBottomView.isHidden = true
         datePicker.layer.isHidden = true
         datePicker.minimumDate = date
+        
+        if isEditting {
+            if let chore = choreData?.chore {
+                titleTextField.text = chore.name
+                descriptionTextView.text = chore.description
+                if descriptionTextView.text == "Add a Description" {
+                    descriptionTextView.textColor = UIColor.lightGray
+                }
+                let toDateFormatter = DateFormatter()
+                toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+                if let dateFromString = toDateFormatter.date(from: chore.due_date) {
+                    datePicker.date = dateFromString
+                    dateButton.setTitle(dateFormatter.string(from: dateFromString), for: .normal)
+                }
+            }
+            addButton.setTitle("Done", for: .normal)
+        } else {
+            descriptionTextView.text = "Add a Description"
+            descriptionTextView.textColor = UIColor.lightGray
+            dateButton.setTitle(dateFormatter.string(from: date), for: .normal)
+        }
         
         memberTableView.layer.cornerRadius = 13
         memberTableView.layer.borderWidth = 1
@@ -82,6 +104,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             textView.textColor = UIColor.black
         }
     }
+    
     func textViewDidEndEditing(_ textView: UITextView) {
         if descriptionTextView.text.isEmpty {
             descriptionTextView.text = "Add a Description"
@@ -120,11 +143,15 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         
         let templateDateFormatter = DateFormatter()
 
-//        templateDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        templateDateFormatter.dateFormat = "MMMM dd yyyy hh:mma"
+        templateDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        //templateDateFormatter.dateFormat = "MMMM dd yyyy hh:mma"
         let date = templateDateFormatter.string(from: datePicker.date)
         
-        createChore(name: titleTextField.text!, desc: descriptionTextView.text!, due_date: date, house_code: currentUser!.house_code!)
+        if isEditting, let chore = choreData?.chore{
+            editChore(chore_id: chore.id, name: titleTextField.text!, desc: descriptionTextView.text!, due_date: date, house_code: currentUser!.house_code!)
+        } else {
+            createChore(name: titleTextField.text!, desc: descriptionTextView.text!, due_date: date, house_code: currentUser!.house_code!)
+        }
         dismiss(animated: true, completion: nil)
     }
     
@@ -145,6 +172,11 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         
         let member = memberList[indexPath.row]
         cell.memberName.text = member.first_name + " " + member.last_name
+        if self.selectedList[indexPath.row] {
+            cell.memberName.textColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)
+            cell.memberImage.layer.borderWidth = 2
+            cell.memberImage.layer.borderColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1).cgColor
+        }
         return cell
     }
     
@@ -190,8 +222,16 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                     return
                 }
                 self.memberList = result.data ?? []
-                for _ in 0..<self.memberList.count {
-                    self.selectedList.append(false)
+                for member in self.memberList {
+                    if self.isEditting, let assignees = self.choreData?.assignees {
+                        if assignees.contains(where: {$0.id == member.id}) {
+                            self.selectedList.append(true)
+                        } else {
+                            self.selectedList.append(false)
+                        }
+                    } else {
+                        self.selectedList.append(false)
+                    }
                 }
                 DispatchQueue.main.async {
                     self.memberTableView.reloadData()
@@ -225,6 +265,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             "house_code": house_code,
             "assignees": list_id_selected
         ]
+        print(parameters)
         
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         request.httpBody = httpBody
@@ -240,12 +281,14 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                     return
                 }
                 DispatchQueue.main.async {
-                    if list_id_selected.isEmpty {
-                        self.parentVC?.unassignedchoreList.append(result.data)
-                        self.parentVC?.unassignedChoresTableView.reloadData()
-                    } else {
-                        self.parentVC?.assignedchoreList.append(result.data)
-                        self.parentVC?.currentChoresTableView.reloadData()
+                    if let parentVC = self.parentVC as? ChoresVC{
+                        if list_id_selected.isEmpty {
+                            parentVC.unassignedchoreList.append(result.data)
+                            parentVC.unassignedChoresTableView.reloadData()
+                        } else {
+                            parentVC.assignedchoreList.append(result.data)
+                            parentVC.currentChoresTableView.reloadData()
+                        }
                     }
                 }
             } catch {
@@ -253,5 +296,88 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             }
         }
         dataTask.resume()
+    }
+    func editChore(chore_id: Int, name: String, desc: String, due_date: String, house_code: String) {
+        let url = URL(string: "http://127.0.0.1:8080/edit_chore")!
+        
+        var request = URLRequest(url: url)
+        
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.httpMethod = "PUT"
+        
+        var list_id_selected = [Int]()
+        for i in 0..<selectedList.count {
+            if selectedList[i] {
+                list_id_selected.append(memberList[i].id)
+            }
+        }
+        let parameters: [String: Any] = [
+            "chore_id": chore_id,
+            "name": name,
+            "description": desc,
+            "due_date": due_date,
+            "house_code": house_code,
+            "assignees": list_id_selected
+        ]
+        
+        let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        request.httpBody = httpBody
+        request.timeoutInterval = 20
+        print(list_id_selected)
+        let dataTask = URLSession.shared.dataTask(with: request) { [self] data, response, error in
+            var result:postResponse
+            do {
+                result = try JSONDecoder().decode(postResponse.self, from: data!)
+                print(result)
+                if result.code != 200 {
+                    print(result)
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.updateParentChoreList()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    
+    func updateParentChoreList() {
+        let toDateFormatter = DateFormatter()
+        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        let date = toDateFormatter.string(from: datePicker.date)
+        
+        if let parentVC = self.parentVC as? ChoresVC {
+            if let choreIndex = parentVC.assignedchoreList.firstIndex(where: {$0.id == choreData!.chore.id}) {
+                if selectedList.contains(where: {$0 == true}) {
+                    parentVC.assignedchoreList[choreIndex] = chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text)
+                } else {
+                    parentVC.assignedchoreList.remove(at: choreIndex)
+                    parentVC.unassignedchoreList.append(chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text))
+                }
+            } else if let choreIndex = parentVC.unassignedchoreList.firstIndex(where: {$0.id == choreData!.chore.id}) {
+                if selectedList.contains(where: {$0 == true}) {
+                    parentVC.unassignedchoreList.remove(at: choreIndex)
+                    parentVC.assignedchoreList.append(chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text))
+                } else {
+                    parentVC.unassignedchoreList[choreIndex] = chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text)
+                }
+            }
+            parentVC.sortChoreList()
+            parentVC.getChoreListAssignees()
+            parentVC.currentChoresTableView.reloadData()
+            parentVC.unassignedChoresTableView.reloadData()
+        } else if let parentVC = self.parentVC as? HomeVC{
+//            if let choreIndex =  parentVC.choreList.firstIndex(where: {$0.id == choreData!.chore.id}) {
+//                parentVC.choreList[choreIndex] = chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text)
+//                parentVC.choreTableView.reloadData()
+//                parentVC.getAssigneesForChoreList()
+//                parentVC.getChoreByUser(userID: String(currentUser!.id))
+//            }
+            parentVC.getChoreByUser(userID: String(currentUser!.id))
+            parentVC.getChoreByHouseCode(houseCode: currentUser!.house_code!)
+        }
     }
 }
