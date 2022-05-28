@@ -74,3 +74,42 @@ struct chorePostResponse: Codable {
     let data: chore
 }
 
+
+var currentUser: user?
+//var choreList = [chore]()
+//var choreAssigneesList = [[user]]()
+//var unassignedChoreList = [chore]()
+//var assignedchoreList = [chore]()
+//var approvedRuleList = [rule]()
+//var unapprovedRuleList = [rule]()
+var memberList = [user]()
+
+func getHouseMembers() {
+    var components = URLComponents(string: "http://127.0.0.1:8080/get_house_members")!
+    components.queryItems = [
+        URLQueryItem(name: "house_code", value: currentUser?.house_code)
+    ]
+    components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+    
+    var request = URLRequest(url: components.url!)
+
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+    request.httpMethod = "GET"
+    let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+        var result:multiUserResponse
+        do {
+            result = try JSONDecoder().decode(multiUserResponse.self, from: data!)
+            
+            if result.code != 200 {
+                return
+            }
+            
+            memberList = result.data ?? []
+            
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    dataTask.resume()
+}

@@ -59,7 +59,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             print(user)
             let main = UIStoryboard(name: "Main", bundle: nil)
             let tabBarNavigation = main.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
-            tabBarNavigation.currentUser = user
+            currentUser = user
             self.window?.rootViewController = tabBarNavigation
         } else {
             print("NO")

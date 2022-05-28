@@ -9,8 +9,6 @@ import UIKit
 
 class HomelessVC: UIViewController {
     
-    var currentUser: user?
-    
     @IBOutlet weak var addHouseButton: UIButton!
     
     override func viewDidLoad() {
@@ -27,7 +25,6 @@ class HomelessVC: UIViewController {
         if segue.identifier == "segueAddHouse" {
             let destinationNC =  segue.destination as! UINavigationController
             let destinationVC = destinationNC.viewControllers[0] as? AddHouseVC
-            destinationVC?.currentUser = self.currentUser
         }
     }
     

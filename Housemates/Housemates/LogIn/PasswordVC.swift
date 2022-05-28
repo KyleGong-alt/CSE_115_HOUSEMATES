@@ -71,7 +71,7 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! TabBarController
-        destinationVC.currentUser = sender as? user
+        currentUser = sender as? user
     }
     
     func signup(firstName: String, lastName: String, email: String, phone: String, password: String) {

@@ -11,8 +11,7 @@ class AddRuleVC: UIViewController, UITextFieldDelegate, UITextViewDelegate {
 
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var descriptionTextField: UITextView!
-    
-    var currentUser: user?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         titleTextField.delegate = self
