@@ -23,17 +23,26 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet var currentChoresTableView: UITableView!
     @IBOutlet var unassignedChoresTableView: UITableView!
     
-    var currentUser: user?
-    
+    var choreList = [chore]()
     var unassignedchoreList = [chore]()
     var assignedchoreList = [chore]()
-    var choreAssigneesList = [[user]]()
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        overrideUserInterfaceStyle = .light
+        self.view.addSubview(loadingIndicator)
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            loadingIndicator.widthAnchor.constraint(equalToConstant: 50),
+            loadingIndicator.heightAnchor.constraint(equalTo: self.loadingIndicator.widthAnchor)
+        ])
+        
+        loadingIndicator.isAnimating = true
         currentChoresTableView.delegate = self
         currentChoresTableView.dataSource = self
         unassignedChoresTableView.delegate = self
@@ -43,24 +52,39 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         setBottomBorder(label: unassignedChoresLabel, height: 8, color: UIColor.white.cgColor)
         
+        currentChoresTableView.isHidden = true
+        unassignedChoresTableView.isHidden = true
+        currentChoresLabel.isHidden = true
+        unassignedChoresLabel.isHidden = true
+        
         toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
-        
-        sortChoreList()
-        getChoreListAssignees()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.tabBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
         tabBarController?.tabBar.tintColor = UIColor.white
         navigationController?.navigationBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
+        getChoreByHouseCode(houseCode: currentUser!.house_code!)
     }
     
-    func getChoreListAssignees() {
-        choreAssigneesList.removeAll()
-        for chore in assignedchoreList {
-            getAssigneesChore(chore: chore)
+    let loadingIndicator: ProgressView = {
+        let progress = ProgressView(colors: [.white], lineWidth: 5)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
+    
+    func doneLoading() {
+        if (choreList.count == unassignedchoreList.count + assignedchoreList.count) {
+            loadingIndicator.isAnimating = false
+            sortChoreList()
+            self.currentChoresTableView.reloadData()
+            self.unassignedChoresTableView.reloadData()
+            self.currentChoresTableView.isHidden = false
+            self.unassignedChoresTableView.isHidden = false
+            currentChoresLabel.isHidden = false
+            unassignedChoresLabel.isHidden = false
         }
     }
     
@@ -116,14 +140,8 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let chore = sender as! chore
             destinationVC.chore = chore
             destinationVC.parentVC = self
-            let assignedIndex = assignedchoreList.firstIndex(where: {$0.id == chore.id })
-            if assignedIndex != nil {
-                destinationVC.assignees = choreAssigneesList[assignedIndex!]
-                
-            }
         } else if segue.identifier == "segueAddChores" {
             let destinationVC = segue.destination as! AddChoresVC
-            destinationVC.currentUser = self.currentUser
             if let choreData = sender as? (chore: chore, assignees: [user]) {
                 destinationVC.isEditting = true
                 destinationVC.choreData = choreData
@@ -142,7 +160,37 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         performSegue(withIdentifier: "segueAddChores", sender: nil)
     }
     
-    func getAssigneesChore(chore: chore){
+    func getChoreByHouseCode(houseCode: String) {
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_chores_by_house_code")!
+        components.queryItems = [
+            URLQueryItem(name: "house_code", value: houseCode)
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:choreResponse
+            do {
+                result = try JSONDecoder().decode(choreResponse.self, from: data!)
+                //print(result)
+                self.choreList = result.data ?? []
+                self.unassignedchoreList.removeAll()
+                self.assignedchoreList.removeAll()
+                for chore in self.choreList {
+                    self.getAssignees(chore: chore)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    
+    func getAssignees(chore: chore){
         var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
         components.queryItems = [
             URLQueryItem(name: "chore_id", value: String(chore.id))
@@ -158,7 +206,14 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             var result:assigneeResponse
             do {
                 result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
-                self.choreAssigneesList.append(result.data ?? [])
+                if ((result.data?.count ?? 0) != 0) {
+                    self.assignedchoreList.append(chore)
+                } else {
+                    self.unassignedchoreList.append(chore)
+                }
+                DispatchQueue.main.async {
+                    self.doneLoading()
+                }
             } catch {
                 print(error.localizedDescription)
             }

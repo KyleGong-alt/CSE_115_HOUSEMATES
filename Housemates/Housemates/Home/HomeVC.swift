@@ -19,20 +19,28 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet var rulesView: UIView!
     @IBOutlet var ruleTitleLabel: UILabel!
     @IBOutlet var addRuleButton: UIButton!
-    var currentUser: user?
 
     var choreList = [chore]()
-    var choreAssigneesList = [[user]]()
-    var unassignedchoreList = [chore]()
-    var assignedchoreList = [chore]()
     var approvedRuleList = [rule]()
     var unapprovedRuleList = [rule]()
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
+    var loaded = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        overrideUserInterfaceStyle = .light
+        self.view.addSubview(loadingIndicator)
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            loadingIndicator.widthAnchor.constraint(equalToConstant: 50),
+            loadingIndicator.heightAnchor.constraint(equalTo: self.loadingIndicator.widthAnchor)
+        ])
+        
+        loadingIndicator.isAnimating = true
+
         setBottomBorder(label: currentChoreLabel, height: 8, color: UIColor.white.cgColor)
         setBottomBorder(label: ruleTitleLabel, height: 8, color: UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1).cgColor)
         
@@ -41,6 +49,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         choresView.layer.shadowOpacity = 0.5
         choresView.layer.shadowOffset = .zero
         choresView.layer.shadowRadius = 10
+        choresView.isHidden = true
         
         ruleTableView.delegate = self
         ruleTableView.dataSource = self
@@ -52,7 +61,9 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         rulesView.layer.shadowOpacity = 0.3
         rulesView.layer.shadowOffset = .zero
         rulesView.layer.shadowRadius = 10
+        rulesView.isHidden = true
         ruleTableView.layer.cornerRadius = 13
+
         
         addRuleButton.layer.cornerRadius = 40/2
         addRuleButton.layer.zPosition = 3
@@ -61,12 +72,31 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
     }
+    
+    let loadingIndicator: ProgressView = {
+        let progress = ProgressView(colors: [UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)], lineWidth: 5)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
+    
+    func doneLoading() {
+        if loaded == 3 {
+            loadingIndicator.isAnimating = false
+            self.sortChoreList()
+            self.choreTableView.reloadData()
+            self.ruleTableView.reloadData()
+            self.rulesView.isHidden = false
+            self.choresView.isHidden = false
+            self.loaded = 0
+        }
+    }
+    
+    
     override func viewWillAppear(_ animated: Bool) {
         getApprovedRules()
         getUnapprovedRules()
         
         getChoreByUser(userID: String(currentUser!.id))
-        getChoreByHouseCode(houseCode: currentUser!.house_code!)
     }
     
     func findRuleWithIndex(index: Int) -> rule {
@@ -148,15 +178,11 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let chore = choreList[indexPath.row] as chore
             destinationVC.chore = chore
             destinationVC.parentVC = self
-            destinationVC.assignees = choreAssigneesList[indexPath.row]
+//            destinationVC.assignees = choreAssigneesList[indexPath.row]
         } else if segue.identifier == "segueAllChore" {
             let destinationVC = segue.destination as! ChoresVC
-            destinationVC.currentUser = self.currentUser
-            destinationVC.unassignedchoreList = self.unassignedchoreList
-            destinationVC.assignedchoreList = self.assignedchoreList
         } else if segue.identifier == "segueAddChores" {
             let destinationVC = segue.destination as! AddChoresVC
-            destinationVC.currentUser = self.currentUser
             destinationVC.parentVC = self
             destinationVC.isEditting = true
             if let choreData = sender as? (chore: chore, assignees: [user]) {
@@ -165,7 +191,6 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else if segue.identifier == "segueAddRule" {
             let destinationVC = segue.destination as! AddRuleVC
             destinationVC.sheetPresentationController?.detents = [.medium()]
-            destinationVC.currentUser = self.currentUser
         }
     }
     
@@ -186,13 +211,6 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.choreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
     }
     
-    func getAssigneesForChoreList() {
-        self.choreAssigneesList.removeAll()
-        for chore in choreList {
-            self.getAssigneesYourChore(chore: chore)
-        }
-    }
-    
     func getChoreByUser(userID: String) {
         var components = URLComponents(string: "http://127.0.0.1:8080/get_chores_by_user")!
         components.queryItems = [
@@ -205,103 +223,16 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         request.httpMethod = "GET"
-        let semaphore = DispatchSemaphore.init(value: 0)
+        
         let dataTask = URLSession.shared.dataTask(with: request) { [self] data, response, error in
             var result:choreResponse
             do {
                 result = try JSONDecoder().decode(choreResponse.self, from: data!)
-                //print(result)
                 self.choreList = result.data  ?? []
-                sortChoreList()
-                getAssigneesForChoreList()
                 DispatchQueue.main.async {
-                    self.choreTableView.reloadData()
-                    self.ruleTableView.reloadData()
+                    self.loaded += 1
+                    self.doneLoading()
                 }
-                
-            } catch {
-                print(error.localizedDescription)
-            }
-            semaphore.signal()
-        }
-        dataTask.resume()
-        semaphore.wait()
-    }
-    func getChoreByHouseCode(houseCode: String) {
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_chores_by_house_code")!
-        components.queryItems = [
-            URLQueryItem(name: "house_code", value: houseCode)
-        ]
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
-        var request = URLRequest(url: components.url!)
-
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        request.httpMethod = "GET"
-        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:choreResponse
-            do {
-                result = try JSONDecoder().decode(choreResponse.self, from: data!)
-                //print(result)
-                let choreList = result.data ?? []
-                self.unassignedchoreList.removeAll()
-                self.assignedchoreList.removeAll()
-                for chore in choreList {
-                    self.getAssignees(chore: chore)
-                }
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        dataTask.resume()
-    }
-    
-    func getAssignees(chore: chore){
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
-        components.queryItems = [
-            URLQueryItem(name: "chore_id", value: String(chore.id))
-        ]
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
-        var request = URLRequest(url: components.url!)
-
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        request.httpMethod = "GET"
-        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:assigneeResponse
-            do {
-                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
-                if ((result.data?.count ?? 0) != 0) {
-                    self.assignedchoreList.append(chore)
-                } else {
-                    self.unassignedchoreList.append(chore)
-                }
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        dataTask.resume()
-    }
-    
-    func getAssigneesYourChore(chore: chore){
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_house_rules")!
-        components.queryItems = [
-            URLQueryItem(name: "house_code", value: String(chore.id))
-        ]
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
-        var request = URLRequest(url: components.url!)
-
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        request.httpMethod = "GET"
-        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            var result:assigneeResponse
-            do {
-                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
-                self.choreAssigneesList.append(result.data ?? [])
             } catch {
                 print(error.localizedDescription)
             }
@@ -326,7 +257,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             do {
                 result = try JSONDecoder().decode(ruleResponse.self, from: data!)
                 self.approvedRuleList = result.data ?? []
-                
+                DispatchQueue.main.async {
+                    self.loaded += 1
+                    self.doneLoading()
+                }
             } catch {
                 print(error.localizedDescription)
             }
@@ -350,7 +284,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             do {
                 result = try JSONDecoder().decode(ruleResponse.self, from: data!)
                 self.unapprovedRuleList = result.data ?? []
-                
+                DispatchQueue.main.async {
+                    self.loaded += 1
+                    self.doneLoading()
+                }
             } catch {
                 print(error.localizedDescription)
             }

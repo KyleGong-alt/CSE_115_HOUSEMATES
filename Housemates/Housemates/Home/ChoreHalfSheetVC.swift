@@ -15,33 +15,72 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
     @IBOutlet var exButton: UIButton!
     @IBOutlet var descriptionText: UITextView!
     @IBOutlet var membersTableView: UITableView!
+    @IBOutlet var membersView: UIView!
     @IBOutlet var dateLabel: UILabel!
+    @IBOutlet var timeLabel: UILabel!
     
     var parentVC: UIViewController?
     var chore: chore!
     var assignees = [user]()
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
+    var printTimeFormatter = DateFormatter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        overrideUserInterfaceStyle = .light
+        self.membersView.addSubview(loadingIndicator)
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: self.membersView.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: self.membersView.centerYAnchor),
+            loadingIndicator.widthAnchor.constraint(equalToConstant: 30),
+            loadingIndicator.heightAnchor.constraint(equalTo: self.loadingIndicator.widthAnchor)
+        ])
+        
+        loadingIndicator.isAnimating = true
+        
         membersTableView.delegate = self
         membersTableView.dataSource = self
+        membersTableView.isHidden = true
         
         setBottomBorder(label: choreTitle, height: 4, color: UIColor.black.cgColor)
         descriptionText.layer.cornerRadius = 13
-        descriptionText.contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        descriptionText.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
+        
+        editButton.layer.borderWidth = 1
+        editButton.layer.borderColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1).cgColor
+        editButton.layer.cornerRadius = 13
         
         choreTitle.text = chore.name
         descriptionText.text = chore.description
         
         toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
-        printDateFormatter.dateStyle = DateFormatter.Style.long
-        printDateFormatter.timeStyle = DateFormatter.Style.short
+        printDateFormatter.dateFormat = "EEEE, MMM d, yyyy"
+        printTimeFormatter.dateFormat = "hh:mm a"
         
-        let dateFromString: Date? = toDateFormatter.date(from: chore.due_date)
-        dateLabel.text = printDateFormatter.string(from: dateFromString!)
+        if let dateFromString = toDateFormatter.date(from: chore.due_date) {
+            dateLabel.text = printDateFormatter.string(from: dateFromString)
+            timeLabel.text = printTimeFormatter.string(from: dateFromString)
+        }
+    }
+    
+    let loadingIndicator: ProgressView = {
+        let progress = ProgressView(colors: [UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)], lineWidth: 5)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
+    
+    func doneLoading() {
+        membersTableView.reloadData()
+        loadingIndicator.isAnimating = false
+        membersTableView.isHidden = false
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        getAssigneesYourChore(chore: chore)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -53,23 +92,40 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         cell.memberName.text = assignees[indexPath.row].first_name + " " + assignees[indexPath.row].last_name
         return cell
     }
-    
-    func animateCheck() {
-        let option: UIView.AnimationOptions = [.curveEaseIn, .transitionCrossDissolve]
-        UIView.animate(withDuration: 0.5, delay: 0, options: option, animations: {
-            print("HELLO")
-            self.checkButton.setImage(nil, for: .normal)
-            self.checkButton.frame.origin.x -= 20
-        }, completion: nil)
-    }
 
     @IBAction func onCheck(_ sender: Any) {
-        animateCheck()
     }
     @IBAction func onEdit(_ sender: Any) {
         self.dismiss(animated: true) {
             let choreData = (chore: self.chore, assignees: self.assignees)
             self.parentVC?.performSegue(withIdentifier: "segueAddChores", sender: choreData)
         }
+    }
+    
+    func getAssigneesYourChore(chore: chore){
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
+        components.queryItems = [
+            URLQueryItem(name: "chore_id", value: String(chore.id))
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:assigneeResponse
+            do {
+                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
+                self.assignees = result.data ?? []
+                DispatchQueue.main.async {
+                    self.doneLoading()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
     }
 }

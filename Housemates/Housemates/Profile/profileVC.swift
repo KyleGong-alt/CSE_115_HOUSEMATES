@@ -38,7 +38,6 @@ class profileVC: UIViewController {
         1: (UIImage(named: "photo.on.rectangle"), "Choose from library")
     ]
     
-    var currentUser: user?
     override func viewDidLoad() {
         super.viewDidLoad()
         profilePic.layer.masksToBounds = true
@@ -74,7 +73,7 @@ class profileVC: UIViewController {
         firstNameTextField.text = currentUser?.first_name
         lastNameTextField.text = currentUser?.last_name
         emailTextField.text = currentUser?.email
-        phoneNumberTextField.text = format(with: "(XXX) XXX-XXX", phone: currentUser!.mobile_number)
+        phoneNumberTextField.text = format(with: "(XXX) XXX-XXXX", phone: currentUser!.mobile_number)
         
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let delegate = windowScene.delegate as? SceneDelegate else { return }
@@ -99,7 +98,7 @@ class profileVC: UIViewController {
     }
     
     func updatePhone(phone: String) {
-        phoneNumberTextField.text = format(with: "(XXX) XXX-XXX", phone: phone)
+        phoneNumberTextField.text = format(with: "(XXX) XXX-XXXX", phone: phone)
     }
     
     @IBAction func onSignOut(_ sender: Any) {
@@ -193,9 +192,10 @@ class profileVC: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! EditProfileVC
+        destinationVC.sheetPresentationController?.detents = [.medium()]
         if let sender = sender as? String {
             destinationVC.editType = sender
-            destinationVC.currentUser = currentUser
+            destinationVC.parentVC = self
         }
     }
     

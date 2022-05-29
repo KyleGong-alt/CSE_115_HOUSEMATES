@@ -11,8 +11,6 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
 
     @IBOutlet weak var houseCodeTextField: UITextField!
     
-    var currentUser: user?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -44,10 +42,9 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         if segue.identifier == "segueAddedHouse" {
             let destinationVC = segue.destination as! TabBarController
             if currentUser!.house_code != nil{
-                destinationVC.currentUser = currentUser
             } else {
-                let updatedUser = user(id: self.currentUser!.id, first_name: self.currentUser!.first_name, last_name: self.currentUser!.last_name, house_code: self.houseCodeTextField.text, mobile_number: self.currentUser!.mobile_number, email: self.currentUser!.email, password: self.currentUser!.password)
-                destinationVC.currentUser = updatedUser
+                let updatedUser = user(id: currentUser!.id, first_name: currentUser!.first_name, last_name: currentUser!.last_name, house_code: houseCodeTextField.text, mobile_number: currentUser!.mobile_number, email: currentUser!.email, password: currentUser!.password)
+                currentUser = updatedUser
             }
         }
     }
@@ -154,7 +151,7 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
                 if (result.data == nil) {
                     return
                 }
-                self.currentUser = result.data
+                currentUser = result.data
                 DispatchQueue.main.async {
                     self.performSegue(withIdentifier: "segueAddedHouse", sender: nil)
                 }

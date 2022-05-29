@@ -25,10 +25,10 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     var parentVC: UIViewController?
     
     let dateFormatter = DateFormatter()
+    let toDateFormatter = DateFormatter()
     var dateHidden = true
     var memberTableHidden = true
-    
-    var currentUser: user?
+
     var memberList = [user]()
     var selectedList = [Bool]()
     var isEditting = false
@@ -63,6 +63,8 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         datePicker.layer.isHidden = true
         datePicker.minimumDate = date
         
+        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        
         if isEditting {
             if let chore = choreData?.chore {
                 titleTextField.text = chore.name
@@ -70,8 +72,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                 if descriptionTextView.text == "Add a Description" {
                     descriptionTextView.textColor = UIColor.lightGray
                 }
-                let toDateFormatter = DateFormatter()
-                toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
                 if let dateFromString = toDateFormatter.date(from: chore.due_date) {
                     datePicker.date = dateFromString
                     dateButton.setTitle(dateFormatter.string(from: dateFromString), for: .normal)
@@ -170,7 +170,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AddChoreMemberCell") as! AddChoreMemberCell
         
-        let member = memberList[indexPath.row]
+        let member = self.memberList[indexPath.row]
         cell.memberName.text = member.first_name + " " + member.last_name
         if self.selectedList[indexPath.row] {
             cell.memberName.textColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)
@@ -255,7 +255,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         var list_id_selected = [Int]()
         for i in 0..<selectedList.count {
             if selectedList[i] {
-                list_id_selected.append(memberList[i].id)
+                list_id_selected.append(self.memberList[i].id)
             }
         }
         let parameters: [String: Any] = [
@@ -282,13 +282,18 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                 }
                 DispatchQueue.main.async {
                     if let parentVC = self.parentVC as? ChoresVC{
-                        if list_id_selected.isEmpty {
-                            parentVC.unassignedchoreList.append(result.data)
-                            parentVC.unassignedChoresTableView.reloadData()
-                        } else {
-                            parentVC.assignedchoreList.append(result.data)
-                            parentVC.currentChoresTableView.reloadData()
-                        }
+//                        let date = self.toDateFormatter.string(from: self.datePicker.date)
+//                        let new_chore = chore(id: result.data.id, name: result.data.name, due_date: date, house_code: result.data.house_code, description: result.data.description)
+//                        if list_id_selected.isEmpty {
+//                            parentVC.unassignedchoreList.append(new_chore)
+//                            parentVC.sortChoreList()
+//                            parentVC.unassignedChoresTableView.reloadData()
+//                        } else {
+//                            parentVC.assignedchoreList.append(new_chore)
+//                            parentVC.sortChoreList()
+//                            parentVC.currentChoresTableView.reloadData()
+//                        }
+                        parentVC.getChoreByHouseCode(houseCode: currentUser!.house_code!)
                     }
                 }
             } catch {
@@ -309,7 +314,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         var list_id_selected = [Int]()
         for i in 0..<selectedList.count {
             if selectedList[i] {
-                list_id_selected.append(memberList[i].id)
+                list_id_selected.append(self.memberList[i].id)
             }
         }
         let parameters: [String: Any] = [
@@ -345,8 +350,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     }
     
     func updateParentChoreList() {
-        let toDateFormatter = DateFormatter()
-        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
         let date = toDateFormatter.string(from: datePicker.date)
         
         if let parentVC = self.parentVC as? ChoresVC {
@@ -366,7 +369,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                 }
             }
             parentVC.sortChoreList()
-            parentVC.getChoreListAssignees()
             parentVC.currentChoresTableView.reloadData()
             parentVC.unassignedChoresTableView.reloadData()
         } else if let parentVC = self.parentVC as? HomeVC{
@@ -376,8 +378,8 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
 //                parentVC.getAssigneesForChoreList()
 //                parentVC.getChoreByUser(userID: String(currentUser!.id))
 //            }
+            parentVC.loaded = 2
             parentVC.getChoreByUser(userID: String(currentUser!.id))
-            parentVC.getChoreByHouseCode(houseCode: currentUser!.house_code!)
         }
     }
 }
