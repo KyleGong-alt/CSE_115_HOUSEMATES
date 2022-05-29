@@ -79,7 +79,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "SignInSegue") {
             let destinationVC = segue.destination as! TabBarController
-            destinationVC.currentUser = sender as? user
+            currentUser = sender as? user
         }
     }
     

@@ -16,6 +16,9 @@
 		C7077AF6280F469C00B52A0C /* EmailPhoneVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7077AF5280F469C00B52A0C /* EmailPhoneVC.swift */; };
 		C70F3C9E283DB6ED00E3BD98 /* AddRuleVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70F3C9D283DB6ED00E3BD98 /* AddRuleVC.swift */; };
 		C70F3CA0283DBF0700E3BD98 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70F3C9F283DBF0600E3BD98 /* EditProfileVC.swift */; };
+		C70F3CA22841377E00E3BD98 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70F3CA12841377D00E3BD98 /* ProgressView.swift */; };
+		C70F3CA62841383700E3BD98 /* ProgressShapeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70F3CA52841383700E3BD98 /* ProgressShapeLayer.swift */; };
+		C70F3CA828413A2C00E3BD98 /* StrokeAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70F3CA728413A2C00E3BD98 /* StrokeAnimation.swift */; };
 		C722BF612818B01100458FAC /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C722BF602818B01100458FAC /* HomeVC.swift */; };
 		C722BF632818F1AC00458FAC /* HomelessVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C722BF622818F1AC00458FAC /* HomelessVC.swift */; };
 		C722BF652819CF6B00458FAC /* YourChoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C722BF642819CF6B00458FAC /* YourChoreCell.swift */; };
@@ -30,7 +33,7 @@
 		C73FEC00280DE8D300C11888 /* HousematesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73FEBFF280DE8D300C11888 /* HousematesUITests.swift */; };
 		C73FEC02280DE8D300C11888 /* HousematesUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73FEC01280DE8D300C11888 /* HousematesUITestsLaunchTests.swift */; };
 		C73FEC13280DF40600C11888 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73FEC12280DF40600C11888 /* LoginVC.swift */; };
-		C76F0FF3281C7BEC0071C82A /* requestStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FF2281C7BEC0071C82A /* requestStruct.swift */; };
+		C76F0FF3281C7BEC0071C82A /* BackendData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FF2281C7BEC0071C82A /* BackendData.swift */; };
 		C76F0FF5281C85020071C82A /* ChoresVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FF4281C85020071C82A /* ChoresVC.swift */; };
 		C76F0FF7281C8A5A0071C82A /* CustomSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FF6281C8A5A0071C82A /* CustomSegue.swift */; };
 		C76F0FF9281F1F590071C82A /* MembersVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F0FF8281F1F590071C82A /* MembersVC.swift */; };
@@ -79,6 +82,9 @@
 		C7077AF5280F469C00B52A0C /* EmailPhoneVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailPhoneVC.swift; sourceTree = "<group>"; };
 		C70F3C9D283DB6ED00E3BD98 /* AddRuleVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRuleVC.swift; sourceTree = "<group>"; };
 		C70F3C9F283DBF0600E3BD98 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
+		C70F3CA12841377D00E3BD98 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		C70F3CA52841383700E3BD98 /* ProgressShapeLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressShapeLayer.swift; sourceTree = "<group>"; };
+		C70F3CA728413A2C00E3BD98 /* StrokeAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeAnimation.swift; sourceTree = "<group>"; };
 		C722BF602818B01100458FAC /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		C722BF622818F1AC00458FAC /* HomelessVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomelessVC.swift; sourceTree = "<group>"; };
 		C722BF642819CF6B00458FAC /* YourChoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourChoreCell.swift; sourceTree = "<group>"; };
@@ -97,7 +103,7 @@
 		C73FEBFF280DE8D300C11888 /* HousematesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousematesUITests.swift; sourceTree = "<group>"; };
 		C73FEC01280DE8D300C11888 /* HousematesUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousematesUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		C73FEC12280DF40600C11888 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
-		C76F0FF2281C7BEC0071C82A /* requestStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = requestStruct.swift; sourceTree = "<group>"; };
+		C76F0FF2281C7BEC0071C82A /* BackendData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendData.swift; sourceTree = "<group>"; };
 		C76F0FF4281C85020071C82A /* ChoresVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresVC.swift; sourceTree = "<group>"; };
 		C76F0FF6281C8A5A0071C82A /* CustomSegue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegue.swift; sourceTree = "<group>"; };
 		C76F0FF8281F1F590071C82A /* MembersVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembersVC.swift; sourceTree = "<group>"; };
@@ -183,6 +189,16 @@
 			path = LogIn;
 			sourceTree = "<group>";
 		};
+		C70F3CA42841380400E3BD98 /* Load */ = {
+			isa = PBXGroup;
+			children = (
+				C70F3CA12841377D00E3BD98 /* ProgressView.swift */,
+				C70F3CA52841383700E3BD98 /* ProgressShapeLayer.swift */,
+				C70F3CA728413A2C00E3BD98 /* StrokeAnimation.swift */,
+			);
+			path = Load;
+			sourceTree = "<group>";
+		};
 		C722BF5F2818AFE100458FAC /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -226,6 +242,7 @@
 		C73FEBDD280DE8D100C11888 /* Housemates */ = {
 			isa = PBXGroup;
 			children = (
+				C70F3CA42841380400E3BD98 /* Load */,
 				C79794BA282D99650067BEBC /* Navigation */,
 				1CA8CF66281B8B81004AC253 /* Profile */,
 				C722BF5F2818AFE100458FAC /* Home */,
@@ -238,7 +255,7 @@
 				C73FEBEC280DE8D300C11888 /* Info.plist */,
 				C76F0FF6281C8A5A0071C82A /* CustomSegue.swift */,
 				C7077AF1280F3EE100B52A0C /* DesignExtension.swift */,
-				C76F0FF2281C7BEC0071C82A /* requestStruct.swift */,
+				C76F0FF2281C7BEC0071C82A /* BackendData.swift */,
 			);
 			path = Housemates;
 			sourceTree = "<group>";
@@ -569,10 +586,11 @@
 				C7077AF4280F3F2E00B52A0C /* FirstLastNameVC.swift in Sources */,
 				C7077AF2280F3EE100B52A0C /* DesignExtension.swift in Sources */,
 				C73FEBDF280DE8D100C11888 /* AppDelegate.swift in Sources */,
+				C70F3CA62841383700E3BD98 /* ProgressShapeLayer.swift in Sources */,
 				C7D453B32825A35400DFBB83 /* AddChoresVC.swift in Sources */,
 				C722BF612818B01100458FAC /* HomeVC.swift in Sources */,
 				C722BF652819CF6B00458FAC /* YourChoreCell.swift in Sources */,
-				C76F0FF3281C7BEC0071C82A /* requestStruct.swift in Sources */,
+				C76F0FF3281C7BEC0071C82A /* BackendData.swift in Sources */,
 				C7F9E52628344E8E007B3256 /* AddHouseVC.swift in Sources */,
 				C722BF632818F1AC00458FAC /* HomelessVC.swift in Sources */,
 				C7CF5D332834164D00B315D6 /* AddChoreMemberCell.swift in Sources */,
@@ -585,8 +603,10 @@
 				1CA8CF68281B8EC0004AC253 /* profileVC.swift in Sources */,
 				C73FEBE1280DE8D100C11888 /* SceneDelegate.swift in Sources */,
 				C76F0FF5281C85020071C82A /* ChoresVC.swift in Sources */,
+				C70F3CA828413A2C00E3BD98 /* StrokeAnimation.swift in Sources */,
 				C79794BC282D99A20067BEBC /* TabBarController.swift in Sources */,
 				C76F0FF9281F1F590071C82A /* MembersVC.swift in Sources */,
+				C70F3CA22841377E00E3BD98 /* ProgressView.swift in Sources */,
 				C722BF67281A213000458FAC /* ChoreHalfSheetVC.swift in Sources */,
 				C70F3C9E283DB6ED00E3BD98 /* AddRuleVC.swift in Sources */,
 			);

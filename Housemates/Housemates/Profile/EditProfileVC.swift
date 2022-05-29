@@ -15,9 +15,9 @@ class EditProfileVC: UIViewController {
     
     @IBOutlet var secondLabel: UILabel!
     @IBOutlet var secondTextField: UITextField!
-    
-    var currentUser: user?
     var editType: String!
+    var parentVC: UIViewController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         secondLabel.isHidden = true
@@ -42,6 +42,7 @@ class EditProfileVC: UIViewController {
             navigationBar.topItem?.title = "Edit Phone Number"
             firstLabel.text = "Phone Number"
             firstTextField.placeholder = "Phone Number"
+            firstTextField.keyboardType = .numberPad
             return
         case "password":
             navigationBar.topItem?.title = "Edit Password"
@@ -62,6 +63,9 @@ class EditProfileVC: UIViewController {
     }
     
     @IBAction func onDone(_ sender: Any) {
+        if !checkValidField() {
+            return
+        }
         switch editType {
         case "first_name":
             updateUser(email: currentUser!.email, first_name: firstTextField.text!, last_name: currentUser!.last_name, password: currentUser!.password, mobile_number: currentUser!.mobile_number)
@@ -80,6 +84,62 @@ class EditProfileVC: UIViewController {
             return
         default:
             return
+        }
+    }
+    
+    func checkValidField() -> Bool{
+        switch editType {
+        case "phone":
+            if !isValidPhone(firstTextField.text!) {
+                let alert = UIAlertController(title: "Invalid Phone Input", message: "The phone number you inputted is invalid. Please try again.", preferredStyle: UIAlertController.Style.alert)
+
+                alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+                self.present(alert, animated: true, completion: nil)
+                return false
+            } else {
+                return true
+            }
+        case "email":
+            if !isValidEmail(firstTextField.text!) {
+                let alert = UIAlertController(title: "Invalid Email Input", message: "The email address you inputted is invalid. Please try again.", preferredStyle: UIAlertController.Style.alert)
+
+                alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+                self.present(alert, animated: true, completion: nil)
+                return false
+            } else {
+                return true
+            }
+        case "password":
+            if firstTextField.text! != currentUser?.password {
+                let alert = UIAlertController(title: "Password Not Match", message: "The password you inputted does not match the password in the server. Please try again.", preferredStyle: UIAlertController.Style.alert)
+
+                alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+                self.present(alert, animated: true, completion: nil)
+                return false
+            } else {
+                if secondTextField.text!.isEmpty {
+                    let alert = UIAlertController(title: "Empty Field(s)", message: "One or more fields are empty. Please fill in the fields.", preferredStyle: UIAlertController.Style.alert)
+
+                    alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+                    self.present(alert, animated: true, completion: nil)
+                    return false
+                }
+                return true
+            }
+        default:
+            if firstTextField.text!.isEmpty {
+                let alert = UIAlertController(title: "Empty Field", message: "A required field is empty. Please fill in the field.", preferredStyle: UIAlertController.Style.alert)
+
+                alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+                self.present(alert, animated: true, completion: nil)
+                return false
+            }
+            return true
         }
     }
     func updateUser(email: String, first_name: String, last_name: String, password: String, mobile_number: String) {
@@ -114,6 +174,11 @@ class EditProfileVC: UIViewController {
                     return
                 }
                 DispatchQueue.main.async {
+                    currentUser = user(id: currentUser!.id, first_name: first_name, last_name: last_name, house_code: currentUser!.house_code, mobile_number: mobile_number, email: email, password: password)
+                    getHouseMembers()
+                    if let parentVC = self.parentVC as? profileVC{
+                        parentVC.viewDidLoad()
+                    }
                     self.dismiss(animated: true, completion: nil)
                 }
             } catch {
