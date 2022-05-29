@@ -1,16 +1,21 @@
 import requests
 import json
 import unittest
+import string
+import random
 
 import app as housemates_app
 import db
 import utils
 
 # BUGS:
-    # update_user doesn't check if email exists before performing update
+    # /update_user doesn't check if email exists before performing update
 
 
 class UsersTest(unittest.TestCase):
+
+    # holds generated random names during testing. Helps to avoid duplicate random names
+    random_names = dict()
 
     # setup testing object
     def setUp(self):
@@ -22,21 +27,27 @@ class UsersTest(unittest.TestCase):
         result = self.app.get('/')
         self.assertEqual("Hello from the Housemates Flask API!", result.data.decode('utf-8'))
 
-    # test the '/list_users' route
     def test_list_users(self):
 
+        # this function performs /list_users, and verifies that the users were fetched correctly
+
+        # perform '/list_users' request
         actual_response = self.app.get('/list_users')
+
+        # extract data from json response
+        actual_data = json.loads(actual_response.data)['data']
 
         # generate expected response from database
         sql_string = "SELECT * FROM users "
         with housemates_app.app.app_context():
-            data = db.db_query(sql_string, many=True)
-            expected_response = utils.encode_response(status='success', code=200, desc='', data=data)
+            expected_data = db.db_query(sql_string, many=True)
 
-        # print("ACTUAL: ", actual_response.data.decode('utf-8'))
-        # print("EXPECTED: ", expected_response.data.decode('utf-8'))
+        # print("ACTUAL RESPONSE: ", actual_response.data.decode('utf-8'))
 
-        self.assertEqual(expected_response.data, actual_response.data)
+        # print("ACTUAL DATA: ", actual_data)
+        # print("EXPECTED DATA: ", expected_data)
+
+        self.assertEqual(expected_data, actual_data)
 
     def test_profilePic(self):
         pass
@@ -52,26 +63,109 @@ class UsersTest(unittest.TestCase):
                            password='password',
                            mobile_number='6908934789')
 
-        # convert data to json
-        encoded_update_dict = json.dumps(update_dict)
-
         # send test put request
         actual_response = self.app.put('/update_user',
-                                       data=encoded_update_dict,
+                                       data=json.dumps(update_dict),
                                        content_type='application/json')
+
+        # try extracting actual data
+        actual_data = json.loads(actual_response.data)['data']
 
         # fetch updated user from database
         sql_string = "SELECT * FROM users WHERE email='{}'".format(update_dict['email'])
         with housemates_app.app.app_context():
-            data = db.db_query(sql_string)
-            expected_response = utils.encode_response(status='success', code=200, desc='', data=data)
-
-        # extract actual and expected data
-        expected_data = json.loads(expected_response.data)['data']
-        actual_data = json.loads(actual_response.data)['data']
+            expected_data = db.db_query(sql_string)
 
         # print("ACTUAL RESPONSE: ", actual_response.data.decode('utf-8'))
-        # print("EXPECTED RESPONSE: ", expected_response.data.decode('utf-8'))
+
+        # print("ACTUAL DATA: ", actual_data)
+        # print("EXPECTED DATA: ", expected_data)
+
+        self.assertEqual(expected_data, actual_data)
+
+    def test_signup(self):
+
+        # this function performs /signup, and verifies that the user was inserted into the db
+
+        # generate random name for signup to avoid duplicate signups
+        letters = string.ascii_lowercase
+        random_name = ''.join(random.choice(letters) for _ in range(10))
+        # generate a new name if it already exists
+        while random_name in self.random_names:
+            random_name = ''.join(random.choice(letters) for _ in range(10))
+        # track the new name
+        self.random_names[random_name] = 'seen'
+
+        # create signup dict
+        signup_dict = dict(email=random_name + '@ucsc.edu',
+                           first_name=random_name,
+                           last_name=random_name,
+                           password='password',
+                           mobile_number='1234567890')
+
+        # send test post request
+        actual_response = self.app.post('/signup',
+                                        data=json.dumps(signup_dict),
+                                        content_type='application/json')
+
+        # get data from json response
+        actual_data = json.loads(actual_response.data)['data']
+
+        # fetch new user from database
+        sql_string = "SELECT * FROM users WHERE email='{}'".format(signup_dict['email'])
+        with housemates_app.app.app_context():
+            expected_data = db.db_query(sql_string)
+
+        # print("ACTUAL RESPONSE: ", actual_response.data.decode('utf-8'))
+
+        # print("ACTUAL DATA: ", actual_data)
+        # print("EXPECTED DATA: ", expected_data)
+
+        self.assertEqual(expected_data, actual_data)
+
+    def test_login(self):
+
+        # this function performs /login, and verifies that the user logged in successfully
+
+        # create login dict
+        login_dict = dict(email='test1@ucsc.edu',
+                          password='password')
+
+        # send test post request
+        actual_response = self.app.post('/login',
+                                        data=json.dumps(login_dict),
+                                        content_type='application/json')
+
+        # extract data from json response
+        actual_data = json.loads(actual_response.data)['data']
+
+        # fetch new user from database
+        sql_string = "SELECT * FROM users WHERE email='{}'".format(login_dict['email'])
+        with housemates_app.app.app_context():
+            expected_data = db.db_query(sql_string)
+
+        # print("ACTUAL RESPONSE: ", actual_response.data.decode('utf-8'))
+
+        # print("ACTUAL DATA: ", actual_data)
+        # print("EXPECTED DATA: ", expected_data)
+
+        self.assertEqual(expected_data, actual_data)
+
+    def test_get_user(self):
+
+        # perform '/get_user' request
+        params_dict = dict(email='test@ucsc.edu')
+        actual_response = self.app.get('/get_user?email=' + params_dict['email'])
+
+        # extract data from json response
+        actual_data = json.loads(actual_response.data)['data']
+
+        # generate expected response from database
+        sql_string = "SELECT * FROM users WHERE email='{}'".format(params_dict['email'])
+        with housemates_app.app.app_context():
+            expected_data = db.db_query(sql_string)
+
+        # print("ACTUAL RESPONSE: ", actual_response.data.decode('utf-8'))
 
         # print("ACTUAL DATA: ", actual_data)
         # print("EXPECTED DATA: ", expected_data)
