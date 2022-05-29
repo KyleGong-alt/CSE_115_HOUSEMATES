@@ -449,7 +449,8 @@ def delete_chore(user_id):
     sql_string = "DELETE FROM chores WHERE id={}".format(user_id)
     #deletes the chore from
     result = db.db_insert(sql_string)
-
+    sql_delete_assignee = "DELETE FROM chores_assignee WHERE chore_id={}".format(user_id)
+    db.db_insert(sql_delete_assignee)
     # validate deletion
     if not result:
         return utils.encode_response(status='failure', code=601, desc='unable to delete chore')
