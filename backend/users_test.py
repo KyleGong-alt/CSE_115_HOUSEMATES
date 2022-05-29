@@ -1,4 +1,3 @@
-import requests
 import json
 import unittest
 import string
@@ -8,8 +7,14 @@ import app as housemates_app
 import db
 import utils
 
-# BUGS:
-    # /update_user doesn't check if email exists before performing update
+# INSTRUCTIONS:
+#   test a specific function: python users_test.py -v UsersTest.function_name
+#   verbose mode (runs all functions): python users_test.py -v
+#   normal (silent, runs all functions) mode: python users_test.py
+
+# BUGS FOUND IN APIS:
+#   /update_user:
+#       validation issue -> doesn't check if email exists before performing update?
 
 
 class UsersTest(unittest.TestCase):
