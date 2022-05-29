@@ -583,11 +583,13 @@ def get_unvoted_house_rules_assignees(house_code, user_id):
     #Creates the index for which rule to remove
     counter = -1
 
-    #Gets all the house_rules using house_code
-    all_rules_string = "SELECT * FROM house_rules where house_code = '{}'".format(house_code)
+    #Gets all the house_rules using house_code and that validity is 0
+    all_rules_string = "SELECT * FROM house_rules where house_code = '{}' and valid = 0".format(house_code)
 
     #Gets all the house_rule_ids that the user voted for from house_rule_assignee using the user_id
     house_rule_assignee_table = "SELECT house_rule_id FROM house_rule_assignee WHERE user_id = '{}'".format(user_id)
+
+    #Gets all the valid elements from house_rule
 
     #Fetches rules from database
     house_rule_ids = db.db_query(all_rules_string, many=True)
@@ -614,9 +616,11 @@ def get_unvoted_house_rules_assignees(house_code, user_id):
 
     #Loops through the house_rule_ids, x is now dictionaries 
     for x in house_rule_ids:
+        print(x)
         counter = counter + 1 #Increments counter to find index for which rule to delete
         for y in house_rule_ids_not_voted: #Loops through the house_rule_ids_not_voted
             if (x['id'] == y): #Finds the house_rule_id that the user voted for
+                # if (x['valid'] == 0): #Checks if the house rule isn't valid
                 copy_of_house_rule_ids.pop(counter) #Pops the rule that the user voted for through countint the index
                 counter = counter - 1 #Decrements counter after popping so indexing is correct
 

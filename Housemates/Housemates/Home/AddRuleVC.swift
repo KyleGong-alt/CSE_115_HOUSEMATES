@@ -12,6 +12,7 @@ class AddRuleVC: UIViewController, UITextFieldDelegate, UITextViewDelegate {
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var descriptionTextField: UITextView!
 
+    var parentVC: UIViewController?
     override func viewDidLoad() {
         super.viewDidLoad()
         titleTextField.delegate = self
@@ -74,7 +75,8 @@ class AddRuleVC: UIViewController, UITextFieldDelegate, UITextViewDelegate {
             "house_code": house_code,
             "title": title,
             "description": description,
-            "voted_num": String(voted_num)
+            "voted_num": String(voted_num),
+            "valid": 0
         ]
         print(parameters)
         
@@ -90,6 +92,14 @@ class AddRuleVC: UIViewController, UITextFieldDelegate, UITextViewDelegate {
                 if result.code != 200 {
                     print(result)
                     return
+                }
+                DispatchQueue.main.async {
+                    if let parentVC = self.parentVC as? HomeVC{
+                        parentVC.loaded = 2
+                        parentVC.getUnapprovedRules()
+                    }
+                    self.dismiss(animated: true, completion: nil)
+                    
                 }
             } catch {
                 print(error.localizedDescription)

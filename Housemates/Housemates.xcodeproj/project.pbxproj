@@ -316,7 +316,6 @@
 				C73FEBD8280DE8D100C11888 /* Frameworks */,
 				C73FEBD9280DE8D100C11888 /* Resources */,
 				97B2CD29219793523768E293 /* [CP] Embed Pods Frameworks */,
-				AB826D8CE98CA8D68534F0DE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -355,7 +354,6 @@
 				C73FEBF8280DE8D300C11888 /* Frameworks */,
 				C73FEBF9280DE8D300C11888 /* Resources */,
 				030AC4558B5E76BA25F81F17 /* [CP] Embed Pods Frameworks */,
-				BCEA94F03C48C707A5588E57 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -492,40 +490,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Housemates/Pods-Housemates-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		AB826D8CE98CA8D68534F0DE /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Housemates/Pods-Housemates-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Housemates/Pods-Housemates-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Housemates/Pods-Housemates-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BCEA94F03C48C707A5588E57 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Housemates-HousematesUITests/Pods-Housemates-HousematesUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Housemates-HousematesUITests/Pods-Housemates-HousematesUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Housemates-HousematesUITests/Pods-Housemates-HousematesUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C750A77312A53F05EC743DD6 /* [CP] Check Pods Manifest.lock */ = {
