@@ -27,9 +27,8 @@ class UsersTest(unittest.TestCase):
         result = self.app.get('/')
         self.assertEqual("Hello from the Housemates Flask API!", result.data.decode('utf-8'))
 
+    # performs /list_users, and verifies that the users were fetched correctly
     def test_list_users(self):
-
-        # this function performs /list_users, and verifies that the users were fetched correctly
 
         # perform '/list_users' request
         actual_response = self.app.get('/list_users')
@@ -52,9 +51,8 @@ class UsersTest(unittest.TestCase):
     def test_profilePic(self):
         pass
 
+    # performs /update_user, and verifies that the user was successfully updated
     def test_update_user(self):
-
-        # this function performs /update_user, and verifies that the user was successfully updated
 
         # test update data
         update_dict = dict(email='test@ucsc.edu',
@@ -83,9 +81,8 @@ class UsersTest(unittest.TestCase):
 
         self.assertEqual(expected_data, actual_data)
 
+    # performs /signup, and verifies that the user was inserted into the db
     def test_signup(self):
-
-        # this function performs /signup, and verifies that the user was inserted into the db
 
         # generate random name for signup to avoid duplicate signups
         letters = string.ascii_lowercase
@@ -123,9 +120,8 @@ class UsersTest(unittest.TestCase):
 
         self.assertEqual(expected_data, actual_data)
 
+    # performs /login, and verifies that the user logged in successfully
     def test_login(self):
-
-        # this function performs /login, and verifies that the user logged in successfully
 
         # create login dict
         login_dict = dict(email='test1@ucsc.edu',
@@ -151,6 +147,7 @@ class UsersTest(unittest.TestCase):
 
         self.assertEqual(expected_data, actual_data)
 
+    # performs /get_user and verifies that the correct user was fetched
     def test_get_user(self):
 
         # perform '/get_user' request
