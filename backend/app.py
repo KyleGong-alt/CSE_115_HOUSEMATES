@@ -58,9 +58,9 @@ def get_profile_pic():
     email = email.replace('@', '-')
     email = email.replace('.', '-')
     picFolder = os.path.join('./ProfilePics', email)
-    if not os.path.exists(picFolder):
-        os.mkdir(picFolder)
     if request.method == 'POST':
+        if not os.path.exists(picFolder):
+            os.mkdir(picFolder)
         utils.delete_dir_contents(picFolder)
         file = request.files['file']
         img_path = os.path.join(picFolder, file.filename)
@@ -212,29 +212,37 @@ def create_chore():
 #
 # Creates the house rule, #note that voted_num is the # of members
 #
-@app.route('/create_house_rules', methods=['GET'])
+@app.route('/create_house_rules', methods=['POST'])
 def create_house_rules():
 
     #get form-data files
-    title = request.form.get('title')
-    description = request.form.get('description')
-    house_code = request.form.get('house_code')
-    voted_num = request.form.get('voted_num')
+    fields_list = ['title', 'description', 'house_code', 'voted_num', "valid"]
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+    
+    request_dict = request.get_json()
+
+    title = request_dict.get('title')
+    description = request_dict.get('description')
+    house_code = request_dict.get('house_code')
+    voted_num = request_dict.get('voted_num')
+    valid = request_dict.get('valid')
 
     # validate that title-data has no null values
     if '' in [title]:
         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty house rule)')
 
-     # validate that vote-data has no null values
-    if '' in [voted_num]:
-        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty voters)')
-
-    # validate that housecode-data has no null values
+    # # validate that housecode-data has no null values
     if '' in [house_code]:
         return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
 
+    # # validate that vote-data has no null values
+    if '' in [voted_num]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty voters)')
     # get all the form-data value and check if its present
-    response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num)
+    response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num,valid=valid)
     if not response:
         return utils.encode_response(status='failure', code=404, desc='house_rules not found')
 
@@ -614,6 +622,31 @@ def get_not_approved_house_rules():
     if not response:
         return utils.encode_response(status='failure', code=602, desc='cannot find user')
     return response
+
+@app.route('/get_unvoted_house_rules', methods=['GET'])
+def get_unvoted_house_rules():
+
+    # get form-data fields
+    house_code = request.args.get('house_code')
+    user_id = request.args.get('user_id')
+    
+    # validate form-data for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid request (empty house code)')
+
+    if '' in [user_id] or None in [user_id]:
+        return utils.encode_response(status='failure', code=602, desc='invalid request (empty user_id)')
+
+    #perform request
+    response = users.get_unvoted_house_rules_assignees(house_code=house_code, user_id=user_id)
+
+    # return appropriate response
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='cannot find user')
+    return response
+
+
+
 
 #
 # Handle HTTP and application errors

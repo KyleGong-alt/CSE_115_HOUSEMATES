@@ -12,10 +12,6 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
     @IBOutlet var houseCodeLabel: UILabel!
     @IBOutlet var memberTableView: UITableView!
     
-    var currentUser: user?
-    
-    var memberList = [user]()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         houseCodeLabel.text = currentUser?.house_code
@@ -36,21 +32,20 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "segueCloseRightNav" {
             let destinationVC = segue.destination as! TabBarController
-            destinationVC.currentUser = self.currentUser
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        self.memberList.count
+        memberList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MemberCell") as! MemberCell
         
-        let user = self.memberList[indexPath.row]
+        let user = memberList[indexPath.row]
         cell.memberNameLabel.text = user.first_name + " " + user.last_name
         cell.memberEmailLabel.text = user.email
-        cell.memberPhoneLabel.text = format(with: "(XXX) XXX-XXX", phone: user.mobile_number)
+        cell.memberPhoneLabel.text = format(with: "(XXX) XXX-XXXX", phone: user.mobile_number)
         return cell
         
     }
@@ -95,8 +90,8 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
                 if (result.code != 200) {
                     return
                 }
-                let updatedUser = user(id: self.currentUser!.id, first_name: self.currentUser!.first_name, last_name: self.currentUser!.last_name, house_code: nil, mobile_number: self.currentUser!.mobile_number, email: self.currentUser!.email, password: self.currentUser!.password)
-                self.currentUser = updatedUser
+                let updatedUser = user(id: currentUser!.id, first_name: currentUser!.first_name, last_name: currentUser!.last_name, house_code: nil, mobile_number: currentUser!.mobile_number, email: currentUser!.email, password: currentUser!.password)
+                currentUser = updatedUser
                 DispatchQueue.main.async {
                     self.performSegue(withIdentifier: "segueCloseRightNav", sender: nil)
                 }

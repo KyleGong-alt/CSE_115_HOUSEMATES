@@ -38,10 +38,8 @@ class profileVC: UIViewController {
         1: (UIImage(named: "photo.on.rectangle"), "Choose from library")
     ]
     
-    var currentUser: user?
     override func viewDidLoad() {
         super.viewDidLoad()
-        testing = "profile"
         profilePic.layer.masksToBounds = true
         profilePic.layer.cornerRadius = profilePic.bounds.width/2
         profilePic.layer.borderWidth = 1
@@ -75,7 +73,7 @@ class profileVC: UIViewController {
         firstNameTextField.text = currentUser?.first_name
         lastNameTextField.text = currentUser?.last_name
         emailTextField.text = currentUser?.email
-        phoneNumberTextField.text = format(with: "(XXX) XXX-XXX", phone: currentUser!.mobile_number)
+        phoneNumberTextField.text = format(with: "(XXX) XXX-XXXX", phone: currentUser!.mobile_number)
         
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let delegate = windowScene.delegate as? SceneDelegate else { return }
@@ -94,13 +92,13 @@ class profileVC: UIViewController {
         slideUpView.delegate = self
         slideUpView.dataSource = self
         slideUpView.register(SlideUpViewCell.self, forCellReuseIdentifier: "SlideUpViewCell")
-//        setProfilePic()
+        setProfilePic(currentUser!.email)
 //        firstName.text = user.first_name
         // Do any additional setup after loading the view.
     }
     
     func updatePhone(phone: String) {
-        phoneNumberTextField.text = format(with: "(XXX) XXX-XXX", phone: phone)
+        phoneNumberTextField.text = format(with: "(XXX) XXX-XXXX", phone: phone)
     }
     
     @IBAction func onSignOut(_ sender: Any) {
@@ -150,8 +148,8 @@ class profileVC: UIViewController {
         
     }
     
-    private func setProfilePic(){
-        let urlString = "http://localhost:8080/profilePic"
+    private func setProfilePic(_ email: String){
+        let urlString = "http://localhost:8080/profilePic?email="+email
         guard let url = URL(string: urlString) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if error != nil {
@@ -165,6 +163,7 @@ class profileVC: UIViewController {
             }
 
             DispatchQueue.main.async {
+                print("SWITCHING PROFILE PIC")
                 self.profilePic.image = UIImage(data: data!)
             }
         }.resume()
@@ -193,9 +192,10 @@ class profileVC: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! EditProfileVC
+        destinationVC.sheetPresentationController?.detents = [.medium()]
         if let sender = sender as? String {
             destinationVC.editType = sender
-            destinationVC.currentUser = currentUser
+            destinationVC.parentVC = self
         }
     }
     
