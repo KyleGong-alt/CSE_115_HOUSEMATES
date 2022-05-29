@@ -623,6 +623,31 @@ def get_not_approved_house_rules():
         return utils.encode_response(status='failure', code=602, desc='cannot find user')
     return response
 
+@app.route('/get_unvoted_house_rules', methods=['GET'])
+def get_unvoted_house_rules():
+
+    # get form-data fields
+    house_code = request.args.get('house_code')
+    user_id = request.args.get('user_id')
+    
+    # validate form-data for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid request (empty house code)')
+
+    if '' in [user_id] or None in [user_id]:
+        return utils.encode_response(status='failure', code=602, desc='invalid request (empty user_id)')
+
+    #perform request
+    response = users.get_unvoted_house_rules_assignees(house_code=house_code, user_id=user_id)
+
+    # return appropriate response
+    if not response:
+        return utils.encode_response(status='failure', code=602, desc='cannot find user')
+    return response
+
+
+
+
 #
 #updates the voted_num field in the house_rules table
 #

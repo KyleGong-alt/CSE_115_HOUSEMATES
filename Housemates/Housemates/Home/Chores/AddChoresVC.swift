@@ -177,6 +177,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             cell.memberImage.layer.borderWidth = 2
             cell.memberImage.layer.borderColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1).cgColor
         }
+        setProfilePic(member.email, imageView: cell.memberImage)
         return cell
     }
     

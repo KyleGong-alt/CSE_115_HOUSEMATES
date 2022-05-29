@@ -16,7 +16,6 @@ target 'Housemates' do
     # Pods for testing
   end
   
-  pod 'GoogleAPIClientForREST/Sheets', '~> 1.2.1'
-  pod 'GoogleSignIn', '~> 4.1.1'
+  pod 'AlamofireImage'
 
 end

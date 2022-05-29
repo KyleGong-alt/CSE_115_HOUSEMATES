@@ -120,6 +120,17 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
         case choreTableView:
+            if choreList.count == 0 {
+                let label = UILabel(frame: CGRect(x: 100, y: 100, width: 200, height: 50))
+                label.text = "No chore assigned"
+                choresView.addSubview(label)
+                NSLayoutConstraint.activate([
+                    label.centerXAnchor.constraint(equalTo: self.choresView.centerXAnchor),
+                    label.centerYAnchor.constraint(equalTo: self.choresView.centerYAnchor),
+//                    label.widthAnchor.constraint(equalToConstant: 50),
+//                    label.heightAnchor.constraint(equalTo: label.widthAnchor)
+                ])
+            }
             return choreList.count
         case ruleTableView:
             return approvedRuleList.count + unapprovedRuleList.count
@@ -141,8 +152,11 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         case ruleTableView:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell") as! RuleCell
             let rule = findRuleWithIndex(index: indexPath.row)
-            if approvedRuleList.contains(where: { $0.id == rule.id
-            }) {
+            
+            if indexPath.row < unapprovedRuleList.count {
+                cell.approveButton.isHidden = false
+                cell.unapproveButton.isHidden = false
+            } else {
                 cell.approveButton.isHidden = true
                 cell.unapproveButton.isHidden = true
             }
@@ -178,7 +192,6 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let chore = choreList[indexPath.row] as chore
             destinationVC.chore = chore
             destinationVC.parentVC = self
-//            destinationVC.assignees = choreAssigneesList[indexPath.row]
         } else if segue.identifier == "segueAllChore" {
             let destinationVC = segue.destination as! ChoresVC
         } else if segue.identifier == "segueAddChores" {
@@ -191,6 +204,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else if segue.identifier == "segueAddRule" {
             let destinationVC = segue.destination as! AddRuleVC
             destinationVC.sheetPresentationController?.detents = [.medium()]
+            destinationVC.parentVC = self
         }
     }
     
@@ -268,6 +282,33 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         dataTask.resume()
     }
     func getUnapprovedRules(){
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_not_approved_house_rules")!
+        components.queryItems = [
+            URLQueryItem(name: "house_code", value: String(currentUser!.house_code!))
+        ]
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        
+        var request = URLRequest(url: components.url!)
+
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        request.httpMethod = "GET"
+        let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            var result:ruleResponse
+            do {
+                result = try JSONDecoder().decode(ruleResponse.self, from: data!)
+                self.unapprovedRuleList = result.data ?? []
+                DispatchQueue.main.async {
+                    self.loaded += 1
+                    self.doneLoading()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        dataTask.resume()
+    }
+    func getUserUnvotedRules(){
         var components = URLComponents(string: "http://127.0.0.1:8080/get_not_approved_house_rules")!
         components.queryItems = [
             URLQueryItem(name: "house_code", value: String(currentUser!.house_code!))
