@@ -85,6 +85,27 @@ func isValidPhone(_ value: String) -> Bool {
     return phoneTest.evaluate(with: value)
 }
 
+func setProfilePic(_ email: String, imageView: UIImageView){
+    let urlString = "http://localhost:8080/profilePic?email="+email
+    guard let url = URL(string: urlString) else { return }
+    URLSession.shared.dataTask(with: url) { (data, response, error) in
+        if error != nil {
+
+            return
+        }
+
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            print("Not a proper HTTPURLResponse or statusCode")
+            return
+        }
+
+        DispatchQueue.main.async {
+            print("SWITCHING PROFILE PIC")
+            imageView.image = UIImage(data: data!)
+        }
+    }.resume()
+}
+
 
 extension UIView {
     func findViewController() -> UIViewController? {

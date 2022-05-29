@@ -7,7 +7,8 @@
 
 import UIKit
 import Foundation
-
+import Alamofire
+import AlamofireImage
 
 class profileVC: UIViewController {
 
@@ -92,7 +93,7 @@ class profileVC: UIViewController {
         slideUpView.delegate = self
         slideUpView.dataSource = self
         slideUpView.register(SlideUpViewCell.self, forCellReuseIdentifier: "SlideUpViewCell")
-        setProfilePic(currentUser!.email)
+        setProfilePic(currentUser!.email, imageView: self.profilePic)
 //        firstName.text = user.first_name
         // Do any additional setup after loading the view.
     }
@@ -147,28 +148,6 @@ class profileVC: UIViewController {
         }, completion: nil)
         
     }
-    
-    private func setProfilePic(_ email: String){
-        let urlString = "http://localhost:8080/profilePic?email="+email
-        guard let url = URL(string: urlString) else { return }
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if error != nil {
-
-                return
-            }
-
-            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                print("Not a proper HTTPURLResponse or statusCode")
-                return
-            }
-
-            DispatchQueue.main.async {
-                print("SWITCHING PROFILE PIC")
-                self.profilePic.image = UIImage(data: data!)
-            }
-        }.resume()
-    }
-    
     
     @IBAction func onEditFirstName(_ sender: Any) {
         performSegue(withIdentifier: "segueEditProfile", sender: "first_name")
@@ -238,7 +217,20 @@ extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerCo
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
         profilePic.image = image
+        if let image = image {
+            imageUpload(image)
+        }
         self.dismiss(animated: true, completion: nil)
     }
+    
+    func imageUpload(_ image: UIImage) {
+        let url = URL(string: "http://localhost:8080/profilePic?email="+currentUser!.email)!
+        let imageData = image.jpegData(compressionQuality: 0.9)
         
+        AF.upload(multipartFormData: { MultipartFormData in
+            MultipartFormData.append(imageData!, withName: "file", fileName: "profilePic", mimeType: "image/jpg")
+        },to: url).response { response in
+            print(response)
+        }
+    }
 }
