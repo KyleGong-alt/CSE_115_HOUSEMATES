@@ -649,6 +649,31 @@ def get_unvoted_house_rules():
 
 
 #
+#updates the voted_num field in the house_rules table
+#
+@app.route('/update_house_rule_voted_num', methods=['PUT'])
+def vote_house_rule():
+    # validate request json
+    signup_fields = ['user_id', 'rule_id', 'update_value']
+    valid_json, desc = utils.validate_json_request(signup_fields, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    # get signup fields
+    user_id = request_dict.get('user_id')
+    rule_id = request_dict.get('rule_id')
+    update_value = request_dict.get('update_value')
+
+    response = users.vote_house_rule(user_id, rule_id, update_value)
+    return response
+
+
+
+#
 # Handle HTTP and application errors
 #
 @app.errorhandler(Exception)
