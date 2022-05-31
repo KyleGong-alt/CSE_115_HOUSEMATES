@@ -183,6 +183,9 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 for chore in self.choreList {
                     self.getAssignees(chore: chore)
                 }
+                DispatchQueue.main.async {
+                    self.doneLoading()
+                }
             } catch {
                 print(error.localizedDescription)
             }

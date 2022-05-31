@@ -46,6 +46,7 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
         cell.memberNameLabel.text = user.first_name + " " + user.last_name
         cell.memberEmailLabel.text = user.email
         cell.memberPhoneLabel.text = format(with: "(XXX) XXX-XXXX", phone: user.mobile_number)
+        setProfilePic(user.email, imageView: cell.memberImage)
         return cell
         
     }

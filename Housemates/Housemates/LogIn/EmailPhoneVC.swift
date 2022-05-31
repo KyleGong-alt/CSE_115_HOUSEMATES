@@ -58,7 +58,29 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
 
     @IBAction func onNext(_ sender: Any) {
         //segue to password
+        if !checkValidField() {
+            return
+        }
         performSegue(withIdentifier: "segueToPassword", sender: nil)
+    }
+    func checkValidField() -> Bool{
+        if !isValidEmail(emailTextField.text!) {
+            let alert = UIAlertController(title: "Invalid Email Input", message: "The email address you inputted is invalid. Please try again.", preferredStyle: UIAlertController.Style.alert)
+
+            alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+            self.present(alert, animated: true, completion: nil)
+            return false
+        }
+        if !isValidPhone(phoneTextField.text!) {
+            let alert = UIAlertController(title: "Invalid Phone Input", message: "The phone number you inputted is invalid. Please try again.", preferredStyle: UIAlertController.Style.alert)
+
+            alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
+
+            self.present(alert, animated: true, completion: nil)
+            return false
+        }
+        return true
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
