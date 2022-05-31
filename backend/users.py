@@ -591,7 +591,7 @@ def vote_house_rule(user_id, house_rule_id, update_value):
     houseCount = countDict['count(email)']
 
     #guard if already voted
-    sql_checkVoted = "SELECT id FROM house_rule_assignee WHERE user_id = {}".format(user_id)
+    sql_checkVoted = "SELECT id FROM house_rule_assignee WHERE user_id = {} AND house_rule_id = {}".format(user_id, house_rule_id)
     voted = db.db_query(sql_checkVoted)
     if not (voted == None):
         return utils.encode_response(status='success', code=400, desc='User has already voted')
