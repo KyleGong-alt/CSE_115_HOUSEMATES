@@ -611,7 +611,7 @@ def vote_house_rule(user_id, house_rule_id, update_value):
     elif update_value == -1:
         sql_downVote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_no= voted_no +1  WHERE id = '{}'".format(house_rule_id)
         db.db_insert(sql_downVote)
-        if houseRuleDict['voted_no']+1>houseCount/2:
+        if houseRuleDict['voted_no']+1>=houseCount/2:
             sql_string = "DELETE FROM house_rules WHERE id={}".format(house_rule_id)
             # deletes the chore from
             result = db.db_insert(sql_string)
