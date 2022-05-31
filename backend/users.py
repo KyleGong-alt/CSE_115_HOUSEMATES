@@ -609,8 +609,15 @@ def vote_house_rule(user_id, house_rule_id, update_value):
             sql_valid="UPDATE house_rules SET valid = 1 WHERE id = '{}'".format(house_rule_id)
             db.db_insert(sql_valid)
     elif update_value == -1:
-        sql_downVote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_no= voted_yes +1  WHERE id = '{}'".format(house_rule_id)
+        sql_downVote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_no= voted_no +1  WHERE id = '{}'".format(house_rule_id)
         db.db_insert(sql_downVote)
+        if houseRuleDict['voted_no']+1>houseCount/2:
+            sql_string = "DELETE FROM house_rules WHERE id={}".format(house_rule_id)
+            # deletes the chore from
+            result = db.db_insert(sql_string)
+            sql_delete_assignee = "DELETE FROM house_rule_assignee WHERE house_rule_id={}".format(house_rule_id)
+            db.db_insert(sql_delete_assignee)
+
 
     response = utils.encode_response(status='success', code=200, desc='successful query', data=houseCount)
 
