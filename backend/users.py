@@ -605,7 +605,7 @@ def vote_house_rule(user_id, house_rule_id, update_value):
     if update_value == 1:
         sql_upvote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_yes= voted_yes +1  WHERE id = '{}'".format(house_rule_id)
         db.db_insert(sql_upvote)
-        if houseRuleDict['voted_yes']>houseCount/2:
+        if houseRuleDict['voted_yes']+1>houseCount/2:
             sql_valid="UPDATE house_rules SET valid = 1 WHERE id = '{}'".format(house_rule_id)
             db.db_insert(sql_valid)
     elif update_value == -1:
