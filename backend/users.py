@@ -111,6 +111,11 @@ def get_user_chores(user_id):
     # query the chores that associate with user_id
     data = db.db_query(sql_string, many=True)
 
+    # format date for each chore
+    for chore in data:
+        date_time = chore['due_date'].strftime('%Y-%m-%d %H:%M:%S')
+        chore['due_date'] = date_time
+
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='', data=data)
     return response
@@ -194,6 +199,11 @@ def get_house_chores(house_code):
     # fetch chores from DB
     data = db.db_query(sql_string, many=True)
 
+    # format date for each chore
+    for chore in data:
+        date_time = chore['due_date'].strftime('%Y-%m-%d %H:%M:%S')
+        chore['due_date'] = date_time
+
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     # response = jsonify(data)
@@ -247,6 +257,11 @@ def get_chores(house_code):
                  "".format(house_code, house_code)
     # fetch chores and assignees
     data = db.db_query(sql_string, many=True)
+
+    # format date for each chore
+    for chore in data:
+        date_time = chore['due_date'].strftime('%Y-%m-%d %H:%M:%S')
+        chore['due_date'] = date_time
 
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
