@@ -645,9 +645,6 @@ def get_unvoted_house_rules():
         return utils.encode_response(status='failure', code=602, desc='cannot find user')
     return response
 
-
-
-
 #
 #updates the voted_num field in the house_rules table
 #
@@ -670,7 +667,6 @@ def vote_house_rule():
 
     response = users.vote_house_rule(user_id, rule_id, update_value)
     return response
-
 
 
 #

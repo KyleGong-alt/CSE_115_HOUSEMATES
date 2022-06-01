@@ -45,7 +45,6 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         membersTableView.dataSource = self
         membersTableView.isHidden = true
         
-        setBottomBorder(label: choreTitle, height: 4, color: UIColor.black.cgColor)
         descriptionText.layer.cornerRadius = 13
         descriptionText.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
         
@@ -77,6 +76,12 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         loadingIndicator.isAnimating = false
         membersTableView.isHidden = false
         
+    }
+    override func viewDidLayoutSubviews() {
+        let bottomLine = CALayer()
+        bottomLine.frame = CGRect(x: 0.0, y: choreTitle.frame.height + 4, width: choreTitle.frame.width + 68, height: 1.0)
+        bottomLine.backgroundColor = UIColor.black.cgColor
+        choreTitle.layer.addSublayer(bottomLine)
     }
     
     override func viewWillAppear(_ animated: Bool) {

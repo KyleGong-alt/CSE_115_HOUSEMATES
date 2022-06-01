@@ -55,6 +55,14 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
         }
         return true
     }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
+        
+        let substringToReplace = textFieldText[rangeOfTextToReplace]
+        let count = textFieldText.count - substringToReplace.count + string.count
+        return count <= 32
+    }
 
     @IBAction func onNext(_ sender: Any) {
         //segue to password

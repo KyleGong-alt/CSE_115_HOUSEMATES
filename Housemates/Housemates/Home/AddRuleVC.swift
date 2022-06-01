@@ -44,11 +44,25 @@ class AddRuleVC: UIViewController, UITextFieldDelegate, UITextViewDelegate {
         }
     }
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
+        let substringToReplace = textFieldText[rangeOfTextToReplace]
+        let count = textFieldText.count - substringToReplace.count + string.count
+        switch textField {
+        case titleTextField:
+            return count <= 45
+        case descriptionTextField:
+            return count <= 200
+        default:
+            return count <= 64
+        }
+    }
+    
     @IBAction func onAdd(_ sender: Any) {
         if titleTextField.text!.isEmpty || descriptionTextField.text!.isEmpty {
             errorAddRule()
         }
-        createHouseRules(house_code: currentUser!.house_code! , title: titleTextField.text!, description: descriptionTextField.text!, voted_num: 1)
+        createHouseRules(house_code: currentUser!.house_code! , title: titleTextField.text!, description: descriptionTextField.text!, voted_num: 0)
         
     }
     func errorAddRule() {
@@ -96,7 +110,7 @@ class AddRuleVC: UIViewController, UITextFieldDelegate, UITextViewDelegate {
                 DispatchQueue.main.async {
                     if let parentVC = self.parentVC as? HomeVC{
                         parentVC.loaded = 2
-                        parentVC.getUnapprovedRules()
+                        parentVC.getUserUnvotedRules()
                     }
                     self.dismiss(animated: true, completion: nil)
                     
