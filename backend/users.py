@@ -446,7 +446,7 @@ def unassign_chore(user_id, chore_id):
 #delete user
 #
 def delete_chore(user_id):
-    sql_string = "DELETE FROM chores WHERE id='{}".format(user_id)
+    sql_string = "DELETE FROM chores WHERE id={}".format(user_id)
     #deletes the chore from
     result = db.db_insert(sql_string)
     sql_delete_assignee = "DELETE FROM chores_assignee WHERE chore_id={}".format(user_id)
@@ -580,68 +580,21 @@ def get_not_approved_house_rules(house_code):
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
     return response
 
-#
-#given
-#
-def vote_house_rule(user_id, house_rule_id, update_value):
-    #count how many users in a house_code
-    sql_house_code = "SELECT house_code, voted_yes, voted_no FROM house_rules WHERE id={}".format(house_rule_id)
-    houseRuleDict = db.db_query(sql_house_code)
-    sql_count = "SELECT count(email) FROM users WHERE house_code='{}'".format(houseRuleDict['house_code'])
-    countDict = db.db_query(sql_count)
-    houseCount = countDict['count(email)']
-
-    #guard if already voted
-    sql_checkVoted = "SELECT id FROM house_rule_assignee WHERE user_id = {} AND house_rule_id = {}".format(user_id, house_rule_id)
-    voted = db.db_query(sql_checkVoted)
-    if not (voted == None):
-        return utils.encode_response(status='success', code=400, desc='User has already voted')
-    #guard if user_id and house_rule_id don't have the same house_code
-
-    #insert user in house_rule assignee
-    sql_assign = "INSERT INTO house_rule_assignee (user_id, house_rule_id, house_code) VALUES ('{}', '{}', '{}') ".format(user_id, house_rule_id, houseRuleDict['house_code'])
-    db.db_insert(sql_assign)
-
-    #if upvote
-    if update_value == 1:
-        sql_upvote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_yes= voted_yes +1  WHERE id = '{}'".format(house_rule_id)
-        db.db_insert(sql_upvote)
-        if houseRuleDict['voted_yes']+1>houseCount/2:
-            sql_valid="UPDATE house_rules SET valid = 1 WHERE id = '{}'".format(house_rule_id)
-            db.db_insert(sql_valid)
-    elif update_value == -1:
-        sql_downVote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_no= voted_no +1  WHERE id = '{}'".format(house_rule_id)
-        db.db_insert(sql_downVote)
-        if houseRuleDict['voted_no']+1>=houseCount/2:
-            sql_string = "DELETE FROM house_rules WHERE id={}".format(house_rule_id)
-            # deletes the chore from
-            result = db.db_insert(sql_string)
-            sql_delete_assignee = "DELETE FROM house_rule_assignee WHERE house_rule_id={}".format(house_rule_id)
-            db.db_insert(sql_delete_assignee)
-
-
-    response = utils.encode_response(status='success', code=200, desc='successful query', data=houseCount)
-
-    return response
-
-
 def get_unvoted_house_rules_assignees(house_code, user_id):
     #Creates the index for which rule to remove
     counter = -1
 
-    #Gets all the house_rules using house_code and that validity is 0
+    #Gets all the house_rules using house_code
     all_rules_string = "SELECT * FROM house_rules where house_code = '{}' and valid = 0".format(house_code)
 
     #Gets all the house_rule_ids that the user voted for from house_rule_assignee using the user_id
     house_rule_assignee_table = "SELECT house_rule_id FROM house_rule_assignee WHERE user_id = '{}'".format(user_id)
 
-    #Gets all the valid elements from house_rule
-
     #Fetches rules from database
     house_rule_ids = db.db_query(all_rules_string, many=True)
 
-    if not house_rule_ids:
-        return utils.encode_response(status='failure', code=404, desc='house_code not found')
+    # if not house_rule_ids:
+    #     return utils.encode_response(status='failure', code=404, desc='house_code not found')
 
     #Makes a copy of the rules so indexing can work(ex: if you pop a row from original house_rules, the indexing is now -1 so we need a copy)
     copy_of_house_rule_ids= db.db_query(all_rules_string, many=True)
@@ -650,26 +603,25 @@ def get_unvoted_house_rules_assignees(house_code, user_id):
     house_rule_assignee_ids = db.db_query(house_rule_assignee_table, many=True)
 
     if not house_rule_assignee_ids:
-        return utils.encode_response(status='failure', code=404, desc='User_ID not found')
+        return pymysql.NULL
 
-    #Makes the house_rule_ids and house_rule_assignee_ids into a list
+    #Makes the house_rule_ids and house_rule_assignee_ids into a list 
     house_rule_idss = [assignee_dict['id'] for assignee_dict in house_rule_ids if 'id' in assignee_dict]
     curr_house_assignee_ids = [assignee_dict['house_rule_id'] for assignee_dict in house_rule_assignee_ids if 'house_rule_id' in assignee_dict]
 
-
+    
     #Makes a list of rules that the user already voted for
-    house_rule_ids_not_voted = [user for user in house_rule_idss if user in curr_house_assignee_ids]
+    house_rule_ids_not_voted = [user for user in house_rule_idss if user in curr_house_assignee_ids]  
 
-    #Loops through the house_rule_ids, x is now dictionaries
+    #Loops through the house_rule_ids, x is now dictionaries 
     for x in house_rule_ids:
-        print(x)
         counter = counter + 1 #Increments counter to find index for which rule to delete
         for y in house_rule_ids_not_voted: #Loops through the house_rule_ids_not_voted
             if (x['id'] == y): #Finds the house_rule_id that the user voted for
-                # if (x['valid'] == 0): #Checks if the house rule isn't valid
                 copy_of_house_rule_ids.pop(counter) #Pops the rule that the user voted for through countint the index
                 counter = counter - 1 #Decrements counter after popping so indexing is correct
 
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=copy_of_house_rule_ids )
     return response
+
