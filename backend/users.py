@@ -545,7 +545,7 @@ def get_approved_house_rules(house_code):
     # validate_rules(house_code)
 
     # build sql string
-    sql_string = "SELECT id, title, description, voted_num FROM house_rules WHERE house_code = '{}' AND valid = 1".format(house_code)
+    sql_string = "SELECT * FROM house_rules WHERE house_code = '{}' AND valid = 1".format(house_code)
 
     # fetch house rules from DB
     data = db.db_query(sql_string, many=True)
