@@ -57,6 +57,11 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         currentChoresLabel.isHidden = true
         unassignedChoresLabel.isHidden = true
         
+        currentChoresTableView.estimatedRowHeight = 100
+        currentChoresTableView.rowHeight = UITableView.automaticDimension
+        unassignedChoresTableView.estimatedRowHeight = 100
+        unassignedChoresTableView.rowHeight = UITableView.automaticDimension
+        
         toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
@@ -92,10 +97,7 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.unassignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
         self.assignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 116
-    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (tableView == currentChoresTableView) {
             return assignedchoreList.count
