@@ -602,8 +602,8 @@ def get_unvoted_house_rules_assignees(house_code, user_id):
     #Fetches house_rule_ids from database
     house_rule_assignee_ids = db.db_query(house_rule_assignee_table, many=True)
 
-    if not house_rule_assignee_ids:
-        return pymysql.NULL
+    # if not house_rule_assignee_ids:
+    #     return pymysql.NULL
 
     #Makes the house_rule_ids and house_rule_assignee_ids into a list 
     house_rule_idss = [assignee_dict['id'] for assignee_dict in house_rule_ids if 'id' in assignee_dict]
