@@ -24,7 +24,8 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        // Set up delegates and UI design
         doneButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         
         passwordTextField.delegate = self
@@ -47,6 +48,8 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
             doneButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         }
     }
+    
+    // Deals with textfield responders when user presses enter
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == passwordTextField {
             textField.resignFirstResponder()
@@ -54,6 +57,8 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
         }
         return true
     }
+    
+    // Limit character length in textfield
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
         
@@ -62,10 +67,12 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
         return count <= 32
     }
     
+    // User press done
     @IBAction func onDone(_ sender: Any) {
         signup(firstName: firstName, lastName: lastName, email: email, phone: phoneNumber, password: passwordTextField.text!)
     }
     
+    // Deals with error when sign up
     func errorSignup() {
         let alert = UIAlertController(title: "Invalid Signup", message: "Email already in use. Please use another email.", preferredStyle: UIAlertController.Style.alert)
 
@@ -76,11 +83,12 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
         self.present(alert, animated: true, completion: nil)
     }
     
+    // Preparation for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let destinationVC = segue.destination as! TabBarController
         currentUser = sender as? user
     }
     
+    // Signup Request
     func signup(firstName: String, lastName: String, email: String, phone: String, password: String) {
         let url = URL(string: "http://127.0.0.1:8080/signup")!
         
@@ -105,7 +113,11 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:userResponse
             do {
-                result = try JSONDecoder().decode(userResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                result = try JSONDecoder().decode(userResponse.self, from: data)
                 
                 if (result.code == 600) {
                     DispatchQueue.main.async {

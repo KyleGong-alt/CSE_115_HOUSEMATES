@@ -10,14 +10,14 @@ import UIKit
 class FirstLastNameVC: UIViewController, UITextFieldDelegate {
 
     // OUTLETS
-    
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var lastNameTextField: UITextField!
     @IBOutlet weak var nextButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        // Set up delegates and UI design
         nextButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         
         firstNameTextField.delegate = self
@@ -43,6 +43,7 @@ class FirstLastNameVC: UIViewController, UITextFieldDelegate {
         }
     }
     
+    // Deals with textfield responders when user presses enter
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == firstNameTextField {
             lastNameTextField.becomeFirstResponder()
@@ -53,6 +54,7 @@ class FirstLastNameVC: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    // Limit character length in textfield
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
         
@@ -61,14 +63,17 @@ class FirstLastNameVC: UIViewController, UITextFieldDelegate {
         return count <= 32
     }
     
+    // User presses next
     @IBAction func onNext(_ sender: Any) {
         performSegue(withIdentifier: "segueToEmailPhone", sender: nil)
     }
     
+    // User presses cancel
     @IBAction func onCancel(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
     
+    // preparation for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! EmailPhoneVC
         destinationVC.firstName = firstNameTextField.text

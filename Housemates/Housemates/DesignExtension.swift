@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import QuartzCore
 
-// Sets bottom border of the textfield
+// Sets bottom border of the UITextField
 func setBottomBorder(textfield: UITextField) {
     let bottomLine = CALayer()
     bottomLine.frame = CGRect(x: 0.0, y: textfield.frame.height - 1, width: textfield.frame.width, height: 1.0)
@@ -18,6 +18,7 @@ func setBottomBorder(textfield: UITextField) {
     textfield.layer.addSublayer(bottomLine)
 }
 
+// Sets bottom border for UILabel
 func setBottomBorder(label: UILabel, height: CGFloat, color: CGColor) {
     let bottomLine = CALayer()
     bottomLine.frame = CGRect(x: 0.0, y: label.frame.height + height, width: label.frame.width, height: 1.0)
@@ -25,6 +26,7 @@ func setBottomBorder(label: UILabel, height: CGFloat, color: CGColor) {
     label.layer.addSublayer(bottomLine)
 }
 
+// Sets border for UIView
 func setBorder(view: UIView, height: CGFloat, color:CGColor) {
     let line = CALayer()
     line.frame = CGRect(x: 0.0, y: height, width: view.frame.width, height: 1.0)
@@ -32,6 +34,7 @@ func setBorder(view: UIView, height: CGFloat, color:CGColor) {
     view.layer.addSublayer(line)
 }
 
+// Sets border for UIbutton
 func setBorder(button: UIButton, height: CGFloat, color:CGColor) {
     let line = CALayer()
     line.frame = CGRect(x: 0.0, y: height, width: button.frame.width, height: 1.0)
@@ -46,11 +49,11 @@ func segue(srcVC: UIViewController, destVC: UIViewController) {
     transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
     transition.type = CATransitionType.push
     transition.subtype = CATransitionSubtype.fromLeft
-    
-    //srcVC.navigationController.view.add
 }
 
+
 /// mask example: `+X (XXX) XXX-XXXX`
+/// formats string to phone
 func format(with mask: String, phone: String) -> String {
     let numbers = phone.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
     var result = ""
@@ -72,6 +75,7 @@ func format(with mask: String, phone: String) -> String {
     return result
 }
 
+// Checks for valid email
 func isValidEmail(_ email: String) -> Bool {
     let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
 
@@ -79,12 +83,14 @@ func isValidEmail(_ email: String) -> Bool {
     return emailPred.evaluate(with: email)
 }
 
+// Checks for valid phone
 func isValidPhone(_ value: String) -> Bool {
     let PHONE_REGEX = "^\\d{3}\\d{3}\\d{4}$"
     let phoneTest = NSPredicate(format: "SELF MATCHES %@", PHONE_REGEX)
     return phoneTest.evaluate(with: value)
 }
 
+// Profile pic get request and set profile pic to imageView
 func setProfilePic(_ email: String, imageView: UIImageView){
     let urlString = "http://localhost:8080/profilePic?email="+email
     guard let url = URL(string: urlString) else { return }
@@ -105,17 +111,3 @@ func setProfilePic(_ email: String, imageView: UIImageView){
         }
     }.resume()
 }
-
-
-extension UIView {
-    func findViewController() -> UIViewController? {
-        if let nextResponder = self.next as? UIViewController {
-            return nextResponder
-        } else if let nextResponder = self.next as? UIView {
-            return nextResponder.findViewController()
-        } else {
-            return nil
-        }
-    }
-}
-

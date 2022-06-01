@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Your Home VC if user is not part of a house
 class HomelessVC: UIViewController {
     
     @IBOutlet weak var addHouseButton: UIButton!
@@ -17,15 +18,9 @@ class HomelessVC: UIViewController {
         addHouseButton.layer.cornerRadius = 13
     }
     
+    // Segue to add house
     @IBAction func onAddHouse(_ sender: Any) {
         performSegue(withIdentifier: "segueAddHouse", sender: nil)
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "segueAddHouse" {
-            let destinationNC =  segue.destination as! UINavigationController
-            let destinationVC = destinationNC.viewControllers[0] as? AddHouseVC
-        }
     }
     
 }

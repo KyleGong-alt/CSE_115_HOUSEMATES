@@ -1421,23 +1421,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chore Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9SV-pF-atU">
-                                <rect key="frame" x="20" y="10" width="306" height="33.5"/>
+                                <rect key="frame" x="20" y="10" width="342" height="33.5"/>
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="28"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iHz-YK-LHz">
-                                <rect key="frame" x="370" y="10" width="28" height="26"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="26" id="6xB-Vj-OXq"/>
-                                    <constraint firstAttribute="width" constant="28" id="B5J-UC-6bR"/>
-                                </constraints>
-                                <color key="tintColor" systemColor="systemRedColor"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain">
-                                    <backgroundConfiguration key="background" image="xmark.app" catalog="system"/>
-                                </buttonConfiguration>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Assigned To" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7yB-jN-vef">
                                 <rect key="frame" x="20" y="53.5" width="374" height="24"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
@@ -1528,7 +1516,7 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S9t-yi-Nhl">
-                                <rect key="frame" x="334" y="10" width="28" height="26"/>
+                                <rect key="frame" x="370" y="10" width="28" height="26"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="26" id="ISf-Eo-kli"/>
                                     <constraint firstAttribute="width" constant="28" id="zve-0s-DSu"/>
@@ -1563,12 +1551,12 @@
                         <viewLayoutGuide key="safeArea" id="xLm-pY-hPc"/>
                         <color key="backgroundColor" red="1" green="0.98823529409999999" blue="0.87728549789999999" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstItem="xLm-pY-hPc" firstAttribute="trailing" secondItem="S9t-yi-Nhl" secondAttribute="trailing" constant="16" id="272-m3-Pve"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="trailing" secondItem="Hg5-FF-7iB" secondAttribute="trailingMargin" id="2CO-4Y-TWH"/>
                             <constraint firstItem="rRv-Kz-Nqa" firstAttribute="centerX" secondItem="Hg5-FF-7iB" secondAttribute="centerX" id="4Fk-Vs-c6n"/>
                             <constraint firstItem="wdH-li-F6z" firstAttribute="leading" secondItem="xLm-pY-hPc" secondAttribute="leading" constant="50" id="5Zd-1w-DYu"/>
                             <constraint firstItem="S9t-yi-Nhl" firstAttribute="top" secondItem="xLm-pY-hPc" secondAttribute="top" constant="10" id="970-go-ti5"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="top" secondItem="BV4-Nw-Cou" secondAttribute="bottom" constant="4" id="AWQ-0i-5ok"/>
-                            <constraint firstItem="xLm-pY-hPc" firstAttribute="trailing" secondItem="iHz-YK-LHz" secondAttribute="trailing" constant="16" id="Bsj-n2-kAM"/>
                             <constraint firstItem="wdH-li-F6z" firstAttribute="top" secondItem="jDa-CP-38o" secondAttribute="bottom" constant="16" id="DwK-Mf-Bfy"/>
                             <constraint firstItem="BV4-Nw-Cou" firstAttribute="top" secondItem="7yB-jN-vef" secondAttribute="bottom" constant="8" symbolic="YES" id="DyX-MK-qoM"/>
                             <constraint firstItem="KzL-Y0-UGa" firstAttribute="top" secondItem="jnw-im-lxF" secondAttribute="bottom" constant="8" symbolic="YES" id="Fo1-at-hP8"/>
@@ -1584,7 +1572,6 @@
                             <constraint firstItem="BV4-Nw-Cou" firstAttribute="centerX" secondItem="Hg5-FF-7iB" secondAttribute="centerX" id="V7x-GG-yV0"/>
                             <constraint firstItem="9SV-pF-atU" firstAttribute="leading" secondItem="xLm-pY-hPc" secondAttribute="leading" constant="20" id="Wnk-HP-MtW"/>
                             <constraint firstItem="CQK-fH-tKx" firstAttribute="leading" secondItem="9SV-pF-atU" secondAttribute="leading" id="b3G-dA-85O"/>
-                            <constraint firstItem="iHz-YK-LHz" firstAttribute="leading" secondItem="S9t-yi-Nhl" secondAttribute="trailing" constant="8" id="b3Y-WZ-1yj"/>
                             <constraint firstItem="HfO-Fy-fhS" firstAttribute="top" secondItem="KzL-Y0-UGa" secondAttribute="bottom" constant="6" id="bD6-lh-v55"/>
                             <constraint firstItem="Ql4-DT-b6h" firstAttribute="leading" secondItem="7yB-jN-vef" secondAttribute="leading" id="bOJ-RK-jC9"/>
                             <constraint firstItem="jDa-CP-38o" firstAttribute="leading" secondItem="Ql4-DT-b6h" secondAttribute="leading" id="crf-Lz-9My"/>
@@ -1597,7 +1584,6 @@
                             <constraint firstItem="7yB-jN-vef" firstAttribute="top" secondItem="9SV-pF-atU" secondAttribute="bottom" constant="10" id="qKT-zD-z2b"/>
                             <constraint firstItem="jDa-CP-38o" firstAttribute="top" secondItem="Ql4-DT-b6h" secondAttribute="bottom" constant="8" symbolic="YES" id="qSA-0f-m2N"/>
                             <constraint firstItem="xLm-pY-hPc" firstAttribute="trailing" secondItem="KzL-Y0-UGa" secondAttribute="trailing" constant="10" id="qgg-dd-U7Q"/>
-                            <constraint firstItem="iHz-YK-LHz" firstAttribute="top" secondItem="xLm-pY-hPc" secondAttribute="top" constant="10" id="wso-d4-XgL"/>
                             <constraint firstItem="rRv-Kz-Nqa" firstAttribute="top" secondItem="wdH-li-F6z" secondAttribute="bottom" constant="16" id="zXH-NO-QB2"/>
                         </constraints>
                     </view>
@@ -1608,7 +1594,6 @@
                         <outlet property="dateLabel" destination="KzL-Y0-UGa" id="2k6-o2-Gt7"/>
                         <outlet property="descriptionText" destination="wdH-li-F6z" id="Jdq-ZH-hPg"/>
                         <outlet property="editButton" destination="rRv-Kz-Nqa" id="A39-5C-BfG"/>
-                        <outlet property="exButton" destination="iHz-YK-LHz" id="cC8-zR-MQa"/>
                         <outlet property="membersTableView" destination="cqY-q2-yq8" id="apT-5F-lTX"/>
                         <outlet property="membersView" destination="BV4-Nw-Cou" id="bdF-WX-1Hd"/>
                         <outlet property="timeLabel" destination="HfO-Fy-fhS" id="2AA-mj-OPN"/>

@@ -14,6 +14,8 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initialize UI desing on load and set delegate and datasource for tableView
         houseCodeLabel.text = currentUser?.house_code
         houseCodeLabel.layer.masksToBounds = true
         houseCodeLabel.layer.cornerRadius = 13
@@ -25,20 +27,17 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
         memberTableView.dataSource = self
     }
 
+    // On close, close side bar
     @IBAction func onClose(_ sender: Any) {
         performSegue(withIdentifier: "segueCloseRightNav", sender: nil)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "segueCloseRightNav" {
-            let destinationVC = segue.destination as! TabBarController
-        }
-    }
-    
+    // Returns number of row for memberTableView based on number of members
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         memberList.count
     }
     
+    // Deque cell for each row in tableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MemberCell") as! MemberCell
         
@@ -51,6 +50,7 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
         
     }
     
+    // On Long hold for house code
     @objc func handleTap(_ sender: UILongPressGestureRecognizer? = nil) {
         //Set the default sharing message.
         //Set the link to share.
@@ -63,6 +63,7 @@ class MembersVC: UIViewController,UITableViewDataSource, UITableViewDelegate {
         }
     }
     
+    // On leave house
     @IBAction func onLeaveHouse(_ sender: Any) {
         let url = URL(string: "http://127.0.0.1:8080/leave_house")!
         
