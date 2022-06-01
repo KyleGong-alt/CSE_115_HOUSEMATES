@@ -73,6 +73,42 @@ class TestRules:
         assert(response_data["status"] == "success")
         print("/delete_house_rule ... success")
 
+    def test_get_approved_house_rules(self, house_code):
+        params = "?house_code=" + house_code
+        url = self.route_dict["get_approved_house_rules"] + params
+        response = requests.request("GET", url)
+        # print(response.text)
+
+        response_data = json.loads(response.text)
+        # print(response_data)
+
+        assert (response_data["description"] == "successful query")
+        print("/get_approved_house_rules ... success")
+
+    def test_get_not_approved_house_rules(self, house_code):
+        params = "?house_code=" + house_code
+        url = self.route_dict["get_not_approved_house_rules"] + params
+        response = requests.request("GET", url)
+        # print(response.text)
+
+        response_data = json.loads(response.text)
+        # print(response_data)
+
+        assert (response_data["description"] == "successful query")
+        print("/get_not_approved_house_rules ... success")
+
+    def test_get_unvoted_house_rules(self, user_id, house_code):
+        params = "?user_id=" + str(user_id) + "&house_code=" + house_code
+        url = self.route_dict["get_unvoted_house_rules"] + params
+        response = requests.request("GET", url)
+        # print(response.text)
+
+        response_data = json.loads(response.text)
+        # print(response_data)
+
+        assert (response_data["description"] == "successful query")
+        print("/get_unvoted_house_rules ... success")
+
 if __name__ == "__main__":
     print("-" * 35)
     print("House Rules API Unit Testing ...\n")
@@ -80,6 +116,8 @@ if __name__ == "__main__":
     houseApiTest.test_create_house_rules("AKZXCOPQ")
     houseApiTest.test_get_house_rules("AKZXCOPQ")
     houseApiTest.test_delete_house_rule()
-
+    houseApiTest.test_get_approved_house_rules("AKZXCOPQ")
+    houseApiTest.test_get_not_approved_house_rules("AKZXCOPQ")
+    houseApiTest.test_get_unvoted_house_rules(78, "AKZXCOPQ")
     print("\nFinished Running Tests ...")
     print("-" * 35)
