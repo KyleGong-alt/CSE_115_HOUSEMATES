@@ -56,6 +56,12 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         choreTableView.delegate = self
         choreTableView.dataSource = self
         
+        ruleTableView.estimatedRowHeight = 100
+        ruleTableView.rowHeight = UITableView.automaticDimension
+        
+        choreTableView.estimatedRowHeight = 100
+        choreTableView.rowHeight = UITableView.automaticDimension
+        
         rulesView.layer.cornerRadius = 13
         rulesView.layer.shadowColor = UIColor.black.cgColor
         rulesView.layer.shadowOpacity = 0.3
@@ -80,6 +86,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }()
     
     func doneLoading() {
+        print(loaded)
         if loaded == 3 {
             loadingIndicator.isAnimating = false
             self.sortChoreList()
@@ -94,7 +101,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     override func viewWillAppear(_ animated: Bool) {
         getApprovedRules()
-        getUnapprovedRules()
+        getUserUnvotedRules()
         
         getChoreByUser(userID: String(currentUser!.id))
     }
@@ -106,31 +113,21 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             return approvedRuleList[index - unapprovedRuleList.count]
         }
     }
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch tableView {
-        case choreTableView:
-            return 116
-        case ruleTableView:
-            return 100
-        default:
-            return 116
-        }
-    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
         case choreTableView:
-            if choreList.count == 0 {
-                let label = UILabel(frame: CGRect(x: 100, y: 100, width: 200, height: 50))
-                label.text = "No chore assigned"
-                choresView.addSubview(label)
-                NSLayoutConstraint.activate([
-                    label.centerXAnchor.constraint(equalTo: self.choresView.centerXAnchor),
-                    label.centerYAnchor.constraint(equalTo: self.choresView.centerYAnchor),
-//                    label.widthAnchor.constraint(equalToConstant: 50),
-//                    label.heightAnchor.constraint(equalTo: label.widthAnchor)
-                ])
-            }
+//            if choreList.count == 0 {
+//                let label = UILabel(frame: CGRect(x: 100, y: 100, width: 200, height: 50))
+//                label.text = "No chore assigned"
+//                choresView.addSubview(label)
+//                NSLayoutConstraint.activate([
+//                    label.centerXAnchor.constraint(equalTo: self.choresView.centerXAnchor),
+//                    label.centerYAnchor.constraint(equalTo: self.choresView.centerYAnchor),
+////                    label.widthAnchor.constraint(equalToConstant: 50),
+////                    label.heightAnchor.constraint(equalTo: label.widthAnchor)
+//                ])
+//            }
             return choreList.count
         case ruleTableView:
             return approvedRuleList.count + unapprovedRuleList.count
@@ -163,9 +160,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.ruleTitle.text = rule.title
             cell.ruleDescription.text = rule.description
             cell.rule = rule
+            cell.parentVC = self
             return cell
-            default:
-                return UITableViewCell()
+        default:
+            return UITableViewCell()
         
         }
     }
@@ -271,6 +269,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             do {
                 result = try JSONDecoder().decode(ruleResponse.self, from: data!)
                 self.approvedRuleList = result.data ?? []
+                print(self.approvedRuleList)
                 DispatchQueue.main.async {
                     self.loaded += 1
                     self.doneLoading()
@@ -309,9 +308,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         dataTask.resume()
     }
     func getUserUnvotedRules(){
-        var components = URLComponents(string: "http://127.0.0.1:8080/get_not_approved_house_rules")!
+        var components = URLComponents(string: "http://127.0.0.1:8080/get_unvoted_house_rules")!
         components.queryItems = [
-            URLQueryItem(name: "house_code", value: String(currentUser!.house_code!))
+            URLQueryItem(name: "house_code", value: String(currentUser!.house_code!)),
+            URLQueryItem(name: "user_id", value: String(currentUser!.id))
         ]
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         
@@ -323,6 +323,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:ruleResponse
             do {
+                print(data,response,error)
                 result = try JSONDecoder().decode(ruleResponse.self, from: data!)
                 self.unapprovedRuleList = result.data ?? []
                 DispatchQueue.main.async {

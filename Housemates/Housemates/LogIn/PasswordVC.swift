@@ -54,6 +54,13 @@ class PasswordVC: UIViewController, UITextFieldDelegate {
         }
         return true
     }
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
+        
+        let substringToReplace = textFieldText[rangeOfTextToReplace]
+        let count = textFieldText.count - substringToReplace.count + string.count
+        return count <= 32
+    }
     
     @IBAction func onDone(_ sender: Any) {
         signup(firstName: firstName, lastName: lastName, email: email, phone: phoneNumber, password: passwordTextField.text!)

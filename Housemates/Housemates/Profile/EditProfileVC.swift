@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EditProfileVC: UIViewController {
+class EditProfileVC: UIViewController, UITextFieldDelegate{
 
     @IBOutlet var navigationBar: UINavigationBar!
     @IBOutlet var firstLabel: UILabel!
@@ -20,6 +20,8 @@ class EditProfileVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        firstTextField.delegate = self
+        secondTextField.delegate = self
         secondLabel.isHidden = true
         secondTextField.isHidden = true
         switch editType {
@@ -56,6 +58,14 @@ class EditProfileVC: UIViewController {
         default:
             return
         }
+    }
+    
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
+        let substringToReplace = textFieldText[rangeOfTextToReplace]
+        let count = textFieldText.count - substringToReplace.count + string.count
+        return count <= 32
     }
     
     @IBAction func onDismiss(_ sender: Any) {

@@ -30,6 +30,9 @@ struct rule: Codable {
     let title: String
     let description: String
     let voted_num: Int
+    let valid: Int
+    let voted_no: Int
+    let voted_yes: Int
 }
 
 struct ruleResponse: Codable {

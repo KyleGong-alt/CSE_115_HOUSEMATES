@@ -112,6 +112,20 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
     }
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
+        let substringToReplace = textFieldText[rangeOfTextToReplace]
+        let count = textFieldText.count - substringToReplace.count + string.count
+        switch textField {
+        case titleTextField:
+            return count <= 45
+        case descriptionTextView:
+            return count <= 200
+        default:
+            return count <= 64
+        }
+    }
+    
     @IBAction func onDateTouch(_ sender: Any) {
         self.dateHidden = !self.dateHidden
         UIView.animate(withDuration: 0.2) {
@@ -283,17 +297,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
                 }
                 DispatchQueue.main.async {
                     if let parentVC = self.parentVC as? ChoresVC{
-//                        let date = self.toDateFormatter.string(from: self.datePicker.date)
-//                        let new_chore = chore(id: result.data.id, name: result.data.name, due_date: date, house_code: result.data.house_code, description: result.data.description)
-//                        if list_id_selected.isEmpty {
-//                            parentVC.unassignedchoreList.append(new_chore)
-//                            parentVC.sortChoreList()
-//                            parentVC.unassignedChoresTableView.reloadData()
-//                        } else {
-//                            parentVC.assignedchoreList.append(new_chore)
-//                            parentVC.sortChoreList()
-//                            parentVC.currentChoresTableView.reloadData()
-//                        }
                         parentVC.getChoreByHouseCode(houseCode: currentUser!.house_code!)
                     }
                 }
@@ -373,12 +376,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             parentVC.currentChoresTableView.reloadData()
             parentVC.unassignedChoresTableView.reloadData()
         } else if let parentVC = self.parentVC as? HomeVC{
-//            if let choreIndex =  parentVC.choreList.firstIndex(where: {$0.id == choreData!.chore.id}) {
-//                parentVC.choreList[choreIndex] = chore(id: choreData!.chore.id, name: titleTextField.text!, due_date: date, house_code: choreData!.chore.house_code, description: descriptionTextView.text)
-//                parentVC.choreTableView.reloadData()
-//                parentVC.getAssigneesForChoreList()
-//                parentVC.getChoreByUser(userID: String(currentUser!.id))
-//            }
             parentVC.loaded = 2
             parentVC.getChoreByUser(userID: String(currentUser!.id))
         }
