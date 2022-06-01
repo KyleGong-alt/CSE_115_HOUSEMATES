@@ -52,8 +52,6 @@ class TestChores:
 
         response_data = json.loads(response.text)
         # print(response_data)
-        self.rule_id = response_data["data"][-1]["id"]
-        # print(response_data["data"][-1])
 
         assert (response_data["description"] == "successful query")
         print("/get_chores_by_house_code ... success")
@@ -84,6 +82,8 @@ class TestChores:
 
         response_data = json.loads(response.text)
         # print(response_data)
+        self.rule_id = response_data["data"]["id"]
+        # print(response_data["data"][-1])
 
         assert (response_data["description"] == "create chore successful")
         print("/create_chore ... success")
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     choreApiTest.test_get_chores_by_house_code("AKZXCOPQ")
     choreApiTest.test_get_assignees(75)
     choreApiTest.test_edit_chore("Unit Testing!", "Unit Testing chores", "2022-06-20 11:00:00", "DBSGALUC", [80, 79])
-    choreApiTest.test_assign_chore(81, "DBSGALUC")
+    choreApiTest.test_assign_chore(81, "AKZXCOPQ")
     choreApiTest.test_unassign_chore(81)
     choreApiTest.test_delete_chore()
     print("\nFinished Running Tests ...")
