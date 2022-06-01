@@ -31,7 +31,7 @@ class TestRules:
 
         response_data = json.loads(response.text)
         self.rule_id = response_data["data"][-1]["id"]
-        # print(response_data)
+        # print(response_data["data"][-1])
 
         assert (response_data["description"] == "successful query")
         print("/get_house_rules ... success")
