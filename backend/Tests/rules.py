@@ -80,5 +80,6 @@ if __name__ == "__main__":
     houseApiTest.test_create_house_rules("AKZXCOPQ")
     houseApiTest.test_get_house_rules("AKZXCOPQ")
     houseApiTest.test_delete_house_rule()
+
     print("\nFinished Running Tests ...")
     print("-" * 35)
