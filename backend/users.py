@@ -545,7 +545,7 @@ def get_approved_house_rules(house_code):
     # validate_rules(house_code)
 
     # build sql string
-
+    # sql_string = "SELECT id, title, description, voted_num FROM house_rules WHERE house_code = '{}' AND valid = 1".format(house_code)
     sql_string = "SELECT * FROM house_rules WHERE house_code = '{}' AND valid = 1".format(house_code)
 
     # fetch house rules from DB
@@ -578,6 +578,50 @@ def get_not_approved_house_rules(house_code):
 
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=data)
+    return response
+
+#
+#given
+#
+def vote_house_rule(user_id, house_rule_id, update_value):
+    #count how many users in a house_code
+    sql_house_code = "SELECT house_code, voted_yes, voted_no FROM house_rules WHERE id={}".format(house_rule_id)
+    houseRuleDict = db.db_query(sql_house_code)
+    sql_count = "SELECT count(email) FROM users WHERE house_code='{}'".format(houseRuleDict['house_code'])
+    countDict = db.db_query(sql_count)
+    houseCount = countDict['count(email)']
+
+    #guard if already voted
+    sql_checkVoted = "SELECT id FROM house_rule_assignee WHERE user_id = {} AND house_rule_id = {}".format(user_id, house_rule_id)
+    voted = db.db_query(sql_checkVoted)
+    if not (voted == None):
+        return utils.encode_response(status='success', code=400, desc='User has already voted')
+    #guard if user_id and house_rule_id don't have the same house_code
+
+    #insert user in house_rule assignee
+    sql_assign = "INSERT INTO house_rule_assignee (user_id, house_rule_id, house_code) VALUES ('{}', '{}', '{}') ".format(user_id, house_rule_id, houseRuleDict['house_code'])
+    db.db_insert(sql_assign)
+
+    #if upvote
+    if update_value == 1:
+        sql_upvote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_yes= voted_yes +1  WHERE id = '{}'".format(house_rule_id)
+        db.db_insert(sql_upvote)
+        if houseRuleDict['voted_yes']+1>houseCount/2:
+            sql_valid="UPDATE house_rules SET valid = 1 WHERE id = '{}'".format(house_rule_id)
+            db.db_insert(sql_valid)
+    elif update_value == -1:
+        sql_downVote = "UPDATE house_rules SET voted_num = voted_num + 1, voted_no= voted_no +1  WHERE id = '{}'".format(house_rule_id)
+        db.db_insert(sql_downVote)
+        if houseRuleDict['voted_no']+1>=houseCount/2:
+            sql_string = "DELETE FROM house_rules WHERE id={}".format(house_rule_id)
+            # deletes the chore from
+            result = db.db_insert(sql_string)
+            sql_delete_assignee = "DELETE FROM house_rule_assignee WHERE house_rule_id={}".format(house_rule_id)
+            db.db_insert(sql_delete_assignee)
+
+
+    response = utils.encode_response(status='success', code=200, desc='successful query', data=houseCount)
+
     return response
 
 def get_unvoted_house_rules_assignees(house_code, user_id):
@@ -624,4 +668,6 @@ def get_unvoted_house_rules_assignees(house_code, user_id):
     # return encoded response
     response = utils.encode_response(status='success', code=200, desc='successful query', data=copy_of_house_rule_ids )
     return response
+
+
 
