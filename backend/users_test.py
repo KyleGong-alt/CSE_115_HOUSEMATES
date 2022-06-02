@@ -7,10 +7,12 @@ import app as housemates_app
 import db
 import utils
 
+
 # INSTRUCTIONS:
+#   setup environment variables: source ./env.sh
 #   test a specific function: python users_test.py -v UsersTest.function_name
-#   verbose mode (runs all functions): python users_test.py -v
-#   normal (silent, runs all functions) mode: python users_test.py
+#   recommended verbose mode (runs all functions): python users_test.py -v
+#   normal mode (silent, runs all functions): python users_test.py
 
 # BUGS FOUND IN APIS:
 #   /update_user:
@@ -18,7 +20,6 @@ import utils
 
 
 class UsersTest(unittest.TestCase):
-
     # holds generated random names during testing. Helps to avoid duplicate random names
     random_names = dict()
 
@@ -34,7 +35,6 @@ class UsersTest(unittest.TestCase):
 
     # performs /list_users, and verifies that the users were fetched correctly
     def test_list_users(self):
-
         # perform '/list_users' request
         actual_response = self.app.get('/list_users')
 
@@ -58,7 +58,6 @@ class UsersTest(unittest.TestCase):
 
     # performs /update_user, and verifies that the user was successfully updated
     def test_update_user(self):
-
         # test update data
         update_dict = dict(email='test@ucsc.edu',
                            first_name='Daniel',
@@ -88,7 +87,6 @@ class UsersTest(unittest.TestCase):
 
     # performs /signup, and verifies that the user was inserted into the db
     def test_signup(self):
-
         # generate random name for signup to avoid duplicate signups
         letters = string.ascii_lowercase
         random_name = ''.join(random.choice(letters) for _ in range(10))
@@ -118,6 +116,11 @@ class UsersTest(unittest.TestCase):
         with housemates_app.app.app_context():
             expected_data = db.db_query(sql_string)
 
+        # delete data from database
+        sql_string = "DELETE FROM users WHERE email='{}'".format(signup_dict['email'])
+        with housemates_app.app.app_context():
+            db.db_insert(sql_string)
+
         # print("ACTUAL RESPONSE: ", actual_response.data.decode('utf-8'))
 
         # print("ACTUAL DATA: ", actual_data)
@@ -127,9 +130,8 @@ class UsersTest(unittest.TestCase):
 
     # performs /login, and verifies that the user logged in successfully
     def test_login(self):
-
         # create login dict
-        login_dict = dict(email='test1@ucsc.edu',
+        login_dict = dict(email='test@ucsc.edu',
                           password='password')
 
         # send test post request
@@ -154,7 +156,6 @@ class UsersTest(unittest.TestCase):
 
     # performs /get_user and verifies that the correct user was fetched
     def test_get_user(self):
-
         # perform '/get_user' request
         params_dict = dict(email='test@ucsc.edu')
         actual_response = self.app.get('/get_user?email=' + params_dict['email'])
