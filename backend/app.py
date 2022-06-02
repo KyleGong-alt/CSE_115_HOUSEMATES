@@ -379,7 +379,6 @@ def unassign_chore():
 
 ######################################################### HOUSE/HOUSE RULES API #################################################################
 
-
 #
 # Creates the house rule, #note that voted_num is the # of members
 #
