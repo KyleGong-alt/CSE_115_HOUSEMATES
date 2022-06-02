@@ -1,5 +1,5 @@
 //
-//  YourChoreCell.swift
+//  AssignedMemberCell.swift
 //  Housemates
 //
 //  Created by Jackson Tran on 4/27/22.
@@ -7,24 +7,22 @@
 
 import UIKit
 
-class YourChoreCell: UITableViewCell {
+// Assigned member cell for ChoreHalfSheetVC
+class AssignedMemberCell: UITableViewCell {
 
-    
-    
-   
-    @IBOutlet var choreView: UIView!
-    @IBOutlet weak var choreTitle: UILabel!
-    @IBOutlet weak var choreDescription: UILabel!
-    @IBOutlet weak var choreTime: UILabel!
+    @IBOutlet var memberName: UILabel!
+    @IBOutlet var memberPic: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        choreView.layer.cornerRadius = 13
+        memberPic.layer.cornerRadius = 25
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+
         // Configure the view for the selected state
     }
+
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Progress Loading View
 class ProgressView: UIView {
     
     init(frame: CGRect, colors: [UIColor], lineWidth: CGFloat) {
@@ -27,6 +28,7 @@ class ProgressView: UIView {
         fatalError("init(code:) is not supported")
     }
     
+    // Layout and sizing of the view
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -44,6 +46,7 @@ class ProgressView: UIView {
         return ProgressShapeLayer(strokeColor: colors.first!, lineWidth: lineWidth)
     }()
 
+    // Animation
     func animateStroke() {
         
         let startAnimation = StrokeAnimation(type: .start, beginTime: 0.25, fromValue: 0.0, toValue: 1.0, duration: 0.75)
@@ -60,6 +63,7 @@ class ProgressView: UIView {
         self.layer.addSublayer(shapeLayer)
     }
     
+    // Turns animation and view on/off
     var isAnimating: Bool = false {
         didSet {
             if isAnimating {

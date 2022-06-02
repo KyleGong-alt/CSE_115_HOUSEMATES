@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Cell members in add chore
 class AddChoreMemberCell: UITableViewCell {
 
     @IBOutlet weak var memberImage: UIImageView!

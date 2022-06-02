@@ -20,6 +20,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set up delegates and UI design
         signInButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         
         emailTextField.delegate = self
@@ -27,8 +28,6 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         
         setBottomBorder(textfield: emailTextField)
         setBottomBorder(textfield: passwordTextField)
-
-        // Do any additional setup after loading the view.
     }
     
     
@@ -48,6 +47,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         }
     }
     
+    // Set responder when user presses enter
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == emailTextField {
             passwordTextField.becomeFirstResponder()
@@ -58,6 +58,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    // Limit character length in textfield
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
         
@@ -65,17 +66,19 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         let count = textFieldText.count - substringToReplace.count + string.count
         return count <= 32
     }
-    
+
+    // User press sign in
     @IBAction func onSignIn(_ sender: Any) {
-        //segue to home
         signin(email: emailTextField.text!, password: passwordTextField.text!)
         return
     }
     
+    // User press create account
     @IBAction func onCreateAccount(_ sender: Any) {
         performSegue(withIdentifier: "segueToSignUp", sender: nil)
     }
     
+    // Deals with error sign in
     func errorSignin() {
         let alert = UIAlertController(title: "Incorrect Email or Password", message: "The email or password you entered is incorrect. Please try again.", preferredStyle: UIAlertController.Style.alert)
 
@@ -84,13 +87,14 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         self.present(alert, animated: true, completion: nil)
     }
     
+    // Deals preparation for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "SignInSegue") {
-            let destinationVC = segue.destination as! TabBarController
             currentUser = sender as? user
         }
     }
     
+    // Sign In request
     func signin(email: String, password: String) {
         let url = URL(string: "http://127.0.0.1:8080/login")!
         
@@ -111,7 +115,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result: userResponse
             guard let data = data else {
-                print("OUT")
+                print("Server not connected!")
                 return
             }
             do {

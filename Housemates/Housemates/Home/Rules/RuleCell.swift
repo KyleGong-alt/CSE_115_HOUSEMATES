@@ -11,12 +11,13 @@ class RuleCell: UITableViewCell {
 
     
     @IBOutlet weak var ruleTitle: UILabel!
-    @IBOutlet weak var ruleView: UIView!
     @IBOutlet var ruleDescription: UILabel!
     @IBOutlet weak var approveButton: UIButton!
     @IBOutlet weak var unapproveButton: UIButton!
+    
     var rule: rule?
     var parentVC: UIViewController?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -28,15 +29,17 @@ class RuleCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    // User press approve
     @IBAction func onApprove(_ sender: Any) {
         updateVote(user_id: currentUser!.id, rule_id: rule!.id, update_value: 1)
     }
     
-    
+    // User press disapprove
     @IBAction func onDisapprove(_ sender: Any) {
         updateVote(user_id: currentUser!.id, rule_id: rule!.id, update_value: -1)
     }
     
+    // Updates the vote
     func updateVote(user_id: Int, rule_id: Int, update_value: Int) {
         let url = URL(string: "http://127.0.0.1:8080/update_house_rule_voted_num")!
         
@@ -51,7 +54,6 @@ class RuleCell: UITableViewCell {
             "rule_id": rule_id,
             "update_value": update_value
         ]
-        print(parameters)
         
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         request.httpBody = httpBody
@@ -59,7 +61,12 @@ class RuleCell: UITableViewCell {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:postResponse
             do {
-                result = try JSONDecoder().decode(postResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+
+                result = try JSONDecoder().decode(postResponse.self, from: data)
                 if result.code != 200 {
                     print(result)
                     return
