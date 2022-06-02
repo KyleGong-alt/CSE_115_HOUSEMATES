@@ -39,6 +39,7 @@ app = Flask(__name__)
 def hello():
     return 'Hello from the Housemates Flask API!'
 
+######################################################### USERS API #################################################################
 
 #
 # list all users in db
@@ -178,6 +179,9 @@ def get_user():
     # print(response)
     return utils.encode_response(status='success', code=200, desc='get_user successful', data=response)
 
+
+######################################################### CHORES API #################################################################
+
 #
 # add a chore
 # due_date should be of type string -- "May 1 2022 10:00AM"
@@ -207,46 +211,6 @@ def create_chore():
     response = users.add_chore(name=name, desc=desc, due_date=datetime_object, house_code=house_code, assignees=assignees)
 
     # return appropriate response
-    return response
-
-#
-# Creates the house rule, #note that voted_num is the # of members
-#
-@app.route('/create_house_rules', methods=['POST'])
-def create_house_rules():
-
-    #get form-data files
-    fields_list = ['title', 'description', 'house_code', 'voted_num', "valid"]
-    valid_json, desc = utils.validate_json_request(fields_list, request)
-    if not valid_json:
-        response = utils.encode_response(status='failure', code=602, desc=desc)
-        return response
-    
-    request_dict = request.get_json()
-
-    title = request_dict.get('title')
-    description = request_dict.get('description')
-    house_code = request_dict.get('house_code')
-    voted_num = request_dict.get('voted_num')
-    valid = request_dict.get('valid')
-
-    # validate that title-data has no null values
-    if '' in [title]:
-        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty house rule)')
-
-    # # validate that housecode-data has no null values
-    if '' in [house_code]:
-        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
-
-    # # validate that vote-data has no null values
-    if '' in [voted_num]:
-        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty voters)')
-    # get all the form-data value and check if its present
-    response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num,valid=valid)
-    if not response:
-        return utils.encode_response(status='failure', code=404, desc='house_rules not found')
-
-    #return the form-data values
     return response
 
 #
@@ -323,22 +287,6 @@ def get_chores():
     return response
 
 #
-# get house rules
-#
-@app.route('/get_house_rules', methods=['GET'])
-def get_house_rules():
-    # get params field
-    house_code = request.args.get('house_code')
-
-    # validate params for null values
-    if '' in [house_code] or None in [house_code]:
-        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
-
-    # response request
-    response = users.get_house_rules(house_code)
-    return response
-
-#
 # edit a chore
 #
 @app.route('/edit_chore', methods=['PUT'])
@@ -381,6 +329,111 @@ def delete_chore():
     chore_id = request_dict.get('chore_id')
 
     response = users.delete_chore(chore_id)
+    return response
+
+#
+# assign chore to user in house
+#
+@app.route('/assign_chore', methods=['POST'])
+def assign_chore():
+    # validate JSON request
+    fields_list = ['user_id', 'chore_id', 'house_code']
+
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    user_id = request_dict.get('user_id')
+    chore_id = request_dict.get('chore_id')
+    house_code = request_dict.get('house_code')
+
+    # response request
+    response = users.assign_chore(user_id, chore_id, house_code)
+    return response
+
+#
+# unassign user from chore
+#
+@app.route('/unassign_chore', methods=['PUT'])
+def unassign_chore():
+    # validate JSON request
+    fields_list = ['user_id', 'chore_id']
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+
+    # build dict from json
+    request_dict = request.get_json()
+
+    user_id = request_dict.get('user_id')
+    chore_id = request_dict.get('chore_id')
+
+    # response request
+    response = users.unassign_chore(user_id, chore_id)
+    return response
+
+######################################################### HOUSE/HOUSE RULES API #################################################################
+
+
+#
+# Creates the house rule, #note that voted_num is the # of members
+#
+@app.route('/create_house_rules', methods=['POST'])
+def create_house_rules():
+
+    #get form-data files
+    fields_list = ['title', 'description', 'house_code', 'voted_num', "valid"]
+    valid_json, desc = utils.validate_json_request(fields_list, request)
+    if not valid_json:
+        response = utils.encode_response(status='failure', code=602, desc=desc)
+        return response
+    
+    request_dict = request.get_json()
+
+    title = request_dict.get('title')
+    description = request_dict.get('description')
+    house_code = request_dict.get('house_code')
+    voted_num = request_dict.get('voted_num')
+    valid = request_dict.get('valid')
+
+    # validate that title-data has no null values
+    if '' in [title]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty house rule)')
+
+    # # validate that housecode-data has no null values
+    if '' in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty housecode)')
+
+    # # validate that vote-data has no null values
+    if '' in [voted_num]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user form-data (empty voters)')
+    # get all the form-data value and check if its present
+    response = users.add_house_rules(title=title, description=description, house_code=house_code, voted_num=voted_num,valid=valid)
+    if not response:
+        return utils.encode_response(status='failure', code=404, desc='house_rules not found')
+
+    #return the form-data values
+    return response
+
+#
+# get house rules
+#
+@app.route('/get_house_rules', methods=['GET'])
+def get_house_rules():
+    # get params field
+    house_code = request.args.get('house_code')
+
+    # validate params for null values
+    if '' in [house_code] or None in [house_code]:
+        return utils.encode_response(status='failure', code=602, desc='invalid user parameters (no house code provided)')
+
+    # response request
+    response = users.get_house_rules(house_code)
     return response
 
 #
@@ -514,51 +567,7 @@ def create_house():
     # return appropriate response
     return response
 
-#
-# assign chore to user in house
-#
-@app.route('/assign_chore', methods=['POST'])
-def assign_chore():
-    # validate JSON request
-    fields_list = ['user_id', 'chore_id', 'house_code']
 
-    valid_json, desc = utils.validate_json_request(fields_list, request)
-    if not valid_json:
-        response = utils.encode_response(status='failure', code=602, desc=desc)
-        return response
-
-    # build dict from json
-    request_dict = request.get_json()
-
-    user_id = request_dict.get('user_id')
-    chore_id = request_dict.get('chore_id')
-    house_code = request_dict.get('house_code')
-
-    # response request
-    response = users.assign_chore(user_id, chore_id, house_code)
-    return response
-
-#
-# unassign user from chore
-#
-@app.route('/unassign_chore', methods=['PUT'])
-def unassign_chore():
-    # validate JSON request
-    fields_list = ['user_id', 'chore_id']
-    valid_json, desc = utils.validate_json_request(fields_list, request)
-    if not valid_json:
-        response = utils.encode_response(status='failure', code=602, desc=desc)
-        return response
-
-    # build dict from json
-    request_dict = request.get_json()
-
-    user_id = request_dict.get('user_id')
-    chore_id = request_dict.get('chore_id')
-
-    # response request
-    response = users.unassign_chore(user_id, chore_id)
-    return response
 
 #
 # edit house rules
