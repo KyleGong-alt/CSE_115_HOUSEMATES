@@ -115,7 +115,7 @@ class TestRules:
 
         house_rule_json = json.dumps({"title": 'Dont Delete Me',
                                       "description": 'test',
-                                      "house_code": 'AKZXCOPQ',
+                                      "house_code": 'DBSGALUC',
                                       "voted_num": "0",
                                       "valid": "0"
                                       })
@@ -123,13 +123,14 @@ class TestRules:
         postResponse = requests.request("POST", postUrl, headers=self.json_headers, data=house_rule_json)
 
 
-        getUrl = self.route_dict["get_house_rules"]+"?house_code=AKZXCOPQ"
+        getUrl = self.route_dict["get_house_rules"]+"?house_code=DBSGALUC"
         getResponse = requests.request("GET", getUrl)
-        response_data = json.loads(postResponse.text)
+        response_data = json.loads(getResponse.text)
+        id_for_house_rule = response_data['data'][0]['id'];
 
-        #
-        update_vote_data = json.dumps({"user_id": 56,
-                                      "rule_id": 54,
+
+        update_vote_data = json.dumps({"user_id": 79,
+                                      "rule_id": id_for_house_rule,
                                       "update_value": 1
                                       })
         voteUrl = self.route_dict["update_house_rule_voted_num"]
