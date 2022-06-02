@@ -68,11 +68,11 @@ class TestHouse:
 if __name__ == "__main__":
     print("-" * 35)
     print("House API Unit Testing ...\n")
-    # houseApiTest = TestHouse()
-    # houseApiTest.test_create_house(75)
-    # houseApiTest.test_get_house_members("AKZXCOPQ")
-    # houseApiTest.test_join_house(61, "AKZXCOPQ")
-    # houseApiTest.test_leave_house(61)
+    houseApiTest = TestHouse()
+    houseApiTest.test_create_house(1)
+    houseApiTest.test_get_house_members("DBSGALUC")
+    houseApiTest.test_join_house(61, "DBSGALUC")
+    houseApiTest.test_leave_house(61)
     print("\nFinished Running Tests ...")
     print("-" * 35)
 
