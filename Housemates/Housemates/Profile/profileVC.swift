@@ -41,6 +41,8 @@ class profileVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initialize UI setup
         profilePic.layer.masksToBounds = true
         profilePic.layer.cornerRadius = profilePic.bounds.width/2
         profilePic.layer.borderWidth = 1
@@ -76,15 +78,22 @@ class profileVC: UIViewController {
         emailTextField.text = currentUser?.email
         phoneNumberTextField.text = format(with: "(XXX) XXX-XXXX", phone: currentUser!.mobile_number)
         
+        
+        // Set up slide up view for profile picture
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let delegate = windowScene.delegate as? SceneDelegate else { return }
+        
+        // dim container view when slide view pops up
         containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         containerView.frame = self.view.frame
         delegate.window?.addSubview(containerView)
         
+        // tap gesture for the container view
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(slideUpViewTapped))
         containerView.addGestureRecognizer(tapGesture)
         containerView.alpha = 0
+        
+        // Setup Slide up view
         slideUpView.frame = CGRect(x: 16, y: screenSize.height, width: screenSize.width - 32, height: 100)
         slideUpView.separatorStyle = .none
         slideUpView.layer.cornerRadius = 20
@@ -94,14 +103,14 @@ class profileVC: UIViewController {
         slideUpView.dataSource = self
         slideUpView.register(SlideUpViewCell.self, forCellReuseIdentifier: "SlideUpViewCell")
         setProfilePic(currentUser!.email, imageView: self.profilePic)
-//        firstName.text = user.first_name
-        // Do any additional setup after loading the view.
     }
     
+    // Format phone number from XXXXXXXXXX to (XXX) XXX-XXXX
     func updatePhone(phone: String) {
         phoneNumberTextField.text = format(with: "(XXX) XXX-XXXX", phone: phone)
     }
     
+    // Sign Out logic, segues back to loginVC
     @IBAction func onSignOut(_ sender: Any) {
         UserDefaults.standard.removeObject(forKey: "email")
         let main = UIStoryboard(name: "Main", bundle: nil)
@@ -119,16 +128,24 @@ class profileVC: UIViewController {
         
         delegate.window?.layer.add(transition, forKey: kCATransition)
     }
+    
+    // Begin touch recognizer on screen
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // UI indicate user touched profile pic
         if touches.first?.view == self.profilePic {
             profilePic.layer.borderWidth = 4
         }
     }
+    
+    // End touch recognizer on screen
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // UI indicate user end touch profile pic
         if touches.first?.view == self.profilePic {
             profilePic.layer.borderWidth = 1
         }
     }
+    
+    // Long Hold Recognizer for profile pic. Slide up View appears
     @IBAction func onPicLongHold(_ sender: Any) {
         profilePic.layer.borderWidth = 1
         if (containerView.alpha != 0) {
@@ -141,6 +158,7 @@ class profileVC: UIViewController {
         
     }
     
+    // Dismiss slide up view
     @objc func slideUpViewTapped() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .curveEaseInOut, animations: {
             self.containerView.alpha = 0
@@ -149,6 +167,7 @@ class profileVC: UIViewController {
         
     }
     
+    // Perform segue to EditProfileVC with sender to indicate which data is being edit
     @IBAction func onEditFirstName(_ sender: Any) {
         performSegue(withIdentifier: "segueEditProfile", sender: "first_name")
     }
@@ -169,6 +188,7 @@ class profileVC: UIViewController {
         performSegue(withIdentifier: "segueEditProfile", sender: "password")
     }
     
+    // Prepare segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! EditProfileVC
         destinationVC.sheetPresentationController?.detents = [.medium()]
@@ -180,11 +200,15 @@ class profileVC: UIViewController {
     
 }
 
+
 extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    // Number of row for slide up view
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         slideUpViewDataSource.count
     }
     
+    // Loads each row base on data in slide up view
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "SlideUpViewCell", for: indexPath) as? SlideUpViewCell
         else {fatalError("unable to deque SlideUpViewCell")}
@@ -194,15 +218,20 @@ extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerCo
         return cell
     }
     
+    // Fixed height for row of slide up view
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         50
     }
     
+    // On selected row
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         slideUpViewTapped()
+        //Set up image picker
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
         imagePickerController.allowsEditing = true
+        
+        // Camera or Photo Library
         if indexPath.row == 0 && UIImagePickerController.isSourceTypeAvailable(.camera) {
             imagePickerController.sourceType = .camera
             self.present(imagePickerController, animated: true, completion: nil)
@@ -214,6 +243,7 @@ extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerCo
         }
     }
         
+    // On finish with picking image, upload the image
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
         profilePic.image = image
@@ -223,6 +253,7 @@ extension profileVC: UITableViewDelegate, UITableViewDataSource, UIImagePickerCo
         self.dismiss(animated: true, completion: nil)
     }
     
+    // Upload image to server
     func imageUpload(_ image: UIImage) {
         let url = URL(string: "http://localhost:8080/profilePic?email="+currentUser!.email)!
         let imageData = image.jpegData(compressionQuality: 0.9)

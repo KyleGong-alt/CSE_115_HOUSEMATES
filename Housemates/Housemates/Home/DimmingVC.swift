@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Dimming View for side bar animation
 class DimmingVC: UIViewController {
 
     let dimmingTap = UITapGestureRecognizer(target: self, action: #selector(tapped))
@@ -22,17 +23,4 @@ class DimmingVC: UIViewController {
     @objc func tapped(sender: UITapGestureRecognizer) {
         print("TAPPED")
     }
-    
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

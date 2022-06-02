@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Progress animation
 class StrokeAnimation: CABasicAnimation {
     
     enum StrokeType {

@@ -29,9 +29,16 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
     
+    let loadingIndicator: ProgressView = {
+        let progress = ProgressView(colors: [.white], lineWidth: 5)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set up loading progress view
         overrideUserInterfaceStyle = .light
         self.view.addSubview(loadingIndicator)
         
@@ -43,11 +50,16 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         ])
         
         loadingIndicator.isAnimating = true
+        
+        
+        // Set delegates and datasource
         currentChoresTableView.delegate = self
         currentChoresTableView.dataSource = self
         unassignedChoresTableView.delegate = self
         unassignedChoresTableView.dataSource = self
         
+        
+        // Set up UI designs
         setBottomBorder(label: currentChoresLabel, height: 8, color: UIColor.white.cgColor)
         
         setBottomBorder(label: unassignedChoresLabel, height: 8, color: UIColor.white.cgColor)
@@ -62,24 +74,30 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         unassignedChoresTableView.estimatedRowHeight = 100
         unassignedChoresTableView.rowHeight = UITableView.automaticDimension
         
-        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        toDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        // Change tab bar color to green tint when view appearing
         tabBarController?.tabBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
         tabBarController?.tabBar.tintColor = UIColor.white
         navigationController?.navigationBar.barTintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
+        
+        // Get chore data
         getChoreByHouseCode(houseCode: currentUser!.house_code!)
     }
     
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [.white], lineWidth: 5)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
+    override func viewWillDisappear(_ animated: Bool) {
+        // Change tab bar color back to tan tint when view disappear
+        tabBarController?.tabBar.barTintColor = UIColor.init(red: 255/255, green: 252/255, blue: 230/255, alpha: 1)
+        tabBarController?.tabBar.tintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
+        
+        navigationController?.navigationBar.barTintColor = UIColor.init(red: 255/255, green: 252/255, blue: 230/255, alpha: 1)
+    }
     
+    // Check if data is done async loading
     func doneLoading() {
         if (choreList.count == unassignedchoreList.count + assignedchoreList.count) {
             loadingIndicator.isAnimating = false
@@ -93,11 +111,13 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // Sort chore list base on date
     func sortChoreList() {
         self.unassignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
         self.assignedchoreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
     }
 
+    // Returns number of row for specified tableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (tableView == currentChoresTableView) {
             return assignedchoreList.count
@@ -106,13 +126,13 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // Deque which cell for specified tableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (tableView == currentChoresTableView) {
             let cell = tableView.dequeueReusableCell(withIdentifier: "YourChoreCell") as! YourChoreCell
             let chore = assignedchoreList[indexPath.row] as chore
             cell.choreTitle.text = chore.name
             cell.choreDescription.text = chore.description
-            
             let dateFromString: Date? = toDateFormatter.date(from: chore.due_date)
             cell.choreTime.text = printDateFormatter.string(from: dateFromString!)
             return cell
@@ -127,6 +147,7 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // Action when selected row for specified tableView
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if(tableView == currentChoresTableView) {
             performSegue(withIdentifier: "seguePickChore", sender: assignedchoreList[indexPath.row])
@@ -135,6 +156,8 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         
     }
+    
+    // Preparation for different segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "seguePickChore" {
             let destinationVC = segue.destination as! ChoreHalfSheetVC
@@ -151,17 +174,13 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             destinationVC.parentVC = self
         }
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        tabBarController?.tabBar.barTintColor = UIColor.init(red: 255/255, green: 252/255, blue: 230/255, alpha: 1)
-        tabBarController?.tabBar.tintColor = UIColor.init(red: 69/255, green: 125/255, blue: 122/255, alpha: 1)
-        
-        navigationController?.navigationBar.barTintColor = UIColor.init(red: 255/255, green: 252/255, blue: 230/255, alpha: 1)
-    }
     
+    // User press Add
     @IBAction func onAddChore(_ sender: Any) {
         performSegue(withIdentifier: "segueAddChores", sender: nil)
     }
     
+    // Get chore with house code request
     func getChoreByHouseCode(houseCode: String) {
         var components = URLComponents(string: "http://127.0.0.1:8080/get_chores_by_house_code")!
         components.queryItems = [
@@ -177,8 +196,11 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:choreResponse
             do {
-                result = try JSONDecoder().decode(choreResponse.self, from: data!)
-                //print(result)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                result = try JSONDecoder().decode(choreResponse.self, from: data)
                 self.choreList = result.data ?? []
                 self.unassignedchoreList.removeAll()
                 self.assignedchoreList.removeAll()
@@ -195,6 +217,7 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         dataTask.resume()
     }
     
+    // Get assignees base on chore
     func getAssignees(chore: chore){
         var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
         components.queryItems = [
@@ -210,7 +233,12 @@ class ChoresVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:assigneeResponse
             do {
-                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                
+                result = try JSONDecoder().decode(assigneeResponse.self, from: data)
                 if ((result.data?.count ?? 0) != 0) {
                     self.assignedchoreList.append(chore)
                 } else {

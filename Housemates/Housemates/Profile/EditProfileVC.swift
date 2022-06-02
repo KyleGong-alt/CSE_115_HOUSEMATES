@@ -12,9 +12,9 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
     @IBOutlet var navigationBar: UINavigationBar!
     @IBOutlet var firstLabel: UILabel!
     @IBOutlet var firstTextField: UITextField!
-    
     @IBOutlet var secondLabel: UILabel!
     @IBOutlet var secondTextField: UITextField!
+    
     var editType: String!
     var parentVC: UIViewController?
     
@@ -22,8 +22,11 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
         super.viewDidLoad()
         firstTextField.delegate = self
         secondTextField.delegate = self
+        
         secondLabel.isHidden = true
         secondTextField.isHidden = true
+        
+        // Checks which data is being edit and change UI based on the edit type
         switch editType {
         case "first_name":
             navigationBar.topItem?.title = "Edit First Name"
@@ -60,7 +63,7 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
         }
     }
     
-    
+    // Restrict number of characters in the textfield to 32
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
         let substringToReplace = textFieldText[rangeOfTextToReplace]
@@ -68,14 +71,20 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
         return count <= 32
     }
     
+    // Dismisses view
     @IBAction func onDismiss(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
     
+    // User hit done when finish editting
     @IBAction func onDone(_ sender: Any) {
+        
+        // First check if user input is valid
         if !checkValidField() {
             return
         }
+        
+        // Update user data in database
         switch editType {
         case "first_name":
             updateUser(email: currentUser!.email, first_name: firstTextField.text!, last_name: currentUser!.last_name, password: currentUser!.password, mobile_number: currentUser!.mobile_number)
@@ -97,6 +106,7 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
         }
     }
     
+    // Checks for valid input
     func checkValidField() -> Bool{
         switch editType {
         case "phone":
@@ -152,6 +162,8 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
             return true
         }
     }
+    
+    // Update user data request
     func updateUser(email: String, first_name: String, last_name: String, password: String, mobile_number: String) {
         let url = URL(string: "http://127.0.0.1:8080/update_user")!
         
@@ -168,7 +180,6 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
             "password": password,
             "mobile_number": mobile_number
         ]
-        print(parameters)
         
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         request.httpBody = httpBody
@@ -177,12 +188,18 @@ class EditProfileVC: UIViewController, UITextFieldDelegate{
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:postResponse
             do {
-                result = try JSONDecoder().decode(postResponse.self, from: data!)
-                print(result)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                
+                result = try JSONDecoder().decode(postResponse.self, from: data)
+                
                 if result.code != 200 {
                     print(result)
                     return
                 }
+                
                 DispatchQueue.main.async {
                     currentUser = user(id: currentUser!.id, first_name: first_name, last_name: last_name, house_code: currentUser!.house_code, mobile_number: mobile_number, email: email, password: password)
                     getHouseMembers()
