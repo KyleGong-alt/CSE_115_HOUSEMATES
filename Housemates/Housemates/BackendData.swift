@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Structure matching database content
 struct chore: Codable {
     let id: Int
     let name: String
@@ -35,6 +36,7 @@ struct rule: Codable {
     let voted_yes: Int
 }
 
+// Structure for server response
 struct ruleResponse: Codable {
     let status: String
     let code: Int
@@ -79,14 +81,9 @@ struct chorePostResponse: Codable {
 
 
 var currentUser: user?
-//var choreList = [chore]()
-//var choreAssigneesList = [[user]]()
-//var unassignedChoreList = [chore]()
-//var assignedchoreList = [chore]()
-//var approvedRuleList = [rule]()
-//var unapprovedRuleList = [rule]()
 var memberList = [user]()
 
+// Get house member request
 func getHouseMembers() {
     var components = URLComponents(string: "http://127.0.0.1:8080/get_house_members")!
     components.queryItems = [
@@ -102,7 +99,11 @@ func getHouseMembers() {
     let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
         var result:multiUserResponse
         do {
-            result = try JSONDecoder().decode(multiUserResponse.self, from: data!)
+            guard let data = data else {
+                print("Server not connected!")
+                return
+            }
+            result = try JSONDecoder().decode(multiUserResponse.self, from: data)
             
             if result.code != 200 {
                 return

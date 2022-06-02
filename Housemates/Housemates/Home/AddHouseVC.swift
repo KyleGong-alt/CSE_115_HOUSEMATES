@@ -19,18 +19,22 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         
     }
     
+    // Dismiss view
     @IBAction func onDismiss(_ sender: Any) {
         dismiss(animated: true)
     }
     
+    // User press join
     @IBAction func onJoinHouse(_ sender: Any) {
         join_house()
     }
     
+    // User press create house
     @IBAction func onCreateHouse(_ sender: Any) {
         create_house()
     }
     
+    // Deals with invalid house code when joining house
     func errorAddHouse() {
         let alert = UIAlertController(title: "The house code you entered does not exist", message: "The house code you entered does not exist. Please try again.", preferredStyle: UIAlertController.Style.alert)
 
@@ -38,9 +42,10 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
 
         self.present(alert, animated: true, completion: nil)
     }
+    
+    // Preparation for segues
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "segueAddedHouse" {
-            let destinationVC = segue.destination as! TabBarController
             if currentUser!.house_code != nil{
             } else {
                 let updatedUser = user(id: currentUser!.id, first_name: currentUser!.first_name, last_name: currentUser!.last_name, house_code: houseCodeTextField.text, mobile_number: currentUser!.mobile_number, email: currentUser!.email, password: currentUser!.password)
@@ -49,6 +54,7 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         }
     }
     
+    // Join house request
     func join_house() {
         let url = URL(string: "http://127.0.0.1:8080/join_house")!
         
@@ -70,7 +76,7 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result: postResponse
             guard let data = data else {
-                print("OUT")
+                print("server not connected!")
                 return
             }
             do {
@@ -91,6 +97,8 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         }
         dataTask.resume()
     }
+    
+    // Create house request
     func create_house() {
         let url = URL(string: "http://127.0.0.1:8080/create_house")!
         
@@ -111,7 +119,7 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result: postResponse
             guard let data = data else {
-                print("OUT")
+                print("server not connected")
                 return
             }
             do {
@@ -129,6 +137,8 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
         }
         dataTask.resume()
     }
+    
+    // Get user request
     func get_user() {
         var components = URLComponents(string: "http://127.0.0.1:8080/get_user")!
         components.queryItems = [
@@ -145,6 +155,7 @@ class AddHouseVC: UIViewController, UITextFieldDelegate{
             var result:userResponse
             do {
                 guard let data = data else {
+                    print("server not connected")
                     return
                 }
                 result = try JSONDecoder().decode(userResponse.self, from: data)

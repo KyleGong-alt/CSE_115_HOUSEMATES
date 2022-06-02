@@ -202,19 +202,24 @@
 		C722BF5F2818AFE100458FAC /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				C73E673A2847D58C00B1F001 /* Rules */,
 				C76F1001282049500071C82A /* Chores */,
 				C76F10002820491F0071C82A /* Members */,
 				C722BF602818B01100458FAC /* HomeVC.swift */,
 				C722BF622818F1AC00458FAC /* HomelessVC.swift */,
-				C722BF642819CF6B00458FAC /* YourChoreCell.swift */,
-				C722BF66281A213000458FAC /* ChoreHalfSheetVC.swift */,
-				C722BF68281A55E500458FAC /* AssignedMemberCell.swift */,
 				C76F0FFC281F26FE0071C82A /* DimmingVC.swift */,
-				C7CF5D2C2831D65800B315D6 /* RuleCell.swift */,
 				C7F9E52528344E8E007B3256 /* AddHouseVC.swift */,
-				C70F3C9D283DB6ED00E3BD98 /* AddRuleVC.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		C73E673A2847D58C00B1F001 /* Rules */ = {
+			isa = PBXGroup;
+			children = (
+				C7CF5D2C2831D65800B315D6 /* RuleCell.swift */,
+				C70F3C9D283DB6ED00E3BD98 /* AddRuleVC.swift */,
+			);
+			path = Rules;
 			sourceTree = "<group>";
 		};
 		C73FEBD2280DE8D100C11888 = {
@@ -292,6 +297,9 @@
 				C76F0FF4281C85020071C82A /* ChoresVC.swift */,
 				C7D453B22825A35300DFBB83 /* AddChoresVC.swift */,
 				C7CF5D322834164D00B315D6 /* AddChoreMemberCell.swift */,
+				C722BF66281A213000458FAC /* ChoreHalfSheetVC.swift */,
+				C722BF642819CF6B00458FAC /* YourChoreCell.swift */,
+				C722BF68281A55E500458FAC /* AssignedMemberCell.swift */,
 			);
 			path = Chores;
 			sourceTree = "<group>";

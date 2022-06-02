@@ -7,12 +7,12 @@
 
 import UIKit
 
+// Chore half sheet when selecting a chore to view detail
 class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet var choreTitle: UILabel!
     @IBOutlet var editButton: UIButton!
     @IBOutlet var checkButton: UIButton!
-    @IBOutlet var exButton: UIButton!
     @IBOutlet var descriptionText: UITextView!
     @IBOutlet var membersTableView: UITableView!
     @IBOutlet var membersView: UIView!
@@ -25,10 +25,16 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
     var printTimeFormatter = DateFormatter()
+    let loadingIndicator: ProgressView = {
+        let progress = ProgressView(colors: [UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)], lineWidth: 5)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set up progress loading view
         overrideUserInterfaceStyle = .light
         self.membersView.addSubview(loadingIndicator)
         
@@ -41,10 +47,12 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         
         loadingIndicator.isAnimating = true
         
+        // Set delegate and datasource
         membersTableView.delegate = self
         membersTableView.dataSource = self
         membersTableView.isHidden = true
         
+        // Initialize UI designs
         descriptionText.layer.cornerRadius = 13
         descriptionText.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 16, right: 16)
         
@@ -55,7 +63,7 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         choreTitle.text = chore.name
         descriptionText.text = chore.description
         
-        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        toDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         printDateFormatter.dateFormat = "EEEE, MMM d, yyyy"
         printTimeFormatter.dateFormat = "hh:mm a"
         
@@ -65,33 +73,34 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
     
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)], lineWidth: 5)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
-    
+    // Check if data is done async loading
     func doneLoading() {
         membersTableView.reloadData()
         loadingIndicator.isAnimating = false
         membersTableView.isHidden = false
         
     }
+    
+    // Layout subview
     override func viewDidLayoutSubviews() {
+        // add bottom border after subview auto layout from text
         let bottomLine = CALayer()
         bottomLine.frame = CGRect(x: 0.0, y: choreTitle.frame.height + 4, width: choreTitle.frame.width + 68, height: 1.0)
         bottomLine.backgroundColor = UIColor.black.cgColor
         choreTitle.layer.addSublayer(bottomLine)
     }
     
+    // Responds when view will appear
     override func viewWillAppear(_ animated: Bool) {
         getAssigneesYourChore(chore: chore)
     }
     
+    // Returns number of rows in memberTableView based on number of assignees
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         assignees.count
     }
     
+    // Deques cell for each row in memberTableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AssignedMemberCell") as! AssignedMemberCell
         let member = assignees[indexPath.row]
@@ -100,10 +109,12 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         return cell
     }
 
+    // On press check, remove chore from database
     @IBAction func onCheck(_ sender: Any) {
         deleteChore(chore: chore)
-        
     }
+    
+    // On edit, sends user to edit chore
     @IBAction func onEdit(_ sender: Any) {
         self.dismiss(animated: true) {
             let choreData = (chore: self.chore, assignees: self.assignees)
@@ -111,6 +122,7 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         }
     }
     
+    // Get assignees base on chore
     func getAssigneesYourChore(chore: chore){
         var components = URLComponents(string: "http://127.0.0.1:8080/get_assignees")!
         components.queryItems = [
@@ -126,7 +138,18 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:assigneeResponse
             do {
-                result = try JSONDecoder().decode(assigneeResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                
+                result = try JSONDecoder().decode(assigneeResponse.self, from: data)
+                
+                if (result.code != 200) {
+                    print(result)
+                    return
+                }
+                
                 self.assignees = result.data ?? []
                 DispatchQueue.main.async {
                     self.doneLoading()
@@ -138,6 +161,7 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         dataTask.resume()
     }
     
+    // Request for deleting chore from database
     func deleteChore(chore: chore) {
         let url = URL(string: "http://127.0.0.1:8080/delete_chore")!
         
@@ -156,7 +180,18 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:postResponse
             do {
-                result = try JSONDecoder().decode(postResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                
+                result = try JSONDecoder().decode(postResponse.self, from: data)
+                
+                if (result.code != 200) {
+                    print(result)
+                    return
+                }
+                
                 DispatchQueue.main.async {
                     self.updateParentChoreList()
                     self.dismiss(animated: true, completion: nil)
@@ -168,6 +203,7 @@ class ChoreHalfSheetVC: UIViewController, UITableViewDelegate, UITableViewDataSo
         dataTask.resume()
     }
     
+    // Update parent chore list when delete chore
     func updateParentChoreList() {
         if let parentVC = self.parentVC as? ChoresVC {
             parentVC.viewWillAppear(true)

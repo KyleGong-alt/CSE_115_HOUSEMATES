@@ -17,6 +17,7 @@ class MemberCell: UITableViewCell {
     @IBOutlet var memberPhoneLabel: UILabel!
     @IBOutlet var memberEmailLabel: UILabel!
     
+    // Member cell for MembersVC
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

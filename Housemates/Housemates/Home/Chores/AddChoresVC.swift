@@ -23,12 +23,10 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     @IBOutlet weak var addButton: UIButton!
     
     var parentVC: UIViewController?
-    
     let dateFormatter = DateFormatter()
     let toDateFormatter = DateFormatter()
     var dateHidden = true
     var memberTableHidden = true
-
     var memberList = [user]()
     var selectedList = [Bool]()
     var isEditting = false
@@ -37,6 +35,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Set up view: UI design, delegates and datasource, date formats, getting data from server
         titleTextField.delegate = self
         setBottomBorder(textfield: titleTextField)
         
@@ -63,8 +62,9 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         datePicker.layer.isHidden = true
         datePicker.minimumDate = date
         
-        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        toDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         
+        // Set chore data in textfield if isEditting
         if isEditting {
             if let chore = choreData?.chore {
                 titleTextField.text = chore.name
@@ -94,10 +94,13 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         getHouseMembers()
     }
     
+    
+    // End text editing when tapping screen other than textfield
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
     
+    // UI responding to when descriptionTextView is being edit
     func textViewDidBeginEditing(_ textView: UITextView) {
         if descriptionTextView.textColor == UIColor.lightGray {
             textView.text = nil
@@ -105,6 +108,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
     }
     
+    // UI responding to when descriptionTextView is done editting
     func textViewDidEndEditing(_ textView: UITextView) {
         if descriptionTextView.text.isEmpty {
             descriptionTextView.text = "Add a Description"
@@ -112,6 +116,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
     }
     
+    // Limit character length in textfield
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
         let substringToReplace = textFieldText[rangeOfTextToReplace]
@@ -126,6 +131,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
     }
     
+    // When date is pressed, expand or hide date picker
     @IBAction func onDateTouch(_ sender: Any) {
         self.dateHidden = !self.dateHidden
         UIView.animate(withDuration: 0.2) {
@@ -134,14 +140,17 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
     }
     
+    // Responds to change when date in datepicker is changed
     @IBAction func onDateChange(_ sender: Any) {
         dateButton.setTitle(dateFormatter.string(from: datePicker.date), for: .normal)
     }
     
+    // Dismiss view
     @IBAction func onDismiss(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
     
+    // When assign is pressed, expand or hide memberTableview
     @IBAction func onAssign(_ sender: Any) {
         memberTableHidden = !memberTableHidden
         UIView.animate(withDuration: 0.2) {
@@ -149,7 +158,10 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
     }
     
+    // User presses add chore
     @IBAction func onAddChore(_ sender: Any) {
+        
+        //Check for empty title
         if (titleTextField.text!.isEmpty) {
             errorAddChore()
             return
@@ -169,6 +181,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         dismiss(animated: true, completion: nil)
     }
     
+    // Deals with adding chore with empty title
     func errorAddChore() {
         let alert = UIAlertController(title: "Title Field Required", message: "The Title field is empty. Please enter a viable chore title.", preferredStyle: UIAlertController.Style.alert)
 
@@ -177,10 +190,12 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         self.present(alert, animated: true, completion: nil)
     }
     
+    // returns number of row based on number of housemates
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.memberList.count
     }
     
+    // Set up each row in memberTableview
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AddChoreMemberCell") as! AddChoreMemberCell
         
@@ -195,6 +210,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         return cell
     }
     
+    // Repsponds to row select in memberTableView
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! AddChoreMemberCell
         self.selectedList[indexPath.row] = !self.selectedList[indexPath.row]
@@ -209,6 +225,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
     }
     
+    // Layout subviews
     override func viewWillLayoutSubviews() {
         super.updateViewConstraints()
         let dateHeight = dateHidden ? 0 : (328 + 8)
@@ -216,6 +233,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         self.tableHeight?.constant = memberTableHidden ? 0 : self.memberTableView.contentSize.height
     }
     
+    // Request for getting house members
     func getHouseMembers() {
         var components = URLComponents(string: "http://127.0.0.1:8080/get_house_members")!
         components.queryItems = [
@@ -231,7 +249,11 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:multiUserResponse
             do {
-                result = try JSONDecoder().decode(multiUserResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                result = try JSONDecoder().decode(multiUserResponse.self, from: data)
                 
                 if result.code != 200 {
                     return
@@ -258,6 +280,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         dataTask.resume()
     }
     
+    // Request for creating chore
     func createChore(name: String, desc: String, due_date: String, house_code: String) {
         let url = URL(string: "http://127.0.0.1:8080/create_chore")!
         
@@ -280,7 +303,6 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
             "house_code": house_code,
             "assignees": list_id_selected
         ]
-        print(parameters)
         
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         request.httpBody = httpBody
@@ -289,8 +311,11 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:chorePostResponse
             do {
-                result = try JSONDecoder().decode(chorePostResponse.self, from: data!)
-                print(result)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                result = try JSONDecoder().decode(chorePostResponse.self, from: data)
                 if result.code != 200 {
                     print(result)
                     return
@@ -306,6 +331,8 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         }
         dataTask.resume()
     }
+    
+    // Request for editting chore
     func editChore(chore_id: Int, name: String, desc: String, due_date: String, house_code: String) {
         let url = URL(string: "http://127.0.0.1:8080/edit_chore")!
         
@@ -333,12 +360,14 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         let httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         request.httpBody = httpBody
         request.timeoutInterval = 20
-        print(list_id_selected)
         let dataTask = URLSession.shared.dataTask(with: request) { [self] data, response, error in
             var result:postResponse
             do {
-                result = try JSONDecoder().decode(postResponse.self, from: data!)
-                print(result)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                result = try JSONDecoder().decode(postResponse.self, from: data)
                 if result.code != 200 {
                     print(result)
                     return
@@ -353,6 +382,7 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         dataTask.resume()
     }
     
+    // Updating parent chorelist after creating/editting chore
     func updateParentChoreList() {
         let date = toDateFormatter.string(from: datePicker.date)
         

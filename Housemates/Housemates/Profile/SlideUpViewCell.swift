@@ -7,6 +7,7 @@
 
 import UIKit
 
+// UI design set up for the cell for slide up view
 class SlideUpViewCell: UITableViewCell {
 
     lazy var backView : UIView = {

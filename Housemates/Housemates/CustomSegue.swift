@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 
+// Custom swipe right segue
 class RightSegue: UIStoryboardSegue {
     override func perform() {
         let initialView = self.source.view as UIView
@@ -31,6 +32,7 @@ class RightSegue: UIStoryboardSegue {
     }
 }
 
+// Custome swipe left segue
 class LeftSegue: UIStoryboardSegue {
     override func perform() {
         let initialView = self.source.view as UIView
@@ -57,6 +59,7 @@ class LeftSegue: UIStoryboardSegue {
 //https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/DefiningCustomPresentations.html#//apple_ref/doc/uid/TP40007457-CH25-SW1
 let dimmingView = DimmingVC().view as UIView
 
+// Segue for side bar
 class RightNavSegue: UIStoryboardSegue {
     override func perform() {
         let initialView = self.source.view as UIView
@@ -81,14 +84,11 @@ class RightNavSegue: UIStoryboardSegue {
             dimmingView.alpha = 1
             destView.frame = (destView.frame.offsetBy(dx: -screenWidth + 80, dy: 0))
         }) { (Bool) in
-            //self.source.present(self.destination, animated: false, completion: nil)
-            //self.source.
-            //appWindow?.rootViewController = self.destination
-
         }
     }
 }
 
+// segue for closing side bar
 class CloseRightNavSegue: UIStoryboardSegue {
     override func perform() {
         let initialView = self.source.view as UIView
@@ -117,10 +117,6 @@ class CloseRightNavSegue: UIStoryboardSegue {
             destView.frame = (destView.frame.offsetBy(dx: -80 + screenWidth, dy: 0))
             
         }) { (Bool) in
-            //self.source.present(self.destination, animated: false, completion: nil)
-            //self.source.
-            //appWindow?.rootViewController = self.destination
-
         }
         
     }

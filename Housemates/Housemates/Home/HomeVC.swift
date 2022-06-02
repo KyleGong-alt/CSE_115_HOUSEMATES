@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Your Home VC if user is part of a house
 class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
 
@@ -26,9 +27,16 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var toDateFormatter = DateFormatter()
     var printDateFormatter = DateFormatter()
     var loaded = 0
+    let loadingIndicator: ProgressView = {
+        let progress = ProgressView(colors: [UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)], lineWidth: 5)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Set up progress loading view
         overrideUserInterfaceStyle = .light
         self.view.addSubview(loadingIndicator)
         
@@ -41,6 +49,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         loadingIndicator.isAnimating = true
 
+        // Set up UI design
         setBottomBorder(label: currentChoreLabel, height: 8, color: UIColor.white.cgColor)
         setBottomBorder(label: ruleTitleLabel, height: 8, color: UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1).cgColor)
         
@@ -51,6 +60,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         choresView.layer.shadowRadius = 10
         choresView.isHidden = true
         
+        // Set up delegates and datasource for tableview
         ruleTableView.delegate = self
         ruleTableView.dataSource = self
         choreTableView.delegate = self
@@ -74,19 +84,14 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         addRuleButton.layer.cornerRadius = 40/2
         addRuleButton.layer.zPosition = 3
         
-        toDateFormatter.dateFormat = "E, dd MMM yyyy HH:mm:ss zzz"
+        // Set up date formatting
+        toDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         printDateFormatter.dateStyle = DateFormatter.Style.long
         printDateFormatter.timeStyle = DateFormatter.Style.short
     }
     
-    let loadingIndicator: ProgressView = {
-        let progress = ProgressView(colors: [UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 1)], lineWidth: 5)
-        progress.translatesAutoresizingMaskIntoConstraints = false
-        return progress
-    }()
-    
+    // Checks if all data is done async loading (gets all data from server)
     func doneLoading() {
-        print(loaded)
         if loaded == 3 {
             loadingIndicator.isAnimating = false
             self.sortChoreList()
@@ -98,7 +103,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    
+    // Gets data when view will appear
     override func viewWillAppear(_ animated: Bool) {
         getApprovedRules()
         getUserUnvotedRules()
@@ -106,6 +111,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         getChoreByUser(userID: String(currentUser!.id))
     }
     
+    // Find rule either from unpprovedRule or approvedRule
     func findRuleWithIndex(index: Int) -> rule {
         if index < unapprovedRuleList.count {
             return unapprovedRuleList[index]
@@ -114,20 +120,10 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // Returns number of row for respective tableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView {
         case choreTableView:
-//            if choreList.count == 0 {
-//                let label = UILabel(frame: CGRect(x: 100, y: 100, width: 200, height: 50))
-//                label.text = "No chore assigned"
-//                choresView.addSubview(label)
-//                NSLayoutConstraint.activate([
-//                    label.centerXAnchor.constraint(equalTo: self.choresView.centerXAnchor),
-//                    label.centerYAnchor.constraint(equalTo: self.choresView.centerYAnchor),
-////                    label.widthAnchor.constraint(equalToConstant: 50),
-////                    label.heightAnchor.constraint(equalTo: label.widthAnchor)
-//                ])
-//            }
             return choreList.count
         case ruleTableView:
             return approvedRuleList.count + unapprovedRuleList.count
@@ -136,6 +132,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // Deque cell for each row base on specified tableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch tableView {
         case choreTableView:
@@ -168,6 +165,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // Responds to selecting a row based on tableView
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableView {
         case choreTableView:
@@ -182,6 +180,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
     }
     
+    // Preparation for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "seguePickChore" {
             let destinationVC = segue.destination as! ChoreHalfSheetVC
@@ -190,8 +189,6 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let chore = choreList[indexPath.row] as chore
             destinationVC.chore = chore
             destinationVC.parentVC = self
-        } else if segue.identifier == "segueAllChore" {
-            let destinationVC = segue.destination as! ChoresVC
         } else if segue.identifier == "segueAddChores" {
             let destinationVC = segue.destination as! AddChoresVC
             destinationVC.parentVC = self
@@ -206,23 +203,27 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    // Segues to see all Chores
     @IBAction func onChoreNext(_ sender: Any) {
         performSegue(withIdentifier: "segueAllChore", sender: nil)
     }
     
+    // Segue view member (side bar)
     @IBAction func onViewMembers(_ sender: Any) {
         self.tabBarController?.performSegue(withIdentifier: "segueMembers", sender: nil)
     }
     
-    
+    // Segue to add rule
     @IBAction func onAddRule(_ sender: Any) {
         performSegue(withIdentifier: "segueAddRule", sender: nil)
     }
     
+    // Sort chore list based on date
     func sortChoreList() {
         self.choreList.sort(by: {toDateFormatter.date(from: $0.due_date)!.compare(toDateFormatter.date(from: $1.due_date)!) == .orderedAscending})
     }
     
+    // Request chores by userID
     func getChoreByUser(userID: String) {
         var components = URLComponents(string: "http://127.0.0.1:8080/get_chores_by_user")!
         components.queryItems = [
@@ -239,7 +240,11 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let dataTask = URLSession.shared.dataTask(with: request) { [self] data, response, error in
             var result:choreResponse
             do {
-                result = try JSONDecoder().decode(choreResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                result = try JSONDecoder().decode(choreResponse.self, from: data)
                 self.choreList = result.data  ?? []
                 DispatchQueue.main.async {
                     self.loaded += 1
@@ -252,6 +257,7 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         dataTask.resume()
     }
     
+    // Get approved rules from a house
     func getApprovedRules(){
         var components = URLComponents(string: "http://127.0.0.1:8080/get_approved_house_rules")!
         components.queryItems = [
@@ -267,9 +273,14 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:ruleResponse
             do {
-                result = try JSONDecoder().decode(ruleResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                
+                result = try JSONDecoder().decode(ruleResponse.self, from: data)
+                
                 self.approvedRuleList = result.data ?? []
-                print(self.approvedRuleList)
                 DispatchQueue.main.async {
                     self.loaded += 1
                     self.doneLoading()
@@ -280,6 +291,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         dataTask.resume()
     }
+    
+    // Get unapprovedrules from a house
     func getUnapprovedRules(){
         var components = URLComponents(string: "http://127.0.0.1:8080/get_not_approved_house_rules")!
         components.queryItems = [
@@ -295,7 +308,13 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:ruleResponse
             do {
-                result = try JSONDecoder().decode(ruleResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                
+                result = try JSONDecoder().decode(ruleResponse.self, from: data)
+                
                 self.unapprovedRuleList = result.data ?? []
                 DispatchQueue.main.async {
                     self.loaded += 1
@@ -307,6 +326,8 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         dataTask.resume()
     }
+    
+    //Get user unvoted rules from unapproved rules
     func getUserUnvotedRules(){
         var components = URLComponents(string: "http://127.0.0.1:8080/get_unvoted_house_rules")!
         components.queryItems = [
@@ -323,8 +344,12 @@ class HomeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             var result:ruleResponse
             do {
-                print(data,response,error)
-                result = try JSONDecoder().decode(ruleResponse.self, from: data!)
+                guard let data = data else {
+                    print("Server not connected!")
+                    return
+                }
+                
+                result = try JSONDecoder().decode(ruleResponse.self, from: data)
                 self.unapprovedRuleList = result.data ?? []
                 DispatchQueue.main.async {
                     self.loaded += 1

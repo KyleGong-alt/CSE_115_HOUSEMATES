@@ -20,7 +20,7 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        // Set up delegates and UI design
         nextButton.tintColor = UIColor.init(red:65/255, green: 125/255, blue: 122/255, alpha: 0.5)
         
         emailTextField.delegate = self
@@ -46,6 +46,7 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
         }
     }
     
+    // Deals with textfield responders when user presses enter
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == emailTextField {
             phoneTextField.becomeFirstResponder()
@@ -56,6 +57,7 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    // Limit character length in textfield
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let textFieldText = textField.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
         
@@ -64,13 +66,15 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
         return count <= 32
     }
 
+    // User press next
     @IBAction func onNext(_ sender: Any) {
-        //segue to password
         if !checkValidField() {
             return
         }
         performSegue(withIdentifier: "segueToPassword", sender: nil)
     }
+    
+    // Checks valid input for email and phone
     func checkValidField() -> Bool{
         if !isValidEmail(emailTextField.text!) {
             let alert = UIAlertController(title: "Invalid Email Input", message: "The email address you inputted is invalid. Please try again.", preferredStyle: UIAlertController.Style.alert)
@@ -91,6 +95,7 @@ class EmailPhoneVC: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    // Preparation for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! PasswordVC
         

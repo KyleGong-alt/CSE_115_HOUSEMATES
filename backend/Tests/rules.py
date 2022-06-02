@@ -155,6 +155,6 @@ if __name__ == "__main__":
     houseApiTest.test_get_approved_house_rules("AKZXCOPQ")
     houseApiTest.test_get_not_approved_house_rules("AKZXCOPQ")
     houseApiTest.test_get_unvoted_house_rules(78, "AKZXCOPQ")
-    houseApiTest.test_votes()
+    # houseApiTest.test_votes()
     print("\nFinished Running Tests ...")
     print("-" * 35)
