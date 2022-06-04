@@ -106,7 +106,6 @@ func setProfilePic(_ email: String, imageView: UIImageView){
         }
 
         DispatchQueue.main.async {
-            print("SWITCHING PROFILE PIC")
             imageView.image = UIImage(data: data!)
         }
     }.resume()

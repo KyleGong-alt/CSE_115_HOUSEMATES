@@ -1032,19 +1032,19 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="322" height="90"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Chore Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="elu-IY-Cbm">
-                                                            <rect key="frame" x="16" y="66" width="88" height="16"/>
+                                                            <rect key="frame" x="16" y="65.5" width="88" height="16.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Chore Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lUU-0E-y5p">
-                                                            <rect key="frame" x="16" y="37" width="290" height="21"/>
+                                                            <rect key="frame" x="16" y="36.5" width="290" height="21"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="253" text="Chore Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hGy-0V-kV8">
-                                                            <rect key="frame" x="16" y="8" width="290" height="21"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="253" text="Chore Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hGy-0V-kV8">
+                                                            <rect key="frame" x="16" y="8" width="290" height="20.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
@@ -2007,7 +2007,7 @@
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </textAttributes>
                                 <items>
-                                    <navigationItem title="HELLO" id="wbo-ph-u1Y">
+                                    <navigationItem title="Title" id="wbo-ph-u1Y">
                                         <barButtonItem key="leftBarButtonItem" title="Item" image="xmark" catalog="system" id="H3p-nx-xSy">
                                             <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <connections>
@@ -2120,8 +2120,8 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="Zph-i9-FRM"/>
-        <segue reference="Lx6-0z-wG7"/>
-        <segue reference="k0I-aw-CJz"/>
+        <segue reference="cAe-S9-RUe"/>
+        <segue reference="O1F-3N-8dZ"/>
         <segue reference="qVs-VN-vV0"/>
     </inferredMetricsTieBreakers>
     <resources>

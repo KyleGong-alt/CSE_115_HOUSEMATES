@@ -124,10 +124,21 @@ class AddChoresVC: UIViewController, UITextFieldDelegate, UITextViewDelegate, UI
         switch textField {
         case titleTextField:
             return count <= 45
+        default:
+            return count <= 64
+        }
+    }
+    
+    // Limit character length in textView
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard let textFieldText = textView.text, let rangeOfTextToReplace = Range(range, in: textFieldText) else { return false }
+        let substringToReplace = textFieldText[rangeOfTextToReplace]
+        let count = textFieldText.count - substringToReplace.count + text.count
+        switch textView {
         case descriptionTextView:
             return count <= 200
         default:
-            return count <= 64
+            return count <= 100
         }
     }
     
